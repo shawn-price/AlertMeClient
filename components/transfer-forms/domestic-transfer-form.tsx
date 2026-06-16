@@ -4,7 +4,6 @@ import { useState, useRef } from "react"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { AlertCircle } from "@/components/ui/iconify-compat"
 import { useValidatedForm } from "@/hooks/use-validated-form"
@@ -12,9 +11,10 @@ import Form, { FormError } from "@/components/ui/form"
 import { accountNumberSchema, nameSchema, amountSchema, getErrorMessage } from "@/lib/form-utils"
 import { useToast } from "@/hooks/use-toast"
 import { BeneficiaryLookup } from "@/components/beneficiary-lookup"
-import { NIGERIAN_BANKS, getAllPaymentPlatforms } from "@/lib/banks-data"
+import { getAllPaymentPlatforms } from "@/lib/banks-data"
 import { dataStore } from "@/lib/data-store"
 import { ChevronDown } from "@/components/ui/iconify-compat"
+import { SearchableSelect } from "@/components/ui/searchable-select"
 
 /**
  * Domestic Transfer Form - for transfers within Nigeria to other banks
@@ -150,21 +150,23 @@ export function DomesticTransferForm({ onSubmit, isLoading = false }: DomesticTr
           </div>
         </div>
 
-        {/* Recipient Bank - All Nigerian banks and payment platforms */}
+        {/* Recipient Bank - All Nigerian banks and payment platforms with search */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-2 block">Recipient Bank *</label>
-          <Select value={watch("bank")} onValueChange={(value) => { setValue("bank", value); (formState.errors as any).bank && clearErrors("bank") }}>
-            <SelectTrigger className={"bg-white " + ((formState.errors as any).bank ? "border-red-500" : "")}>
-              <SelectValue placeholder="Select bank" />
-            </SelectTrigger>
-            <SelectContent className="max-h-60">
-              {getAllPaymentPlatforms().map((bank) => (
-                <SelectItem key={bank.code} value={bank.name}>
-                  {bank.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            options={getAllPaymentPlatforms().map((bank) => ({
+              value: bank.name,
+              label: bank.name,
+            }))}
+            value={watch("bank")}
+            onValueChange={(value) => {
+              setValue("bank", value)
+              ;(formState.errors as any).bank && clearErrors("bank")
+            }}
+            placeholder="Type or select bank"
+            searchPlaceholder="Search banks..."
+            className={"bg-white " + ((formState.errors as any).bank ? "border-red-500" : "")}
+          />
           <FormError name="bank" />
         </div>
 

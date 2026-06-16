@@ -13,6 +13,7 @@ import { nameSchema, amountSchema, getErrorMessage, emailSchema } from "@/lib/fo
 import { useToast } from "@/hooks/use-toast"
 import { dataStore } from "@/lib/data-store"
 import { generateToken } from "@/lib/utils"
+import { SearchableSelect } from "@/components/ui/searchable-select"
 
 /**
  * Generate a random token for claim links
@@ -288,21 +289,20 @@ export function EmailSmsTransferForm({ onSubmit, isLoading = false }: EmailSmsTr
         {/* Expiry Period */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-2 block">Claim Link Expiry</label>
-          <Select 
-            value={watch("expiryDays").toString()} 
+          <SearchableSelect
+            options={[
+              { value: "1", label: "1 day" },
+              { value: "3", label: "3 days" },
+              { value: "7", label: "7 days (default)" },
+              { value: "14", label: "14 days" },
+              { value: "30", label: "30 days" },
+            ]}
+            value={watch("expiryDays").toString()}
             onValueChange={(value) => setValue("expiryDays", parseInt(value))}
-          >
-            <SelectTrigger className="bg-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">1 day</SelectItem>
-              <SelectItem value="3">3 days</SelectItem>
-              <SelectItem value="7">7 days (default)</SelectItem>
-              <SelectItem value="14">14 days</SelectItem>
-              <SelectItem value="30">30 days</SelectItem>
-            </SelectContent>
-          </Select>
+            placeholder="Select expiry"
+            searchPlaceholder="Search days..."
+            className="bg-white"
+          />
           <div className="text-xs text-gray-500 mt-1">Recipient can claim within this period</div>
         </div>
 

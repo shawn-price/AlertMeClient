@@ -4,7 +4,6 @@ import { useState, useRef } from "react"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { AlertCircle, ChevronDown } from "@/components/ui/iconify-compat"
 import { useValidatedForm } from "@/hooks/use-validated-form"
@@ -12,6 +11,7 @@ import Form, { FormError } from "@/components/ui/form"
 import { nameSchema, amountSchema, getErrorMessage, phoneSchema } from "@/lib/form-utils"
 import { useToast } from "@/hooks/use-toast"
 import { dataStore } from "@/lib/data-store"
+import { SearchableSelect } from "@/components/ui/searchable-select"
 
 /**
  * Mobile Money Transfer Form - for transfers to mobile money wallets
@@ -162,21 +162,23 @@ export function MobileMoneyTransferForm({ onSubmit, isLoading = false }: MobileM
           </div>
         </div>
 
-        {/* Mobile Money Provider */}
+        {/* Mobile Money Provider with search */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-2 block">Mobile Money Provider *</label>
-          <Select value={watch("provider")} onValueChange={(value) => { setValue("provider", value); (formState.errors as any).provider && clearErrors("provider") }}>
-            <SelectTrigger className={"bg-white " + ((formState.errors as any).provider ? "border-red-500" : "")}>
-              <SelectValue placeholder="Select provider" />
-            </SelectTrigger>
-            <SelectContent>
-              {MOBILE_MONEY_PROVIDERS.map((provider) => (
-                <SelectItem key={provider.code} value={provider.name}>
-                  {provider.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            options={MOBILE_MONEY_PROVIDERS.map((provider) => ({
+              value: provider.name,
+              label: provider.name,
+            }))}
+            value={watch("provider")}
+            onValueChange={(value) => {
+              setValue("provider", value)
+              ;(formState.errors as any).provider && clearErrors("provider")
+            }}
+            placeholder="Type or select provider"
+            searchPlaceholder="Search providers..."
+            className={"bg-white " + ((formState.errors as any).provider ? "border-red-500" : "")}
+          />
           <FormError name="provider" />
         </div>
 

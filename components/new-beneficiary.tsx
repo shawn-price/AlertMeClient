@@ -4,10 +4,10 @@ import { useState, useEffect, useRef } from "react"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowLeft, ChevronDown, Home, AlertCircle } from "@/components/ui/iconify-compat"
-import { NIGERIAN_BANKS, getAllPaymentPlatforms } from "@/lib/banks-data"
+import { getAllPaymentPlatforms } from "@/lib/banks-data"
+import { SearchableSelect } from "@/components/ui/searchable-select"
 import { BeneficiaryLookup } from "@/components/beneficiary-lookup"
 import { dataStore } from "@/lib/data-store"
 import { useValidatedForm } from "@/hooks/use-validated-form"
@@ -189,21 +189,23 @@ export function NewBeneficiary({ onBack, onNavigate }: NewBeneficiaryProps) {
               </div>
               </div>
 
-              {/* Bank */}
+              {/* Bank with search */}
               <div>
               <label className="text-sm font-medium text-gray-700 mb-2 block">Bank</label>
-              <Select value={watch("bank")} onValueChange={(value) => { setValue("bank", value); (formState.errors as any).bank && clearErrors("bank") }}>
-                <SelectTrigger className={"bg-white " + ((formState.errors as any).bank ? "border-red-500" : "")}>
-                  <SelectValue placeholder="Select bank" />
-                </SelectTrigger>
-                <SelectContent className="max-h-60">
-                  {getAllPaymentPlatforms().map((bank) => (
-                    <SelectItem key={bank.code} value={bank.name}>
-                      {bank.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <SearchableSelect
+                options={getAllPaymentPlatforms().map((bank) => ({
+                  value: bank.name,
+                  label: bank.name,
+                }))}
+                value={watch("bank")}
+                onValueChange={(value) => {
+                  setValue("bank", value)
+                  ;(formState.errors as any).bank && clearErrors("bank")
+                }}
+                placeholder="Type or select bank"
+                searchPlaceholder="Search banks..."
+                className={"bg-white " + ((formState.errors as any).bank ? "border-red-500" : "")}
+              />
               <FormError name="bank" />
             </div>
 
