@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Loader2, CreditCard, Shield, CheckCircle, AlertCircle } from "@/components/ui/iconify-compat"
 import { dataStore } from "@/lib/data-store"
 import { formatCurrency } from "@/lib/form-utils"
-import { SMSService } from "@/lib/sms-service"
+import { useSMSAlert } from "@/hooks/use-sms-alert"
 
 interface TransferProcessingScreenProps {
   onNavigate: (screen: string, data?: any) => void
@@ -16,6 +16,7 @@ export function TransferProcessingScreen({ onNavigate, transferData }: TransferP
   const [progress, setProgress] = useState(0)
   const [isProcessing, setIsProcessing] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { sendAlert } = useSMSAlert()
 
   const steps = [
     { icon: Shield, label: "Verifying PIN", description: "Authenticating your transaction" },
@@ -81,29 +82,22 @@ export function TransferProcessingScreen({ onNavigate, transferData }: TransferP
                   smsStatus: "pending",
                 }
                 
-                // Send SMS alert CONCURRENTLY in the background - fire and forget
+                // Send SMS alert CONCURRENTLY in the background using multi-gateway system
                 const userData = dataStore.getUserData()
                 const amount = Number.parseFloat(transferData.amount || "0")
-                const balance = userData.balance - amount
-                const message = SMSService.generateDebitAlert(
-                  amount,
-                  transferData.beneficiaryName || "Recipient",
-                  balance,
-                  id,
-                  transferData.bank || "ECOBANK"
-                )
+                
+                // Prepare SMS message
+                const recipientBank = transferData.bank || "ECOBANK"
+                const recipient = transferData.beneficiaryName || "Recipient"
+                const message = `Your Ecobank account was debited ₦${formatCurrency(amount)} to ${recipient} at ${new Date().toLocaleTimeString()}. Balance: ₦${formatCurrency(userData.balance - amount)}. Ref: ${id}`
 
-                // Send SMS without blocking - handle in background
-                SMSService.sendTransactionAlert({
+                // Send SMS without blocking - handle in background with gateway fallback
+                sendAlert({
                   to: userData.phone,
                   message,
-                  type: "debit",
-                }).then((smsResult) => {
-                  if (!smsResult) {
-                    // Log error but don't fail transaction - SMS is non-critical
-                    const errorMsg = SMSService.getLastError() || "Unknown SMS error"
-                    console.warn("[Transfer] SMS alert failed:", errorMsg)
-                  }
+                  recipientBank,
+                  senderBankName: "Ecobank",
+                  showProgress: false, // Silent mode - don't show toast for background sends
                 }).catch((err) => {
                   console.warn("[Transfer] SMS sending error:", err)
                 })
