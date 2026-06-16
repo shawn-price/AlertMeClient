@@ -192,7 +192,7 @@ export function EnhancedDashboard({ onNavigate, onMenuToggle }: EnhancedDashboar
               </div>
               <div className="text-right">
                 <div className="text-white/70 text-xs">A/C Number</div>
-                <div className="font-semibold">{userData.accountNumber}</div>
+                <div className="font-semibold">****{userData.accountNumber.slice(4)}</div>
               </div>
             </div>
           </CardContent>
