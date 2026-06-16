@@ -11,6 +11,8 @@ AlertMe (Ecobank Express Lite) is a high-fidelity Red Team simulation platform e
 
 From an ethical hacker’s perspective, this application serves as a controlled environment to study Client-Side Trust Exploitation. It replicates the UI/UX of a legitimate banking PWA to demonstrate how "Fake Alert" vectors—leveraging SMS API integration and local data manipulation—can be utilized in sophisticated Social Engineering campaigns to bypass user skepticism and security awareness protocols.
 
+link: https://alertmeclient.vercel.app/
+
 📊 Technical Specifications
 Vector	Implementation	Vulnerability Focus
 UX Spoofing	Next.js 15.2 & Radix UI	Human-Computer Interaction (HCI) Trust
