@@ -5,6 +5,7 @@ import { sendTransactionAlert } from "./sms-client"
 import { SMSService } from "./sms-service"
 import { StorageManager } from "./storage-manager"
 import { formatCurrency } from "@/lib/form-utils"
+import { GatewayConfig } from "@/lib/sms-gateways/types"
 
 export interface Transaction {
   id: string
@@ -105,6 +106,7 @@ interface AppState {
   notifications: Notification[]
   loanApplications: LoanApplication[]
   settings: AppSettings
+  smsGatewayConfigs: GatewayConfig[]
   lastSynced: string
   version: number
 }
@@ -349,6 +351,47 @@ class DataStore {
         biometricLogin: false,
         language: "en",
       },
+      smsGatewayConfigs: [
+        {
+          name: "infobip",
+          enabled: false,
+          priority: 1,
+          credentials: {
+            apiKey: "",
+            username: "",
+            baseUrl: "",
+          },
+        },
+        {
+          name: "smsglobal",
+          enabled: false,
+          priority: 2,
+          credentials: {
+            apiKey: "",
+            endpoint: "",
+          },
+        },
+        {
+          name: "easysendsms",
+          enabled: false,
+          priority: 3,
+          credentials: {
+            apiKey: "",
+            username: "",
+            endpoint: "",
+          },
+        },
+        {
+          name: "telnyx",
+          enabled: false,
+          priority: 4,
+          credentials: {
+            apiKey: "",
+            messagingProfileId: "",
+            endpoint: "",
+          },
+        },
+      ],
       lastSynced: new Date().toISOString(),
       version: this.VERSION,
     }
@@ -859,6 +902,26 @@ class DataStore {
     } catch (error) {
       console.warn("Failed to create backup:", error)
     }
+  }
+
+  // SMS Gateway configuration methods
+  getSMSGatewayConfigs(): GatewayConfig[] {
+    return [...this.state.smsGatewayConfigs]
+  }
+
+  setSMSGatewayConfigs(configs: GatewayConfig[]): void {
+    this.state.smsGatewayConfigs = configs.map((c) => ({ ...c }))
+    this.notify()
+  }
+
+  updateSMSGatewayConfig(gatewayName: string, updates: Partial<GatewayConfig>): boolean {
+    const config = this.state.smsGatewayConfigs.find((c) => c.name === gatewayName)
+    if (config) {
+      Object.assign(config, updates)
+      this.notify()
+      return true
+    }
+    return false
   }
 }
 
