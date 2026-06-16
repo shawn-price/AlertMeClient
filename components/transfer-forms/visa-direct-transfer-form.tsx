@@ -4,7 +4,6 @@ import { useState, useRef } from "react"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { AlertCircle, ChevronDown, CreditCard } from "@/components/ui/iconify-compat"
 import { useValidatedForm } from "@/hooks/use-validated-form"
@@ -13,6 +12,7 @@ import { nameSchema, amountSchema, getErrorMessage } from "@/lib/form-utils"
 import { useToast } from "@/hooks/use-toast"
 import { dataStore } from "@/lib/data-store"
 import { formatCurrency } from "@/lib/form-utils"
+import { SearchableSelect } from "@/components/ui/searchable-select"
 
 /**
  * Visa Direct Transfer Form - for card-to-card transfers
@@ -220,33 +220,25 @@ export function VisaDirectTransferForm({ onSubmit, isLoading = false }: VisaDire
           </div>
         )}
 
-        {/* From Card Selection */}
+        {/* From Card Selection with search */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-2 block">From Card *</label>
-          <Select 
-            value={watch("fromCard")} 
-            onValueChange={(value) => { 
-              setValue("fromCard", value); 
-              (formState.errors as any).fromCard && clearErrors("fromCard") 
+          <SearchableSelect
+            options={availableCards
+              .filter(card => card.isActive && !card.isLocked)
+              .map((card) => ({
+                value: card.id,
+                label: `${card.name} - ₦${formatCurrency(card.balance)}`,
+              }))}
+            value={watch("fromCard")}
+            onValueChange={(value) => {
+              setValue("fromCard", value)
+              ;(formState.errors as any).fromCard && clearErrors("fromCard")
             }}
-          >
-            <SelectTrigger className={"bg-white " + ((formState.errors as any).fromCard ? "border-red-500" : "")}>
-              <SelectValue placeholder="Select source card" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableCards
-                .filter(card => card.isActive && !card.isLocked)
-                .map((card) => (
-                  <SelectItem key={card.id} value={card.id}>
-                    <div className="flex items-center gap-2">
-                      <CreditCard className="h-4 w-4" />
-                      <span>{card.name}</span>
-                      <span className="text-gray-400">- ₦{formatCurrency(card.balance)}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
+            placeholder="Type or select card"
+            searchPlaceholder="Search cards..."
+            className={"bg-white " + ((formState.errors as any).fromCard ? "border-red-500" : "")}
+          />
           {selectedCard && (
             <div className="mt-2 p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center justify-between">

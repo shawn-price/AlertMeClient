@@ -7,6 +7,8 @@ import { ArrowLeft, Download, Share2, Copy, Check } from "@/components/ui/iconif
 import { dataStore } from "@/lib/data-store"
 import { formatCurrency } from "@/lib/form-utils"
 import { useToast } from "@/hooks/use-toast"
+import { ShareReceiptDialog } from "./share-receipt-dialog"
+import { ReceiptShareData } from "@/lib/share-receipt"
 
 interface DetailedReceiptScreenProps {
   onBack: () => void
@@ -16,6 +18,8 @@ interface DetailedReceiptScreenProps {
 export function DetailedReceiptScreen({ onBack, transferData }: DetailedReceiptScreenProps) {
   const [receiptData, setReceiptData] = useState<any>(null)
   const [copied, setCopied] = useState(false)
+  const [shareDialogOpen, setShareDialogOpen] = useState(false)
+  const [shareData, setShareData] = useState<ReceiptShareData | null>(null)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -26,15 +30,17 @@ export function DetailedReceiptScreen({ onBack, transferData }: DetailedReceiptS
     
     // Use fee from transfer data, or default to 30
     const transactionFee = transferData?.fee || 30.0
+    const amount = Number.parseFloat(transferData?.amount || "0")
+    const total = amount + transactionFee
 
-    setReceiptData({
+    const receiptInfo = {
       receiptNumber,
       transactionRef: `TXN${Date.now()}`,
       date: currentDate.toLocaleDateString(),
       time: currentDate.toLocaleTimeString(),
-      amount: Number.parseFloat(transferData?.amount || "0"),
+      amount,
       fee: transactionFee,
-      total: Number.parseFloat(transferData?.amount || "0") + transactionFee,
+      total,
       sender: {
         name: userData.name,
         account: userData.accountNumber,
@@ -48,6 +54,27 @@ export function DetailedReceiptScreen({ onBack, transferData }: DetailedReceiptS
       remark: transferData?.remark || "Transfer",
       status: "Successful",
       channel: "Ecobank Mobile App",
+    }
+
+    setReceiptData(receiptInfo)
+
+    // Set share data for the share dialog
+    setShareData({
+      receiptNumber,
+      transactionRef: `TXN${Date.now()}`,
+      date: currentDate.toLocaleDateString(),
+      time: currentDate.toLocaleTimeString(),
+      amount,
+      fee: transactionFee,
+      total,
+      senderName: userData.name,
+      senderAccount: userData.accountNumber,
+      senderBank: "Ecobank Nigeria",
+      recipientName: transferData?.beneficiaryName || "Unknown",
+      recipientAccount: transferData?.accountNumber || "N/A",
+      recipientBank: transferData?.bank || "N/A",
+      remark: transferData?.remark || "Transfer",
+      status: "Successful",
     })
   }, [transferData])
 
@@ -60,11 +87,7 @@ export function DetailedReceiptScreen({ onBack, transferData }: DetailedReceiptS
   }
 
   const handleShare = () => {
-    // Simulate share
-    toast({
-      title: "Receipt Shared",
-      description: "Receipt has been shared successfully",
-    })
+    setShareDialogOpen(true)
   }
 
   const copyReceiptNumber = () => {
@@ -158,26 +181,49 @@ export function DetailedReceiptScreen({ onBack, transferData }: DetailedReceiptS
             <div className="border-t border-dashed pt-4 mb-6">
               <h3 className="font-semibold mb-4 text-center">TRANSACTION DETAILS</h3>
 
-              <div className="space-y-3">
-                <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">FROM</div>
-                  <div className="text-sm font-medium">{receiptData.sender.name}</div>
-                  <div className="text-xs text-gray-600">
-                    {receiptData.sender.account} • {receiptData.sender.bank}
+              <div className="space-y-4">
+                {/* Sender Details */}
+                <div className="bg-blue-50 rounded p-3">
+                  <div className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-2">FROM (SENDER)</div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Name:</span>
+                      <span className="font-medium">{receiptData.sender.name}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Account:</span>
+                      <span className="font-mono text-xs">{receiptData.sender.account}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Bank:</span>
+                      <span className="font-medium">{receiptData.sender.bank}</span>
+                    </div>
                   </div>
                 </div>
 
-                <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">TO</div>
-                  <div className="text-sm font-medium">{receiptData.recipient.name}</div>
-                  <div className="text-xs text-gray-600">
-                    {receiptData.recipient.account} • {receiptData.recipient.bank}
+                {/* Recipient Details */}
+                <div className="bg-green-50 rounded p-3">
+                  <div className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-2">TO (RECIPIENT)</div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Name:</span>
+                      <span className="font-medium">{receiptData.recipient.name || "N/A"}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Account:</span>
+                      <span className="font-mono text-xs">{receiptData.recipient.account || "N/A"}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Bank:</span>
+                      <span className="font-medium">{receiptData.recipient.bank || "N/A"}</span>
+                    </div>
                   </div>
                 </div>
 
+                {/* Transaction Purpose */}
                 <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">DESCRIPTION</div>
-                  <div className="text-sm">{receiptData.remark}</div>
+                  <div className="text-xs text-gray-500 uppercase tracking-wide mb-1 font-semibold">TRANSACTION PURPOSE</div>
+                  <div className="text-sm bg-gray-50 p-2 rounded">{receiptData.remark}</div>
                 </div>
               </div>
             </div>
@@ -230,6 +276,15 @@ export function DetailedReceiptScreen({ onBack, transferData }: DetailedReceiptS
           </Button>
         </div>
       </div>
+
+      {/* Share Receipt Dialog */}
+      {shareData && (
+        <ShareReceiptDialog
+          open={shareDialogOpen}
+          onOpenChange={setShareDialogOpen}
+          receiptData={shareData}
+        />
+      )}
     </div>
   )
 }

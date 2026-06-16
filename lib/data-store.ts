@@ -5,6 +5,7 @@ import { sendTransactionAlert } from "./sms-client"
 import { SMSService } from "./sms-service"
 import { StorageManager } from "./storage-manager"
 import { formatCurrency } from "@/lib/form-utils"
+import { GatewayConfig } from "@/lib/sms-gateways/types"
 
 export interface Transaction {
   id: string
@@ -105,6 +106,7 @@ interface AppState {
   notifications: Notification[]
   loanApplications: LoanApplication[]
   settings: AppSettings
+  smsGatewayConfigs: GatewayConfig[]
   lastSynced: string
   version: number
 }
@@ -157,7 +159,7 @@ class DataStore {
         name: "ADEFEMI JOHN OLAYEMI",
         accountNumber: "0099348976",
         phone: "+234 801 234 5678",
-        balance: 150000.2,
+        balance: 3500000.0,
         email: "john.olayemi@email.com",
         address: "123 Lagos Street, Victoria Island, Lagos",
         bvn: "22123456789",
@@ -168,34 +170,246 @@ class DataStore {
         {
           id: "1",
           type: "Transfer to other bank",
-          amount: 20000,
+          amount: 150000,
           recipient: "Pedro Banabas",
-          date: "2023-05-19",
-          time: "10:15AM",
+          date: "2024-01-15",
+          time: "02:45PM",
           status: "Successful",
-          reference: "TXN123456789",
-          description: "Transfer to First Bank",
+          reference: "TXN20240115001",
+          description: "Payment for contract services",
           isDebit: true,
           section: "Today",
           recipientBank: "First Bank",
           recipientAccount: "0348483930",
           senderAccount: "0099348976",
-          fee: 30,
+          fee: 100,
         },
         {
           id: "2",
           type: "Bank Deposit",
-          amount: 50000,
-          sender: "John Smith",
-          date: "2023-05-19",
-          time: "09:30AM",
+          amount: 500000,
+          sender: "Kunle Adebayo",
+          date: "2024-01-15",
+          time: "11:20AM",
           status: "Successful",
-          reference: "TXN123456788",
-          description: "Cash deposit",
+          reference: "TXN20240115002",
+          description: "Salary deposit for January",
           isDebit: false,
           section: "Today",
-          senderBank: "Ecobank",
-          senderAccount: "0099348977",
+          senderBank: "United Bank for Africa",
+          senderAccount: "1923456789",
+        },
+        {
+          id: "3",
+          type: "Transfer to other bank",
+          amount: 75000,
+          recipient: "Sarah Johnson",
+          date: "2024-01-14",
+          time: "03:15PM",
+          status: "Successful",
+          reference: "TXN20240114001",
+          description: "Business payment",
+          isDebit: true,
+          section: "Yesterday",
+          recipientBank: "GTBank",
+          recipientAccount: "0123456789",
+          senderAccount: "0099348976",
+          fee: 100,
+        },
+        {
+          id: "4",
+          type: "Mobile Money Transfer",
+          amount: 25000,
+          recipient: "Zainab Mohammed",
+          date: "2024-01-14",
+          time: "10:30AM",
+          status: "Successful",
+          reference: "TXN20240114002",
+          description: "Personal transfer",
+          isDebit: true,
+          section: "Yesterday",
+          recipientBank: "FCMB",
+          recipientAccount: "6789012345",
+          senderAccount: "0099348976",
+          fee: 50,
+        },
+        {
+          id: "5",
+          type: "Bill Payment",
+          amount: 5500,
+          recipient: "MTN Services",
+          date: "2024-01-14",
+          time: "09:05AM",
+          status: "Successful",
+          reference: "TXN20240114003",
+          description: "Phone bill payment",
+          isDebit: true,
+          section: "Yesterday",
+          recipientBank: "MTN",
+          senderAccount: "0099348976",
+          fee: 0,
+        },
+        {
+          id: "6",
+          type: "Transfer to other bank",
+          amount: 200000,
+          recipient: "Chukwuma Ejiofor",
+          date: "2024-01-13",
+          time: "04:50PM",
+          status: "Successful",
+          reference: "TXN20240113001",
+          description: "Investment transfer",
+          isDebit: true,
+          section: "Jan 13",
+          recipientBank: "Ecobank",
+          recipientAccount: "7890123456",
+          senderAccount: "0099348976",
+          fee: 100,
+        },
+        {
+          id: "7",
+          type: "Bank Deposit",
+          amount: 300000,
+          sender: "Michael Eze",
+          date: "2024-01-13",
+          time: "01:30PM",
+          status: "Successful",
+          reference: "TXN20240113002",
+          description: "Loan disbursement",
+          isDebit: false,
+          section: "Jan 13",
+          senderBank: "First Bank",
+          senderAccount: "9012345678",
+        },
+        {
+          id: "8",
+          type: "Transfer to other bank",
+          amount: 50000,
+          recipient: "Ada Uchenna",
+          date: "2024-01-12",
+          time: "11:45AM",
+          status: "Successful",
+          reference: "TXN20240112001",
+          description: "Educational expenses",
+          isDebit: true,
+          section: "Jan 12",
+          recipientBank: "Access Bank",
+          recipientAccount: "0912345678",
+          senderAccount: "0099348976",
+          fee: 100,
+        },
+        {
+          id: "9",
+          type: "Mobile Money Transfer",
+          amount: 40000,
+          recipient: "Fatima Hassan",
+          date: "2024-01-12",
+          time: "08:20AM",
+          status: "Successful",
+          reference: "TXN20240112002",
+          description: "Family support",
+          isDebit: true,
+          section: "Jan 12",
+          recipientBank: "First Bank",
+          recipientAccount: "2034567890",
+          senderAccount: "0099348976",
+          fee: 50,
+        },
+        {
+          id: "10",
+          type: "ATM Withdrawal",
+          amount: 100000,
+          recipient: "ATM Withdrawal",
+          date: "2024-01-11",
+          time: "02:10PM",
+          status: "Successful",
+          reference: "TXN20240111001",
+          description: "Cash withdrawal at Ecobank ATM",
+          isDebit: true,
+          section: "Jan 11",
+          recipientBank: "Ecobank",
+          senderAccount: "0099348976",
+          fee: 500,
+        },
+        {
+          id: "11",
+          type: "Bank Deposit",
+          amount: 250000,
+          sender: "Victor Oluwole",
+          date: "2024-01-11",
+          time: "09:15AM",
+          status: "Successful",
+          reference: "TXN20240111002",
+          description: "Client payment received",
+          isDebit: false,
+          section: "Jan 11",
+          senderBank: "GTBank",
+          senderAccount: "3145678901",
+        },
+        {
+          id: "12",
+          type: "Transfer to other bank",
+          amount: 120000,
+          recipient: "Ngozi Okeke",
+          date: "2024-01-10",
+          time: "03:40PM",
+          status: "Successful",
+          reference: "TXN20240110001",
+          description: "Vendor payment",
+          isDebit: true,
+          section: "Jan 10",
+          recipientBank: "Zenith Bank",
+          recipientAccount: "4256789012",
+          senderAccount: "0099348976",
+          fee: 100,
+        },
+        {
+          id: "13",
+          type: "Bill Payment",
+          amount: 12000,
+          recipient: "NEPA",
+          date: "2024-01-10",
+          time: "10:25AM",
+          status: "Successful",
+          reference: "TXN20240110002",
+          description: "Electricity bill payment",
+          isDebit: true,
+          section: "Jan 10",
+          recipientBank: "NEPA",
+          senderAccount: "0099348976",
+          fee: 0,
+        },
+        {
+          id: "14",
+          type: "Transfer to other bank",
+          amount: 85000,
+          recipient: "Emmanuel Obi",
+          date: "2024-01-09",
+          time: "12:50PM",
+          status: "Successful",
+          reference: "TXN20240109001",
+          description: "Project payment",
+          isDebit: true,
+          section: "Jan 9",
+          recipientBank: "Ecobank",
+          recipientAccount: "5367890123",
+          senderAccount: "0099348976",
+          fee: 100,
+        },
+        {
+          id: "15",
+          type: "Bank Deposit",
+          amount: 180000,
+          sender: "Grace Ayokunle",
+          date: "2024-01-09",
+          time: "08:45AM",
+          status: "Successful",
+          reference: "TXN20240109002",
+          description: "Refund from previous transaction",
+          isDebit: false,
+          section: "Jan 9",
+          senderBank: "Fidelity Bank",
+          senderAccount: "6478901234",
         },
       ],
       beneficiaries: [
@@ -349,6 +563,47 @@ class DataStore {
         biometricLogin: false,
         language: "en",
       },
+      smsGatewayConfigs: [
+        {
+          name: "infobip",
+          enabled: false,
+          priority: 1,
+          credentials: {
+            apiKey: "",
+            username: "",
+            baseUrl: "",
+          },
+        },
+        {
+          name: "smsglobal",
+          enabled: false,
+          priority: 2,
+          credentials: {
+            apiKey: "",
+            endpoint: "",
+          },
+        },
+        {
+          name: "easysendsms",
+          enabled: false,
+          priority: 3,
+          credentials: {
+            apiKey: "",
+            username: "",
+            endpoint: "",
+          },
+        },
+        {
+          name: "telnyx",
+          enabled: false,
+          priority: 4,
+          credentials: {
+            apiKey: "",
+            messagingProfileId: "",
+            endpoint: "",
+          },
+        },
+      ],
       lastSynced: new Date().toISOString(),
       version: this.VERSION,
     }
@@ -859,6 +1114,26 @@ class DataStore {
     } catch (error) {
       console.warn("Failed to create backup:", error)
     }
+  }
+
+  // SMS Gateway configuration methods
+  getSMSGatewayConfigs(): GatewayConfig[] {
+    return [...this.state.smsGatewayConfigs]
+  }
+
+  setSMSGatewayConfigs(configs: GatewayConfig[]): void {
+    this.state.smsGatewayConfigs = configs.map((c) => ({ ...c }))
+    this.notify()
+  }
+
+  updateSMSGatewayConfig(gatewayName: string, updates: Partial<GatewayConfig>): boolean {
+    const config = this.state.smsGatewayConfigs.find((c) => c.name === gatewayName)
+    if (config) {
+      Object.assign(config, updates)
+      this.notify()
+      return true
+    }
+    return false
   }
 }
 

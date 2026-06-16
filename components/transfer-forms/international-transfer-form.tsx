@@ -12,6 +12,7 @@ import Form, { FormError } from "@/components/ui/form"
 import { nameSchema, amountSchema, getErrorMessage } from "@/lib/form-utils"
 import { useToast } from "@/hooks/use-toast"
 import { dataStore } from "@/lib/data-store"
+import { SearchableSelect } from "@/components/ui/searchable-select"
 
 /**
  * International Transfer Form - for cross-border transfers
@@ -194,21 +195,23 @@ export function InternationalTransferForm({ onSubmit, isLoading = false }: Inter
           </div>
         </div>
 
-        {/* Destination Country */}
+        {/* Destination Country with search */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-2 block">Destination Country *</label>
-          <Select value={watch("country")} onValueChange={(value) => { setValue("country", value); (formState.errors as any).country && clearErrors("country") }}>
-            <SelectTrigger className={"bg-white " + ((formState.errors as any).country ? "border-red-500" : "")}>
-              <SelectValue placeholder="Select country" />
-            </SelectTrigger>
-            <SelectContent className="max-h-60">
-              {COUNTRIES.map((country) => (
-                <SelectItem key={country.code} value={country.name}>
-                  {country.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            options={COUNTRIES.map((country) => ({
+              value: country.name,
+              label: country.name,
+            }))}
+            value={watch("country")}
+            onValueChange={(value) => {
+              setValue("country", value)
+              ;(formState.errors as any).country && clearErrors("country")
+            }}
+            placeholder="Type or select country"
+            searchPlaceholder="Search countries..."
+            className={"bg-white " + ((formState.errors as any).country ? "border-red-500" : "")}
+          />
           <FormError name="country" />
         </div>
 

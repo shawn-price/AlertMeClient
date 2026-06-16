@@ -4,7 +4,6 @@ import { useState, useRef } from "react"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { AlertCircle, ChevronDown } from "@/components/ui/iconify-compat"
 import { useValidatedForm } from "@/hooks/use-validated-form"
@@ -13,6 +12,7 @@ import { accountNumberSchema, nameSchema, amountSchema, getErrorMessage } from "
 import { useToast } from "@/hooks/use-toast"
 import { BeneficiaryLookup } from "@/components/beneficiary-lookup"
 import { dataStore } from "@/lib/data-store"
+import { SearchableSelect } from "@/components/ui/searchable-select"
 
 /**
  * Ecobank Africa Transfer Form - for transfers to Ecobank branches across Africa
@@ -174,12 +174,6 @@ export function EcobankAfricaTransferForm({ onSubmit, isLoading = false }: Ecoba
     }
   })
 
-  // Group countries by region for better UX
-  const westAfrica = ECOBANK_AFRICA_COUNTRIES.filter(c => c.region === "West Africa")
-  const centralAfrica = ECOBANK_AFRICA_COUNTRIES.filter(c => c.region === "Central Africa")
-  const eastAfrica = ECOBANK_AFRICA_COUNTRIES.filter(c => c.region === "East Africa")
-  const southernAfrica = ECOBANK_AFRICA_COUNTRIES.filter(c => c.region === "Southern Africa")
-
   return (
     <Form methods={methods} onSubmit={onContinue}>
       <div className="px-4 py-6 space-y-6">
@@ -207,46 +201,24 @@ export function EcobankAfricaTransferForm({ onSubmit, isLoading = false }: Ecoba
           </div>
         </div>
 
-        {/* Country Dropdown */}
+        {/* Country Dropdown with search */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-2 block">Destination Country *</label>
-          <Select 
-            value={watch("country")} 
-            onValueChange={(value) => { 
-              setValue("country", value); 
-              (formState.errors as any).country && clearErrors("country") 
+          <SearchableSelect
+            options={ECOBANK_AFRICA_COUNTRIES.map((country) => ({
+              value: country.name,
+              label: `${country.name} (${country.region})`,
+            }))}
+            value={watch("country")}
+            onValueChange={(value) => {
+              setValue("country", value)
+              ;(formState.errors as any).country && clearErrors("country")
             }}
-          >
-            <SelectTrigger className={"bg-white " + ((formState.errors as any).country ? "border-red-500" : "")}>
-              <SelectValue placeholder="Select destination country" />
-            </SelectTrigger>
-            <SelectContent className="max-h-80">
-              <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 bg-gray-50">West Africa</div>
-              {westAfrica.map((country) => (
-                <SelectItem key={country.code} value={country.name}>
-                  {country.name}
-                </SelectItem>
-              ))}
-              <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 bg-gray-50">Central Africa</div>
-              {centralAfrica.map((country) => (
-                <SelectItem key={country.code} value={country.name}>
-                  {country.name}
-                </SelectItem>
-              ))}
-              <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 bg-gray-50">East Africa</div>
-              {eastAfrica.map((country) => (
-                <SelectItem key={country.code} value={country.name}>
-                  {country.name}
-                </SelectItem>
-              ))}
-              <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 bg-gray-50">Southern Africa</div>
-              {southernAfrica.map((country) => (
-                <SelectItem key={country.code} value={country.name}>
-                  {country.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder="Type or select country"
+            searchPlaceholder="Search countries..."
+            className={"bg-white " + ((formState.errors as any).country ? "border-red-500" : "")}
+            maxHeight="max-h-80"
+          />
           {selectedCountry && (
             <div className="text-xs text-[#00B2A9] mt-1">{selectedCountry.region}</div>
           )}

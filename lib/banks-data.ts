@@ -157,7 +157,14 @@ export const getAllWallets = (): BankData[] => {
  * Helper function to get all banks and wallets combined (common view)
  */
 export const getAllBanksAndWallets = (): BankData[] => {
-  return NIGERIAN_BANKS.filter(b => b.type === "bank" || b.type === "microfinance" || b.type === "wallet")
+  return NIGERIAN_BANKS.filter(b => b.type === "bank" || b.type === "microfinance" || b.type === "wallet").sort((a, b) => a.name.localeCompare(b.name))
+}
+
+/**
+ * Helper function to get ALL payment platforms and banks (complete list for dropdowns) - alphabetically sorted
+ */
+export const getAllPaymentPlatforms = (): BankData[] => {
+  return NIGERIAN_BANKS.sort((a, b) => a.name.localeCompare(b.name))
 }
 
 /**

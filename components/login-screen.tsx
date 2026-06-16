@@ -25,8 +25,9 @@ const loginSchema = z.object({
 })
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
+  const userData = dataStore.getUserData()
   const methods = useValidatedForm(loginSchema, {
-    defaultValues: { accountNumber: "", pin: "" },
+    defaultValues: { accountNumber: userData.accountNumber, pin: "1234" },
   })
 
   const { getValues, trigger } = methods

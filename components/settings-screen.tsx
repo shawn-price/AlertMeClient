@@ -7,6 +7,7 @@ import { ShareDetailsModal } from "@/components/share-details-modal"
 import { NetworkChatModal } from "@/components/network-chat-modal"
 import { BankServiceStatus } from "@/components/bank-service-status"
 import { AddFundsModal } from "@/components/add-funds-modal"
+import { SMSGatewaySettings } from "@/components/sms-gateway-settings"
 import {
   ArrowLeft,
   Plus,
@@ -26,6 +27,13 @@ import {
   FileText,
   Archive,
 } from "@/components/ui/iconify-compat"
+
+// SMS Gateway icon
+const Radio = ({ className = "" }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16c3.314-1.006 5-4.219 5-7.5 0-4.5-2.239-8-5-8s-5 3.5-5 8c0 3.281 1.686 6.494 5 7.5M8 16c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z" />
+  </svg>
+)
 import { dataStore } from "@/lib/data-store"
 import { formatCurrency } from "@/lib/form-utils"
 
@@ -40,6 +48,7 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
   const [showServiceStatus, setShowServiceStatus] = useState(false)
   const [showAddFunds, setShowAddFunds] = useState(false)
   const [showStorageModal, setShowStorageModal] = useState(false)
+  const [showSMSGatewaySettings, setShowSMSGatewaySettings] = useState(false)
   const [storageContent, setStorageContent] = useState<string>("")
   const [storageStats, setStorageStats] = useState(() => dataStore.getStorageStats())
   const [userData, setUserData] = useState(dataStore.getUserData())
@@ -114,6 +123,12 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
       label: "SMS Templates",
       description: "Customize transaction alerts",
       onClick: () => onNavigate("sms-templates"),
+    },
+    {
+      icon: Radio,
+      label: "SMS Gateways",
+      description: "Configure SMS providers and fallback",
+      onClick: () => setShowSMSGatewaySettings(true),
     },
     {
       icon: CreditCard,
@@ -348,6 +363,27 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
                   <pre className="max-h-72 overflow-auto p-3 bg-gray-50 border rounded text-xs text-gray-700">{storageContent || "(No content loaded). Click 'View Content' to load."}</pre>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SMS Gateway Settings Modal */}
+      {showSMSGatewaySettings && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
+              <h2 className="text-xl font-semibold">SMS Gateway Settings</h2>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowSMSGatewaySettings(false)}
+              >
+                ✕
+              </Button>
+            </div>
+            <div className="p-6">
+              <SMSGatewaySettings />
             </div>
           </div>
         </div>

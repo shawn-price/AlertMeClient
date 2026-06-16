@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ArrowLeft, Plus, Edit, Trash2, Search, AlertCircle } from "@/components/ui/iconify-compat"
 import { formatCurrency } from "@/lib/form-utils"
 import { dataStore } from "@/lib/data-store"
-import { NIGERIAN_BANKS, getAllBanksAndWallets } from "@/lib/banks-data"
+import { getAllPaymentPlatforms } from "@/lib/banks-data"
 import { useToast } from "@/hooks/use-toast"
+import { SearchableSelect } from "@/components/ui/searchable-select"
 
 interface BeneficiaryUIData {
   id: string
@@ -343,21 +343,17 @@ export function BeneficiaryManagement({ onBack }: BeneficiaryManagementProps) {
 
             <div>
               <Label htmlFor="bank">Bank</Label>
-              <Select
+              <SearchableSelect
+                options={getAllPaymentPlatforms().map((bank) => ({
+                  value: bank.name,
+                  label: bank.name,
+                }))}
                 value={newBeneficiary.bank || ""}
                 onValueChange={(value) => setNewBeneficiary({ ...newBeneficiary, bank: value })}
-              >
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Select bank" />
-                </SelectTrigger>
-                <SelectContent>
-                  {getAllBanksAndWallets().map((bank) => (
-                    <SelectItem key={bank.code} value={bank.name}>
-                      {bank.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder="Type or select bank"
+                searchPlaceholder="Search banks..."
+                className="bg-white"
+              />
             </div>
 
             <div>
