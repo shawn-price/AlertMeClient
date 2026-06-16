@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ArrowLeft, Plus, Edit, Trash2, Search, AlertCircle } from "@/components/ui/iconify-compat"
 import { formatCurrency } from "@/lib/form-utils"
 import { dataStore } from "@/lib/data-store"
-import { NIGERIAN_BANKS, getAllBanksAndWallets } from "@/lib/banks-data"
+import { NIGERIAN_BANKS, getAllBanksAndWallets, getAllPaymentPlatforms } from "@/lib/banks-data"
 import { useToast } from "@/hooks/use-toast"
 
 interface BeneficiaryUIData {
@@ -350,8 +350,8 @@ export function BeneficiaryManagement({ onBack }: BeneficiaryManagementProps) {
                 <SelectTrigger className="bg-white">
                   <SelectValue placeholder="Select bank" />
                 </SelectTrigger>
-                <SelectContent>
-                  {getAllBanksAndWallets().map((bank) => (
+                <SelectContent className="max-h-60">
+                  {getAllPaymentPlatforms().map((bank) => (
                     <SelectItem key={bank.code} value={bank.name}>
                       {bank.name}
                     </SelectItem>

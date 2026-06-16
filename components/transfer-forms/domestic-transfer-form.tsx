@@ -12,7 +12,7 @@ import Form, { FormError } from "@/components/ui/form"
 import { accountNumberSchema, nameSchema, amountSchema, getErrorMessage } from "@/lib/form-utils"
 import { useToast } from "@/hooks/use-toast"
 import { BeneficiaryLookup } from "@/components/beneficiary-lookup"
-import { NIGERIAN_BANKS } from "@/lib/banks-data"
+import { NIGERIAN_BANKS, getAllPaymentPlatforms } from "@/lib/banks-data"
 import { dataStore } from "@/lib/data-store"
 import { ChevronDown } from "@/components/ui/iconify-compat"
 
@@ -150,7 +150,7 @@ export function DomesticTransferForm({ onSubmit, isLoading = false }: DomesticTr
           </div>
         </div>
 
-        {/* Recipient Bank - CBN compliant banks only */}
+        {/* Recipient Bank - All Nigerian banks and payment platforms */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-2 block">Recipient Bank *</label>
           <Select value={watch("bank")} onValueChange={(value) => { setValue("bank", value); (formState.errors as any).bank && clearErrors("bank") }}>
@@ -158,7 +158,7 @@ export function DomesticTransferForm({ onSubmit, isLoading = false }: DomesticTr
               <SelectValue placeholder="Select bank" />
             </SelectTrigger>
             <SelectContent className="max-h-60">
-              {NIGERIAN_BANKS.filter((bank) => bank.type === "bank").map((bank) => (
+              {getAllPaymentPlatforms().map((bank) => (
                 <SelectItem key={bank.code} value={bank.name}>
                   {bank.name}
                 </SelectItem>

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowLeft, ChevronDown, Home, AlertCircle } from "@/components/ui/iconify-compat"
-import { NIGERIAN_BANKS } from "@/lib/banks-data"
+import { NIGERIAN_BANKS, getAllPaymentPlatforms } from "@/lib/banks-data"
 import { BeneficiaryLookup } from "@/components/beneficiary-lookup"
 import { dataStore } from "@/lib/data-store"
 import { useValidatedForm } from "@/hooks/use-validated-form"
@@ -197,16 +197,7 @@ export function NewBeneficiary({ onBack, onNavigate }: NewBeneficiaryProps) {
                   <SelectValue placeholder="Select bank" />
                 </SelectTrigger>
                 <SelectContent className="max-h-60">
-                  <div className="px-3 py-2 text-xs font-bold text-gray-500 sticky top-0 bg-gray-50">Traditional Banks</div>
-                  {NIGERIAN_BANKS.filter((bank) => bank.type === "bank").map((bank) => (
-                    <SelectItem key={bank.code} value={bank.name}>
-                      {bank.name}
-                    </SelectItem>
-                  ))}
-                  <div className="px-3 py-2 text-xs font-bold text-gray-500 sticky top-0 bg-gray-50 mt-2">
-                    Digital Wallets & Fintech
-                  </div>
-                  {NIGERIAN_BANKS.filter((bank) => bank.type === "wallet").map((bank) => (
+                  {getAllPaymentPlatforms().map((bank) => (
                     <SelectItem key={bank.code} value={bank.name}>
                       {bank.name}
                     </SelectItem>
