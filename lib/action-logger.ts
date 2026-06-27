@@ -1,3 +1,5 @@
+"use client"
+
 export type ActionType =
   | "navigation"
   | "transaction"
@@ -287,4 +289,4 @@ export class ActionLogger {
 }
 
 // Global singleton instance
-export const actionLogger = typeof window !== "undefined" ? new ActionLogger() : null
+export const actionLogger = new ActionLogger()

@@ -1,7 +1,6 @@
 "use strict"
 
 import { generateFormattedDebitAlert, generateFormattedCreditAlert } from "@/lib/alert-templates"
-import { actionLogger } from "@/lib/action-logger"
 
 export interface TransactionAlertPayload {
   type: "debit" | "credit"

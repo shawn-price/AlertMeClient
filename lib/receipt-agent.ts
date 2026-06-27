@@ -1,5 +1,3 @@
-import { actionLogger } from "./action-logger"
-
 export interface BankReceiptFormat {
   bankName: string
   logo?: string
