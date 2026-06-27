@@ -173,7 +173,20 @@ export class ProductionAlertService {
         }),
       })
 
-      const data = await response.json()
+      // Get response text first to handle HTML error pages
+      const responseText = await response.text()
+
+      let data: Record<string, any>
+      try {
+        data = JSON.parse(responseText)
+      } catch {
+        // If response is not JSON (likely HTML error page), return generic error
+        console.error(`[ProductionAlert] Non-JSON response from SMS API:`, responseText.substring(0, 100))
+        return {
+          success: false,
+          error: `API Error: HTTP ${response.status}`,
+        }
+      }
 
       if (!response.ok) {
         return {

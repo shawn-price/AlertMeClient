@@ -81,37 +81,31 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center px-6 relative overflow-hidden" style={{ backgroundImage: "url('/ecobank-background.jpg')" }}>
-      {/* Premium Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30 backdrop-blur-sm"></div>
+    <div className="min-h-screen bg-gradient-to-br from-[#004A9F] via-[#0072C6] to-[#00B2A9] flex flex-col items-center justify-center px-6 relative overflow-hidden">
+      <div className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse"></div>
+      <div className="absolute bottom-32 right-8 w-24 h-24 bg-white/5 rounded-full blur-lg animate-bounce"></div>
+      <div className="absolute top-1/3 right-1/4 w-16 h-16 bg-white/10 rounded-full blur-md animate-pulse delay-1000"></div>
+      <div className="absolute bottom-1/4 left-1/3 w-20 h-20 bg-white/5 rounded-full blur-lg animate-bounce delay-500"></div>
 
-      {/* Animated Background Accents */}
-      <div className="absolute top-20 left-10 w-32 h-32 bg-white/5 rounded-full blur-3xl animate-processing-float"></div>
-      <div className="absolute bottom-32 right-8 w-24 h-24 bg-white/5 rounded-full blur-3xl animate-processing-float" style={{ animationDelay: "0.5s" }}></div>
-
-      <div className="w-full max-w-sm relative z-10 animate-slide-up">
-        <div className="text-center mb-10">
-          <div className="relative inline-block mb-4">
-            <div className="text-white text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent drop-shadow-lg">
-              AlertMe
+      <div className="w-full max-w-sm relative z-10">
+        <div className="text-center mb-12">
+          <div className="relative inline-block">
+            <div className="text-white text-4xl font-bold mb-3 bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent">
+              Ecobank
             </div>
-            <div className="absolute -top-3 -right-3">
-              <Sparkles className="h-8 w-8 text-yellow-300 animate-processing-spin drop-shadow-lg" />
+            <div className="absolute -top-2 -right-2">
+              <Sparkles className="h-6 w-6 text-yellow-300 animate-pulse" />
             </div>
           </div>
-          <div className="text-white/95 text-sm font-semibold tracking-wide">Powered by Ecobank | The Pan African Bank</div>
-          <div className="text-white/70 text-sm flex items-center justify-center gap-2">
-            <Shield className="h-4 w-4" />
-            Welcome to Ecobank Mobile!
-          </div>
+          <div className="text-white/90 text-base font-medium mb-2">The Pan African Bank</div>
         </div>
 
-        <Card className="bg-white/98 backdrop-blur-lg shadow-2xl border border-white/60 overflow-hidden rounded-3xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent pointer-events-none"></div>
+        <Card className="bg-white/95 backdrop-blur-xl shadow-2xl border-0 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none"></div>
           <CardContent className="p-8 space-y-6 relative">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-3">Sign In</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">Enter your account number and PIN to access AlertMe</p>
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-2">Sign In</h2>
+              <p className="text-gray-600 text-sm">Enter your account number and PIN</p>
             </div>
 
             {error && (
@@ -120,8 +114,8 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
             <Form methods={methods} onSubmit={handleLogin}>
               <div className="space-y-5">
-                <div className="space-y-3">
-                  <label className="text-sm font-semibold text-gray-800 mb-2 block">Account Number</label>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700 mb-2 block">Account Number</label>
                   <Input
                     type="text"
                     placeholder="Enter account number"
@@ -129,7 +123,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                     maxLength={10}
                     pattern="\d{10}"
                     {...methods.register("accountNumber")}
-                    className="w-full h-13 rounded-2xl border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white transition-all duration-300 hover:border-gray-300 placeholder:text-gray-400 font-medium"
+                    className="w-full h-12 rounded-xl border-2 border-gray-200 focus:border-[#004A9F] focus:ring-0 bg-white/80 backdrop-blur-sm transition-all duration-200 hover:border-gray-300"
                     onChange={(e) => {
                       const val = e.target.value.replace(/\D/g, "").slice(0,10)
                       methods.setValue("accountNumber", val)
@@ -139,8 +133,8 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                   <FormError name="accountNumber" />
                 </div>
 
-                <div className="space-y-3">
-                  <label className="text-sm font-semibold text-gray-800 mb-2 block">4-Digit PIN</label>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700 mb-2 block">4-Digit PIN</label>
                   <div className="relative">
                     <Input
                       type={showPin ? "text" : "password"}
@@ -148,20 +142,20 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                       {...methods.register("pin")}
                       onChange={handlePinChange}
                       maxLength={4}
-                      className="w-full h-13 rounded-2xl border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white transition-all duration-300 hover:border-gray-300 pr-12 placeholder:text-gray-400 font-medium tracking-widest"
+                      className="w-full h-12 rounded-xl border-2 border-gray-200 focus:border-[#004A9F] focus:ring-0 bg-white/80 backdrop-blur-sm transition-all duration-200 hover:border-gray-300 pr-12"
                     />
                     <FormError name="pin" />
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 text-gray-600 hover:text-gray-800 hover:bg-gray-100/50 rounded-lg transition-colors"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-gray-500 hover:text-gray-700 rounded-lg"
                       onClick={() => setShowPin(!showPin)}
                     >
                       {showPin ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">Demo: Account 1234567890 | PIN 1234</p>
+                  <p className="text-xs text-gray-500">Default PIN for demo: 1234</p>
                 </div>
               </div>
             </Form>
@@ -169,15 +163,15 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             <Button
               onClick={methods.handleSubmit(handleLogin)}
               disabled={isLoading}
-              className="w-full h-13 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              className="w-full h-12 bg-gradient-to-r from-[#A4D233] to-[#8BC220] hover:from-[#8BC220] hover:to-[#7AB01F] text-black font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
-                <div className="flex items-center justify-center gap-3">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Signing In...</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
+                  Signing In...
                 </div>
               ) : (
-                <span className="text-base font-semibold">Sign In to AlertMe</span>
+                "Sign In"
               )}
             </Button>
 
