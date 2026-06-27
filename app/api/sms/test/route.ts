@@ -1,37 +1,68 @@
 import { NextRequest, NextResponse } from "next/server"
-import { SMSGatewayManager, GatewayConfig, GatewayName } from "@/lib/sms-gateways"
+import { VartechGateway } from "@/lib/sms-gateways/vartech-gateway"
 
 /**
  * POST /api/sms/test
- * Test a specific SMS gateway
+ * Test the VarTech SMS gateway with a test message
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { gateway, phoneNumber, gatewayConfigs } = body
+    const { phoneNumber } = body
 
     // Validate required fields
-    if (!gateway || !phoneNumber) {
+    if (!phoneNumber) {
+      return NextResponse.json({ error: "Missing required field: phoneNumber" }, { status: 400 })
+    }
+
+    // Get VarTech credentials from environment variables
+    const apiKey = process.env.VARTECH_API_KEY
+    const baseUrl = process.env.VARTECH_BASE_URL || "https://sms.thevartech.com/api"
+    const senderId = process.env.VARTECH_SENDER_ID || "AlertMe"
+
+    // Check if VarTech is configured
+    if (!apiKey || !baseUrl) {
       return NextResponse.json(
-        { error: "Missing required fields: gateway, phoneNumber" },
-        { status: 400 }
+        {
+          success: false,
+          error: "VarTech SMS service not configured",
+          details: "Please configure VARTECH_API_KEY and VARTECH_BASE_URL environment variables",
+        },
+        { status: 500 }
       )
     }
 
-    if (!gatewayConfigs || gatewayConfigs.length === 0) {
+    // Initialize VarTech gateway
+    const gateway = new VartechGateway("vartech", {
+      apiKey,
+      baseUrl,
+      senderId,
+    })
+
+    // Send test SMS
+    const response = await gateway.send({
+      to: phoneNumber,
+      message: "Test SMS from AlertMe. If you received this, the VarTech SMS gateway is working correctly.",
+      from: senderId,
+      senderName: senderId,
+    })
+
+    if (response.success) {
+      return NextResponse.json({
+        success: true,
+        message: "Test SMS sent successfully",
+        messageId: response.messageId,
+        phoneNumber,
+      })
+    } else {
       return NextResponse.json(
-        { error: "No SMS gateway configurations provided" },
-        { status: 400 }
+        {
+          success: false,
+          error: response.error || "Failed to send test SMS",
+        },
+        { status: 500 }
       )
     }
-
-    // Initialize gateway manager
-    const manager = new SMSGatewayManager(gatewayConfigs as GatewayConfig[])
-
-    // Test the specific gateway
-    const result = await manager.testGateway(gateway as GatewayName, phoneNumber)
-
-    return NextResponse.json(result)
   } catch (error) {
     console.error("[SMS Test Route] Error:", error)
     return NextResponse.json(

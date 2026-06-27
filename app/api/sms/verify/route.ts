@@ -1,43 +1,56 @@
 import { type NextRequest, NextResponse } from "next/server"
-import twilio from "twilio"
-import { ensureTwilioConfig } from "@/lib/env-check"
 import { rateLimit, requestKeyFromHeaders } from "@/lib/rate-limiter"
 
-ensureTwilioConfig()
-
-// Server-only endpoint to verify Twilio credentials without sending an SMS.
-// Use this to confirm account SID + auth token are valid.
+// Server-only endpoint to verify VarTech credentials without sending an SMS.
+// Use this to confirm API key and base URL are valid.
 
 export async function GET(request: NextRequest) {
   // lightweight rate-limit to prevent abuse of the verify endpoint
   const key = requestKeyFromHeaders(request.headers)
   const rl = rateLimit(key)
   if (!rl.allowed) {
-    return NextResponse.json({ success: false, error: "Rate limit exceeded" }, { status: 429, headers: { "Retry-After": String(rl.retryAfter || 60) } })
+    return NextResponse.json(
+      { success: false, error: "Rate limit exceeded" },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfter || 60) } }
+    )
   }
   try {
-    const accountSid = process.env.TWILIO_ACCOUNT_SID
-    const authToken = process.env.TWILIO_AUTH_TOKEN
+    const apiKey = process.env.VARTECH_API_KEY
+    const baseUrl = process.env.VARTECH_BASE_URL || "https://sms.thevartech.com/api"
 
-    if (!accountSid || !authToken) {
-      console.error("Twilio credentials not configured")
-      return NextResponse.json({ success: false, error: "Twilio not configured" }, { status: 500 })
+    if (!apiKey || !baseUrl) {
+      console.error("VarTech credentials not configured")
+      return NextResponse.json({ success: false, error: "VarTech not configured" }, { status: 500 })
     }
 
-    const client = twilio(accountSid, authToken)
+    // Perform a simple health check by fetching from the VarTech API
+    const response = await fetch(`${baseUrl}/status`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    }).catch(() => null)
 
-    // Fetch account details as a safe verification step
-    const account = await client.api.accounts(accountSid).fetch()
+    if (!response || !response.ok) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Unable to reach VarTech API",
+          baseUrl,
+        },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,
-      accountSid: account.sid,
-      friendlyName: account.friendlyName,
-      status: account.status,
+      gateway: "VarTech SMS",
+      baseUrl,
+      status: "connected",
     })
   } catch (error: unknown) {
-    console.error("Twilio Verify Error:", error)
-    const errorMessage = error instanceof Error ? error.message : "Failed to verify Twilio credentials"
+    console.error("VarTech Verify Error:", error)
+    const errorMessage = error instanceof Error ? error.message : "Failed to verify VarTech credentials"
     return NextResponse.json({ success: false, error: errorMessage }, { status: 500 })
   }
 }

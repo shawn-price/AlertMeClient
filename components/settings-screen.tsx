@@ -7,7 +7,7 @@ import { ShareDetailsModal } from "@/components/share-details-modal"
 import { NetworkChatModal } from "@/components/network-chat-modal"
 import { BankServiceStatus } from "@/components/bank-service-status"
 import { AddFundsModal } from "@/components/add-funds-modal"
-import { SMSGatewaySettings } from "@/components/sms-gateway-settings"
+import { VartechSMSSettings } from "@/components/vartech-sms-settings"
 import {
   ArrowLeft,
   Plus,
@@ -383,7 +383,7 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
               </Button>
             </div>
             <div className="p-6">
-              <SMSGatewaySettings />
+              <VartechSMSSettings />
             </div>
           </div>
         </div>
