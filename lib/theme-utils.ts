@@ -155,7 +155,7 @@ export const initializeTheme = (): void => {
 
 // Apply theme to document
 export const applyTheme = (theme: StoredTheme): void => {
-  if (typeof document === "undefined") return
+  if (typeof document === "undefined" || !document.documentElement) return
 
   try {
     const primaryHsl = hexToHsl(theme.primary)
