@@ -7,6 +7,7 @@ import { dataStore } from "@/lib/data-store"
 import { formatCurrency } from "@/lib/form-utils"
 import { receiptAgent, Receipt } from "@/lib/receipt-agent"
 import { actionLogger } from "@/lib/action-logger"
+import { productionAlerts } from "@/lib/production-alerts"
 
 interface TransactionSuccessProps {
   onNavigate: (screen: string, data?: any) => void
@@ -40,20 +41,44 @@ function TransactionSuccessComponent({ onNavigate, transferData }: TransactionSu
       // Generate receipt with formatted sender/receiver
       generateAndCacheReceipt(transferData)
 
-      // Check SMS status from transfer data or set a timeout
-      if (transferData.smsStatus === "sent") {
-        setSmsStatus("sent")
-      } else if (transferData.smsStatus === "failed") {
-        setSmsStatus("failed")
-      } else {
-        // Simulate SMS sending completion (in real app, this would be from a callback or WebSocket)
-        const smsTimer = setTimeout(() => {
-          setSmsStatus("sent")
-        }, 2000)
-        return () => clearTimeout(smsTimer)
-      }
+      // Send production SMS alerts to both sender and receiver
+      sendProductionAlerts(transferData)
     }
   }, [transferData])
+
+  const sendProductionAlerts = async (data: any) => {
+    try {
+      const userData = dataStore.getUserData()
+
+      // Send production SMS alerts
+      const alertResult = await productionAlerts.sendTransactionAlert({
+        type: "debit",
+        senderName: userData.name,
+        senderBank: data.bank,
+        senderPhone: userData.phone,
+        recipientName: data.beneficiaryName,
+        recipientBank: data.bank,
+        recipientPhone: data.phone,
+        recipientAccountNumber: data.accountNumber,
+        amount: parseFloat(data.amount),
+        balance: userData.balance || 0,
+        reference: data.id,
+        narration: data.narration || "Money Transfer",
+        timestamp: new Date().toISOString(),
+      })
+
+      if (alertResult.success) {
+        setSmsStatus("sent")
+        console.log("[v0] Production SMS alerts sent successfully:", alertResult)
+      } else {
+        setSmsStatus("failed")
+        console.error("[v0] Failed to send SMS alerts:", alertResult.error)
+      }
+    } catch (error) {
+      console.error("[v0] Error sending production alerts:", error)
+      setSmsStatus("failed")
+    }
+  }
 
   const generateAndCacheReceipt = async (data: any) => {
     try {

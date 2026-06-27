@@ -36,8 +36,8 @@ export async function POST(request: NextRequest) {
     // Check if VarTech is configured
     const isConfigured = apiKey && baseUrl
 
-    // Demo mode: Simulate SMS sending without actual VarTech
-    const isDemoMode = process.env.SMS_DEMO_MODE === "true" || !isConfigured
+    // Demo mode: Only active if explicitly enabled
+    const isDemoMode = process.env.SMS_DEMO_MODE === "true"
 
     if (isDemoMode) {
       // Generate a mock message ID
@@ -52,8 +52,22 @@ export async function POST(request: NextRequest) {
         status: "demo",
         type: type || "general",
         demo: true,
-        details: "SMS sent in demo mode (VarTech credentials not configured)",
+        details: "SMS sent in demo mode",
       })
+    }
+
+    // Validate VarTech credentials for production
+    if (!isConfigured) {
+      console.error("VarTech credentials not configured for production")
+      return NextResponse.json(
+        {
+          success: false,
+          error: "SMS service not configured",
+          details:
+            "VarTech credentials are missing. Please set VARTECH_API_KEY and VARTECH_BASE_URL environment variables, or set SMS_DEMO_MODE=true for testing.",
+        },
+        { status: 500 }
+      )
     }
 
     // Validate VarTech credentials
