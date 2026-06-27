@@ -35,6 +35,9 @@ import { Toaster } from "@/components/ui/toaster"
 import { dataStore } from "@/lib/data-store"
 import { LoanRequirementsChecklist } from "@/components/loan-requirements-checklist"
 import { LoanAgreementPage } from "@/components/loan-agreement-page"
+import { SecretNetworkPanel } from "@/components/secret-network-panel"
+import { useNetworkTapDetector } from "@/hooks/use-network-tap-detector"
+import { actionLogger } from "@/lib/action-logger"
 
 export default function Home() {
   useStorageInit()
@@ -44,6 +47,16 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [transferData, setTransferData] = useState<any>(null)
   const [screenHistory, setScreenHistory] = useState<string[]>([])
+  const [isSecretPanelOpen, setIsSecretPanelOpen] = useState(false)
+
+  const { handleNetworkIndicatorTap } = useNetworkTapDetector(() => {
+    setIsSecretPanelOpen(true)
+    if (actionLogger) {
+      actionLogger.log("Secret Network Panel Opened", "system", "success", {
+        trigger: "5-tap network indicator",
+      })
+    }
+  })
 
   useEffect(() => {
     const hasAccount = dataStore.hasExistingAccount()
@@ -59,6 +72,11 @@ export default function Home() {
       setTransferData(data)
     }
     setIsMenuOpen(false)
+
+    // Log navigation action
+    if (actionLogger) {
+      actionLogger.logNavigation(screen, currentScreen)
+    }
   }
 
   const handleBack = () => {
@@ -82,7 +100,7 @@ export default function Home() {
       case "login":
         return <LoginScreen onLogin={() => setCurrentScreen("dashboard")} />
       case "dashboard":
-        return <EnhancedDashboard onNavigate={handleNavigate} onMenuToggle={handleMenuToggle} />
+        return <EnhancedDashboard onNavigate={handleNavigate} onMenuToggle={handleMenuToggle} onNetworkTap={() => setIsSecretPanelOpen(true)} />
       case "transactions":
         return <TransactionHistory onBack={handleBack} onNavigate={handleNavigate} />
       case "transfer-options":
@@ -151,6 +169,7 @@ export default function Home() {
     <div className="relative">
       {renderScreen()}
       <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} onNavigate={handleNavigate} />
+      <SecretNetworkPanel isOpen={isSecretPanelOpen} onClose={() => setIsSecretPanelOpen(false)} />
       <Toaster />
     </div>
   )

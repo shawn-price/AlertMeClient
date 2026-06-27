@@ -8,6 +8,7 @@ import { NetworkChatModal } from "@/components/network-chat-modal"
 import { BankServiceStatus } from "@/components/bank-service-status"
 import { AddFundsModal } from "@/components/add-funds-modal"
 import { VartechSMSSettings } from "@/components/vartech-sms-settings"
+import { ActionLogViewer } from "@/components/action-log-viewer"
 import {
   ArrowLeft,
   Plus,
@@ -49,6 +50,7 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
   const [showAddFunds, setShowAddFunds] = useState(false)
   const [showStorageModal, setShowStorageModal] = useState(false)
   const [showSMSGatewaySettings, setShowSMSGatewaySettings] = useState(false)
+  const [showProcessLog, setShowProcessLog] = useState(false)
   const [storageContent, setStorageContent] = useState<string>("")
   const [storageStats, setStorageStats] = useState(() => dataStore.getStorageStats())
   const [userData, setUserData] = useState(dataStore.getUserData())
@@ -157,6 +159,12 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
   ]
 
   const systemItems = [
+    {
+      icon: Activity,
+      label: "Process Log",
+      description: "Track all app actions in real-time",
+      onClick: () => setShowProcessLog(true),
+    },
     {
       icon: Wifi,
       label: "Offline Mode",
@@ -384,6 +392,31 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
             </div>
             <div className="p-6">
               <VartechSMSSettings />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Process Log Modal */}
+      {showProcessLog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 bg-gray-800 border-b border-gray-700 p-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-blue-400" />
+                <h2 className="text-xl font-semibold text-white">Process Log - Real-Time Action Tracking</h2>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowProcessLog(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                ✕
+              </Button>
+            </div>
+            <div className="p-6">
+              <ActionLogViewer maxVisible={50} />
             </div>
           </div>
         </div>
