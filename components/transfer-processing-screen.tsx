@@ -136,91 +136,119 @@ export function TransferProcessingScreen({ onNavigate, transferData }: TransferP
   }, [onNavigate, progress, steps.length, transferData])
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="text-center max-w-sm mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-50 to-cyan-50 flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute top-20 left-10 w-40 h-40 bg-blue-200/20 rounded-full blur-3xl animate-processing-float"></div>
+      <div className="absolute bottom-32 right-8 w-32 h-32 bg-cyan-200/20 rounded-full blur-3xl animate-processing-float" style={{ animationDelay: "0.5s" }}></div>
+      <div className="absolute top-1/3 right-1/4 w-24 h-24 bg-blue-300/15 rounded-full blur-2xl animate-processing-pulse"></div>
+
+      <div className="text-center max-w-sm mx-auto relative z-10">
         {error ? (
-          <>
-            <div className="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100">
+          <div className="animate-slide-up">
+            <div className="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-red-100 to-red-50 shadow-lg animate-processing-glow">
               <AlertCircle className="w-8 h-8 text-red-600" />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Transaction Failed</h2>
-            <p className="text-gray-600 mb-6">{error}</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Transaction Failed</h2>
+            <p className="text-gray-600 mb-8 text-sm leading-relaxed">{error}</p>
             <button
               onClick={() => onNavigate("dashboard")}
-              className="inline-flex items-center justify-center px-6 py-2 bg-[#004A9F] hover:bg-[#003875] text-white rounded-lg font-medium"
+              className="inline-flex items-center justify-center px-8 py-3 bg-gradient-primary hover:shadow-lg text-white rounded-xl font-semibold transition-all duration-300 transform hover:scale-105"
             >
               Return to Dashboard
             </button>
-          </>
+          </div>
         ) : isProcessing ? (
-          <>
+          <div className="animate-slide-up">
             {/* Main Loading Animation */}
             <div className="relative mb-8">
-              <div className="w-24 h-24 mx-auto mb-4 relative">
-                <div className="absolute inset-0 rounded-full border-4 border-gray-200"></div>
+              <div className="w-32 h-32 mx-auto mb-4 relative">
+                {/* Outer glow ring */}
+                <div className="absolute inset-0 rounded-full border-4 border-transparent bg-gradient-to-r from-blue-400 to-cyan-400 p-1 animate-processing-spin opacity-40"></div>
+                {/* Background circle */}
+                <div className="absolute inset-0 rounded-full border-8 border-blue-100 m-2"></div>
+                {/* Progress circle */}
                 <div
-                  className="absolute inset-0 rounded-full border-4 border-[#004A9F] border-t-transparent animate-spin"
+                  className="absolute inset-0 rounded-full border-8 border-transparent m-2 transition-all duration-300"
                   style={{
-                    background: `conic-gradient(from 0deg, #004A9F ${progress * 3.6}deg, transparent ${progress * 3.6}deg)`,
+                    background: `conic-gradient(from 0deg, #004A9F ${progress * 3.6}deg, #e0e7ff ${progress * 3.6}deg)`,
                     borderRadius: "50%",
                   }}
                 ></div>
-                <div className="absolute inset-4 bg-[#004A9F] rounded-full flex items-center justify-center">
-                  <Loader2 className="h-8 w-8 text-white animate-spin" />
+                {/* Center circle with icon */}
+                <div className="absolute inset-6 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-full flex items-center justify-center shadow-lg animate-processing-glow">
+                  <Loader2 className="h-10 w-10 text-white animate-processing-spin" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-[#004A9F] mb-2">{Math.round(progress)}%</div>
+              <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">{Math.round(progress)}%</div>
+              <p className="text-sm text-gray-600 font-medium">Processing your transaction</p>
             </div>
 
             {/* Current Step */}
             <div className="mb-8">
-              <div className="flex items-center justify-center mb-4">
+              <div className="flex items-center justify-center mb-6 gap-2">
                 {steps.map((step, index) => {
                   const IconComponent = step.icon
+                  const isComplete = index < currentStep
+                  const isCurrent = index === currentStep
                   return (
                     <div key={index} className="flex items-center">
                       <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          index <= currentStep ? "bg-[#004A9F] text-white" : "bg-gray-200 text-gray-400"
+                        className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
+                          isCurrent
+                            ? "bg-gradient-to-br from-blue-600 to-cyan-600 text-white shadow-lg animate-processing-glow scale-110"
+                            : isComplete
+                              ? "bg-gradient-accent text-white shadow-md"
+                              : "bg-gray-200 text-gray-400"
                         }`}
                       >
-                        <IconComponent className="h-5 w-5" />
+                        {isComplete ? <CheckCircle className="h-6 w-6" /> : <IconComponent className="h-6 w-6" />}
                       </div>
                       {index < steps.length - 1 && (
-                        <div className={`w-8 h-1 mx-2 ${index < currentStep ? "bg-[#004A9F]" : "bg-gray-200"}`}></div>
+                        <div
+                          className={`w-12 h-1 mx-1 rounded-full transition-all duration-500 ${
+                            index < currentStep ? "bg-gradient-accent" : "bg-gray-200"
+                          }`}
+                        ></div>
                       )}
                     </div>
                   )
                 })}
               </div>
 
-              <h2 className="text-xl font-semibold mb-2">{steps[currentStep].label}</h2>
-              <p className="text-gray-600 text-sm">{steps[currentStep].description}</p>
+              <div className="bg-white/60 backdrop-blur rounded-2xl p-6 shadow-sm border border-white/80 animate-slide-up">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">{steps[currentStep].label}</h2>
+                <p className="text-gray-600 text-sm leading-relaxed">{steps[currentStep].description}</p>
+              </div>
             </div>
 
             {/* Transfer Details */}
-            <div className="bg-white rounded-lg p-4 text-left">
-              <div className="text-center mb-4">
-                <div className="text-2xl font-bold text-[#004A9F]">
-                  ₦ {formatCurrency(Number.parseFloat(transferData?.amount || "0"))}
+            <div className="bg-gradient-to-br from-white to-blue-50 rounded-2xl p-6 shadow-lg border border-blue-100 backdrop-blur animate-slide-up mt-6" style={{ animationDelay: "0.2s" }}>
+              <div className="text-center mb-6">
+                <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">
+                  ₦{formatCurrency(Number.parseFloat(transferData?.amount || "0"))}
                 </div>
-                <div className="text-sm text-gray-600">to {transferData?.beneficiaryName || "Recipient"}</div>
+                <div className="text-sm text-gray-600 font-medium">Sending to {transferData?.beneficiaryName || "Recipient"}</div>
               </div>
 
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Bank:</span>
-                  <span className="font-medium">{transferData?.bank}</span>
+              <div className="space-y-3 text-sm bg-white/50 rounded-xl p-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 font-medium">Bank:</span>
+                  <span className="font-semibold text-gray-900">{transferData?.bank}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Account:</span>
-                  <span className="font-medium">{transferData?.accountNumber}</span>
+                <div className="h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 font-medium">Account:</span>
+                  <span className="font-semibold text-gray-900 font-mono">{transferData?.accountNumber}</span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 text-xs text-gray-500">Please do not close this page while processing...</div>
-          </>
+            <div className="mt-8 flex items-center justify-center gap-2 text-xs text-gray-500 animate-processing-pulse">
+              <div className="w-1 h-1 rounded-full bg-blue-600"></div>
+              <span>Processing your transaction securely</span>
+              <div className="w-1 h-1 rounded-full bg-blue-600"></div>
+            </div>
+          </div>
         ) : null}
       </div>
     </div>
