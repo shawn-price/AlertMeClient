@@ -33,6 +33,12 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.VARTECH_BASE_URL || "https://sms.thevartech.com/api"
     const senderId = process.env.VARTECH_SENDER_ID || "AlertMe"
 
+    // Debug logging
+    console.log("[v0] SMS Route Debug:")
+    console.log("[v0] - VARTECH_API_KEY present:", !!apiKey)
+    console.log("[v0] - VARTECH_BASE_URL:", baseUrl)
+    console.log("[v0] - VARTECH_SENDER_ID:", senderId)
+
     // Check if VarTech is configured
     const isConfigured = apiKey && baseUrl
 
