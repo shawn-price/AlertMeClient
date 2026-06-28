@@ -50,7 +50,7 @@ function TransactionSuccessComponent({ onNavigate, transferData }: TransactionSu
     try {
       const userData = dataStore.getUserData()
 
-      // Send production SMS alerts
+      // Send production SMS alerts with platform-aware beneficiary phone resolution
       const alertResult = await productionAlerts.sendTransactionAlert({
         type: "debit",
         senderName: userData.name,
@@ -65,11 +65,17 @@ function TransactionSuccessComponent({ onNavigate, transferData }: TransactionSu
         reference: data.id,
         narration: data.narration || "Money Transfer",
         timestamp: new Date().toISOString(),
+        platformName: data.bank || data.provider, // Platform name for phone resolution strategy
       })
 
       if (alertResult.success) {
         setSmsStatus("sent")
-        console.log("[v0] Production SMS alerts sent successfully:", alertResult)
+        console.log("[v0] Production SMS alerts sent successfully:", {
+          debitSent: alertResult.debitAlertSent,
+          creditSent: alertResult.creditAlertSent,
+          creditSkipped: alertResult.creditAlertSkipped,
+          skipReason: alertResult.creditSkipReason,
+        })
       } else {
         setSmsStatus("failed")
         console.error("[v0] Failed to send SMS alerts:", alertResult.error)

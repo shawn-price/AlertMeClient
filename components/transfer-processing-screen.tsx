@@ -80,6 +80,8 @@ export function TransferProcessingScreen({ onNavigate, transferData }: TransferP
                   beneficiaryName: transferData?.beneficiaryName || "Recipient",
                   timestamp: new Date().toISOString(),
                   smsStatus: "pending",
+                  bank: transferData.bank || transferData.provider, // Ensure bank/provider is included
+                  provider: transferData.provider || transferData.bank, // For compatibility
                 }
                 
                 // Send SMS alert CONCURRENTLY in the background using multi-gateway system
