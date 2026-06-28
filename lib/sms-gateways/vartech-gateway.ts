@@ -44,7 +44,22 @@ export class VartechGateway extends BaseGateway {
             body: JSON.stringify(body),
           })
 
-          const data = await response.json()
+          const responseText = await response.text()
+          let data
+          
+          try {
+            data = JSON.parse(responseText)
+          } catch (parseError) {
+            lastError = new Error(
+              `VarTech API returned invalid JSON (${response.status}). Response starts with: ${responseText.substring(0, 100)}`
+            )
+            // Retry on 5xx errors
+            if (response.status >= 500 && attempt < this.retryAttempts) {
+              await new Promise((resolve) => setTimeout(resolve, this.retryDelayMs * attempt))
+              continue
+            }
+            break
+          }
 
           if (response.ok && data.success) {
             return {

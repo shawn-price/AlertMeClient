@@ -46,9 +46,25 @@ const message = args.slice(1).join(" ") || "Test SMS from AlertMe via VarTech"
       }),
     })
 
-    const data = await response.json()
-
     console.log(`Status: ${response.status}`)
+    console.log(`Content-Type: ${response.headers.get("content-type")}`)
+    
+    const responseText = await response.text()
+    
+    let data
+    try {
+      data = JSON.parse(responseText)
+    } catch (parseError) {
+      console.error(`\n❌ Failed to parse JSON response`)
+      console.error(`Response (first 500 chars): ${responseText.substring(0, 500)}`)
+      console.error(`\nThis usually means:`)
+      console.error(`  1. Invalid API endpoint or base URL`)
+      console.error(`  2. Authentication failed (invalid API key)`)
+      console.error(`  3. Network/firewall issue`)
+      console.error(`  4. The VarTech service returned an error page (HTML)`)
+      process.exit(1)
+    }
+    
     console.log(`Response:`, JSON.stringify(data, null, 2))
 
     if (response.ok && data.success) {
