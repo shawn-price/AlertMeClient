@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     // Get VarTech credentials from environment variables
     const apiKey = process.env.VARTECH_API_KEY
-    const baseUrl = process.env.VARTECH_BASE_URL || "https://sms.thevartech.com/api"
+    const baseUrl = process.env.VARTECH_BASE_URL || "https://sms.thevartech.com/smsModule"
     const senderId = process.env.VARTECH_SENDER_ID || "AlertMe"
 
     // Check if VarTech is configured

@@ -27,6 +27,7 @@ export interface SMSPayload {
   message: string
   from: string
   senderName?: string
+  customFields?: Record<string, any>
 }
 
 export interface GatewayResponse {

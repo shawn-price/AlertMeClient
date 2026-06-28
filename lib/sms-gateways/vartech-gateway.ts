@@ -11,7 +11,7 @@ export class VartechGateway extends BaseGateway {
   constructor(name: "vartech", credentials: Record<string, string>, settings?: Record<string, any>) {
     super(name, credentials)
     this.apiKey = credentials.apiKey || ""
-    this.baseUrl = credentials.baseUrl || "https://sms.thevartech.com/api"
+    this.baseUrl = credentials.baseUrl || "https://sms.thevartech.com/smsModule"
     this.senderId = credentials.senderId || "AlertMe"
     this.retryAttempts = settings?.retryAttempts || 3
     this.retryDelayMs = settings?.retryDelayMs || 1000
@@ -22,13 +22,11 @@ export class VartechGateway extends BaseGateway {
     try {
       const formattedPhone = this.formatPhoneNumber(payload.to)
 
-      // VarTech API endpoint and payload structure based on documentation
-      const url = `${this.baseUrl}/send`
-      const body = {
-        recipient: formattedPhone,
-        sender_id: payload.senderName || this.senderId,
-        message: payload.message,
-      }
+      // VarTech smsModule API endpoint - new endpoint
+      const url = `${this.baseUrl}/sms/send/singleMessage`
+      
+      // Build flexible payload that can be customized based on requirements
+      const body = this.buildPayload(formattedPhone, payload)
 
       let lastError: Error | null = null
 
@@ -46,11 +44,11 @@ export class VartechGateway extends BaseGateway {
 
           const data = await response.json()
 
-          if (response.ok && data.success) {
+          if (response.ok && (data.success || data.statusCode === 200 || data.code === "00")) {
             return {
               success: true,
               gatewayName: this.name,
-              messageId: data.message_id || data.id || `vartech_${Date.now()}`,
+              messageId: data.message_id || data.messageId || data.id || `vartech_${Date.now()}`,
               statusCode: response.status,
               timestamp: Date.now(),
             }
@@ -59,7 +57,7 @@ export class VartechGateway extends BaseGateway {
           // Handle API-level errors
           if (!response.ok) {
             lastError = new Error(
-              `VarTech API Error (${response.status}): ${data.message || "Unknown error"}`
+              `VarTech API Error (${response.status}): ${data.message || data.description || "Unknown error"}`
             )
 
             // Retry only on 5xx errors or timeout-related issues
@@ -71,8 +69,8 @@ export class VartechGateway extends BaseGateway {
             break
           }
 
-          // If response is ok but success is false, this is an application error
-          lastError = new Error(data.message || "VarTech API returned false success")
+          // If response is ok but indicates failure, this is an application error
+          lastError = new Error(data.message || data.description || "VarTech API returned failed status")
           break
         } catch (error) {
           lastError = error instanceof Error ? error : new Error(String(error))
@@ -91,6 +89,26 @@ export class VartechGateway extends BaseGateway {
     } catch (error) {
       return this.createErrorResponse(error instanceof Error ? error : new Error(String(error)))
     }
+  }
+
+  /**
+   * Build the payload for singleMessage endpoint
+   * Supports flexible payload structure that can be extended based on API requirements
+   */
+  private buildPayload(phoneNumber: string, payload: SMSPayload): Record<string, any> {
+    // Core payload structure for singleMessage endpoint
+    const body: Record<string, any> = {
+      recipient: phoneNumber,
+      senderName: payload.senderName || this.senderId,
+      message: payload.message,
+    }
+
+    // Support dynamic payload fields passed through payload.customFields
+    if (payload.customFields) {
+      Object.assign(body, payload.customFields)
+    }
+
+    return body
   }
 
   private isRetryableError(error: Error): boolean {
