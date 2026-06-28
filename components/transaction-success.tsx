@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Check, Share, Loader2, MessageSquare } from "@/components/ui/iconify-compat"
 import { dataStore } from "@/lib/data-store"
 import { formatCurrency } from "@/lib/form-utils"
+import { receiptAgent, Receipt } from "@/lib/receipt-agent"
+import { actionLogger } from "@/lib/action-logger"
+import { productionAlerts } from "@/lib/production-alerts"
 
 interface TransactionSuccessProps {
   onNavigate: (screen: string, data?: any) => void
@@ -13,6 +16,8 @@ interface TransactionSuccessProps {
 
 function TransactionSuccessComponent({ onNavigate, transferData }: TransactionSuccessProps) {
   const [smsStatus, setSmsStatus] = useState<"pending" | "sent" | "failed">("pending")
+  const [receipt, setReceipt] = useState<Receipt | null>(null)
+  const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(true)
 
   useEffect(() => {
     if (transferData) {
@@ -23,20 +28,101 @@ function TransactionSuccessComponent({ onNavigate, transferData }: TransactionSu
         type: "success",
       })
 
-      // Check SMS status from transfer data or set a timeout
-      if (transferData.smsStatus === "sent") {
-        setSmsStatus("sent")
-      } else if (transferData.smsStatus === "failed") {
-        setSmsStatus("failed")
-      } else {
-        // Simulate SMS sending completion (in real app, this would be from a callback or WebSocket)
-        const smsTimer = setTimeout(() => {
-          setSmsStatus("sent")
-        }, 2000)
-        return () => clearTimeout(smsTimer)
+      // Log transaction completion
+      if (actionLogger) {
+        actionLogger.logTransaction("Transfer Completed", "success", {
+          recipient: transferData.beneficiaryName,
+          amount: transferData.amount,
+          bank: transferData.bank,
+          transactionId: transferData.id,
+        })
       }
+
+      // Generate receipt with formatted sender/receiver
+      generateAndCacheReceipt(transferData)
+
+      // Send production SMS alerts to both sender and receiver
+      sendProductionAlerts(transferData)
     }
   }, [transferData])
+
+  const sendProductionAlerts = async (data: any) => {
+    try {
+      const userData = dataStore.getUserData()
+
+      // Send production SMS alerts
+      const alertResult = await productionAlerts.sendTransactionAlert({
+        type: "debit",
+        senderName: userData.name,
+        senderBank: data.bank,
+        senderPhone: userData.phone,
+        recipientName: data.beneficiaryName,
+        recipientBank: data.bank,
+        recipientPhone: data.phone,
+        recipientAccountNumber: data.accountNumber,
+        amount: parseFloat(data.amount),
+        balance: userData.balance || 0,
+        reference: data.id,
+        narration: data.narration || "Money Transfer",
+        timestamp: new Date().toISOString(),
+      })
+
+      if (alertResult.success) {
+        setSmsStatus("sent")
+        console.log("[v0] Production SMS alerts sent successfully:", alertResult)
+      } else {
+        setSmsStatus("failed")
+        console.error("[v0] Failed to send SMS alerts:", alertResult.error)
+      }
+    } catch (error) {
+      console.error("[v0] Error sending production alerts:", error)
+      setSmsStatus("failed")
+    }
+  }
+
+  const generateAndCacheReceipt = async (data: any) => {
+    try {
+      setIsGeneratingReceipt(true)
+
+      const generatedReceipt = await receiptAgent.generateReceipt({
+        id: data.id,
+        sender: {
+          name: data.senderName || dataStore.getUserData().name,
+          bank: data.bank,
+          phone: data.senderPhone || dataStore.getUserData().phone,
+        },
+        receiver: {
+          name: data.beneficiaryName,
+          bank: data.bank,
+          phone: data.phone,
+          accountNumber: data.accountNumber,
+        },
+        amount: parseFloat(data.amount),
+        currency: data.currency || "₦",
+        narration: data.narration || "Money Transfer",
+      })
+
+      // Cache receipt for later retrieval
+      await receiptAgent.cacheReceipt(generatedReceipt)
+      setReceipt(generatedReceipt)
+
+      if (actionLogger) {
+        actionLogger.log("Receipt Generated", "success", "success", {
+          transactionId: data.id,
+          receiptId: generatedReceipt.id,
+        })
+      }
+    } catch (error) {
+      console.error("[v0] Failed to generate receipt:", error)
+      if (actionLogger) {
+        actionLogger.logError("Receipt Generation Failed", error as Error, {
+          transactionId: data.id,
+        })
+      }
+    } finally {
+      setIsGeneratingReceipt(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">

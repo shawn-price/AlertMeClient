@@ -98,10 +98,6 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             </div>
           </div>
           <div className="text-white/90 text-base font-medium mb-2">The Pan African Bank</div>
-          <div className="text-white/70 text-sm flex items-center justify-center gap-2">
-            <Shield className="h-4 w-4" />
-            Welcome to Ecobank Mobile!
-          </div>
         </div>
 
         <Card className="bg-white/95 backdrop-blur-xl shadow-2xl border-0 overflow-hidden">

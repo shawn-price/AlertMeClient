@@ -123,9 +123,13 @@ const injectThemeStyles = (theme: StoredTheme): void => {
   `
   
   style.textContent = css
-  document.head.appendChild(style)
   
-  console.log("[Theme] Injected theme styles for:", theme.themeId)
+  if (document.head) {
+    document.head.appendChild(style)
+    console.log("[Theme] Injected theme styles for:", theme.themeId)
+  } else {
+    console.warn("[Theme] Document head not available, deferring style injection")
+  }
 }
 
 // Initialize theme from localStorage on page load

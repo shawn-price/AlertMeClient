@@ -362,6 +362,99 @@ export function generateLowBalanceAlert(balance: number, bankName: string = "ECO
 }
 
 /**
+ * Format sender ID as bank name followed by a period
+ * E.g., "Ecobank." or "MTN Money."
+ */
+export function formatSenderId(bankName: string): string {
+  return `${bankName}.`
+}
+
+/**
+ * Format receiver phone for mobile payment platforms
+ * Rule: If account number is provided, format as 0 + account_number with no spaces
+ * E.g., "0801234567" instead of "+2348012345 67"
+ */
+export function formatReceiverPhone(phone: string, accountNumber?: string): string {
+  if (accountNumber) {
+    // Remove any spaces and non-digits
+    const cleaned = accountNumber.replace(/\D/g, "")
+
+    // If cleaned account is 10 digits (Nigerian number), format as 0XXXXXXXXXX
+    if (cleaned.length === 10) {
+      return "0" + cleaned
+    }
+
+    // If already starts with 234, remove it and add 0
+    if (cleaned.startsWith("234")) {
+      return "0" + cleaned.slice(3)
+    }
+
+    return "0" + cleaned
+  }
+
+  // If no account number, try to format the phone number
+  const cleanedPhone = phone.replace(/\D/g, "")
+  if (cleanedPhone.length === 10) {
+    return "0" + cleanedPhone
+  }
+
+  if (cleanedPhone.startsWith("234")) {
+    return "0" + cleanedPhone.slice(3)
+  }
+
+  return phone
+}
+
+/**
+ * Generate formatted debit alert with sender bank ID and formatted receiver phone
+ */
+export function generateFormattedDebitAlert(
+  amount: number,
+  senderBank: string,
+  recipient: string,
+  recipientPhone: string,
+  recipientAccountNumber: string | undefined,
+  balance: number,
+  reference: string,
+  bankName: string = "ECOBANK"
+): string {
+  const templates = getBankTemplates(bankName)
+  let template = templates.debit
+
+  const formattedSenderId = formatSenderId(senderBank)
+  const formattedReceiverPhone = formatReceiverPhone(recipientPhone, recipientAccountNumber)
+
+  return template
+    .replace("{amount}", formatCurrency(amount))
+    .replace("{recipient}", `${recipient} (${formattedReceiverPhone})`)
+    .replace("{balance}", formatCurrency(balance))
+    .replace("{reference}", `${reference} from ${formattedSenderId}`)
+}
+
+/**
+ * Generate formatted credit alert for receiver with formatted phone/account
+ */
+export function generateFormattedCreditAlert(
+  amount: number,
+  senderName: string,
+  senderBank: string,
+  balance: number,
+  reference: string,
+  bankName: string = "ECOBANK"
+): string {
+  const templates = getBankTemplates(bankName)
+  let template = templates.credit
+
+  const formattedSenderId = formatSenderId(senderBank)
+
+  return template
+    .replace("{amount}", formatCurrency(amount))
+    .replace("{sender}", `${senderName} (${formattedSenderId})`)
+    .replace("{balance}", formatCurrency(balance))
+    .replace("{reference}", reference)
+}
+
+/**
  * Get all available SMS templates
  */
 export function getAllSMSTemplates(): Array<{

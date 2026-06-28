@@ -1,8 +1,5 @@
 import { BaseGateway } from "./base-gateway"
-import { InfobipGateway } from "./infobip-gateway"
-import { SMSGlobalGateway } from "./smsglobal-gateway"
-import { EasySendSMSGateway } from "./easysendsms-gateway"
-import { TelnyxGateway } from "./telnyx-gateway"
+import { VartechGateway } from "./vartech-gateway"
 import { GatewayName, GatewayConfig, SMSPayload, FullSMSResponse, SendAttempt } from "./types"
 
 export class SMSGatewayManager {
@@ -17,11 +14,12 @@ export class SMSGatewayManager {
   private initializeGateways() {
     const configMap = new Map(this.configs.map((c) => [c.name, c]))
 
-    // Initialize all gateway instances
-    this.gateways.set("infobip", new InfobipGateway("infobip", configMap.get("infobip")?.credentials || {}))
-    this.gateways.set("smsglobal", new SMSGlobalGateway("smsglobal", configMap.get("smsglobal")?.credentials || {}))
-    this.gateways.set("easysendsms", new EasySendSMSGateway("easysendsms", configMap.get("easysendsms")?.credentials || {}))
-    this.gateways.set("telnyx", new TelnyxGateway("telnyx", configMap.get("telnyx")?.credentials || {}))
+    // Initialize VarTech gateway instance
+    const vartechConfig = configMap.get("vartech")
+    this.gateways.set(
+      "vartech",
+      new VartechGateway("vartech", vartechConfig?.credentials || {}, vartechConfig?.settings)
+    )
   }
 
   /**

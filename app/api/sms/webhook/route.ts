@@ -1,77 +1,75 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { verifyTwilioSignature } from "@/lib/twilio-utils"
 import { appendWebhookEvent } from "@/lib/webhook-store"
 import { incrementWebhookEvent } from "@/lib/metrics"
 
 /**
- * Twilio webhook endpoint for message status callbacks (and other callbacks).
- * Verifies Twilio signature and logs status updates. Extend to persist to DB/queue.
+ * VarTech SMS webhook endpoint for message status callbacks and delivery notifications.
+ * VarTech can send delivery reports via webhook.
+ * Configure webhook URL in VarTech dashboard to receive delivery status updates.
  */
 export async function POST(request: NextRequest) {
   try {
-    const authToken = process.env.TWILIO_AUTH_TOKEN
-    const signature = request.headers.get("x-twilio-signature")
-
-    // Parse urlencoded body (Twilio posts form-encoded data)
     const contentType = request.headers.get("content-type") || ""
-    let params: Record<string, string> = {}
+    let payload: Record<string, any> = {}
 
-    if (contentType.includes("application/x-www-form-urlencoded")) {
+    // Parse request body (VarTech sends JSON data)
+    if (contentType.includes("application/json")) {
+      payload = await request.json()
+    } else if (contentType.includes("application/x-www-form-urlencoded")) {
       const text = await request.text()
       const sp = new URLSearchParams(text)
       for (const [k, v] of sp) {
-        params[k] = v
+        payload[k] = v
       }
     } else {
       try {
-        const fd = await request.formData()
-        for (const [k, v] of fd.entries()) {
-          params[k] = String(v)
-        }
+        payload = await request.json()
       } catch (e) {
-        // fallback: try json
-        try {
-          const body = await request.json()
-          for (const k of Object.keys(body || {})) {
-            params[k] = String((body as any)[k])
-          }
-        } catch (err) {
-          // no body parsed
-        }
+        console.warn("Unable to parse webhook body")
+        return NextResponse.json(
+          { success: false, error: "Invalid request format" },
+          { status: 400 }
+        )
       }
     }
 
-    const valid = verifyTwilioSignature(authToken, signature, request.url, params)
-    if (!valid) {
-      console.warn("Invalid Twilio signature for webhook", { url: request.url })
-      return NextResponse.json({ success: false, error: "Invalid signature" }, { status: 403 })
+    // Extract VarTech delivery report fields
+    const messageId = payload["message_id"] || payload["messageId"] || payload["id"]
+    const status = payload["status"] || payload["delivery_status"] || "unknown"
+    const recipient = payload["recipient"] || payload["to"] || "unknown"
+    const timestamp = payload["timestamp"] || new Date().toISOString()
+
+    // Build normalized payload for storage
+    const event = {
+      messageId,
+      status,
+      recipient,
+      timestamp,
+      source: "vartech",
+      raw: payload,
     }
-
-    // Extract common Twilio fields
-    const messageSid = params["MessageSid"] || params["SmsSid"] || params["MessageSid".toLowerCase()]
-    const messageStatus = params["MessageStatus"] || params["SmsStatus"] || params["MessageStatus".toLowerCase()]
-    const to = params["To"] || params["to"]
-    const from = params["From"] || params["from"]
-    const errorCode = params["ErrorCode"] || params["ErrorCode".toLowerCase()]
-    const errorMessage = params["ErrorMessage"] || params["ErrorMessage".toLowerCase()]
-
-    const payload = { messageSid, messageStatus, to, from, errorCode, errorMessage, raw: params }
 
     // Persist to file-backed store
     try {
-      await appendWebhookEvent(payload)
+      await appendWebhookEvent(event)
     } catch (e) {
       console.warn("Failed to persist webhook event:", e)
     }
 
     // Update in-memory metrics
-    incrementWebhookEvent(messageStatus)
+    incrementWebhookEvent(status)
 
-    console.log("Twilio webhook received:", payload)
+    console.log("[VarTech Webhook] Delivery notification received:", {
+      messageId,
+      status,
+      recipient,
+      timestamp,
+    })
 
-    return NextResponse.json({ success: true })
+    // Return 200 OK to acknowledge receipt
+    return NextResponse.json({ success: true, received: true })
   } catch (err) {
-    console.error("Twilio webhook handler error:", err)
+    console.error("[VarTech Webhook] Handler error:", err)
     return NextResponse.json({ success: false, error: "Webhook handler error" }, { status: 500 })
   }
 }

@@ -192,7 +192,9 @@ const PWAScript = `
     });
 
     // Prevent pull-to-refresh on mobile
-    document.body.style.overscrollBehavior = "none";
+    if (document.body) {
+      document.body.style.overscrollBehavior = "none";
+    }
   })();
 `
 

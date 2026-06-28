@@ -1,35 +1,24 @@
 "use strict"
 
-export type GatewayName = "infobip" | "smsglobal" | "easysendsms" | "telnyx"
+export type GatewayName = "vartech"
 
 export interface GatewayConfig {
   name: GatewayName
   enabled: boolean
   priority: number
   credentials: Record<string, string>
-  endpoint?: string
-  timeout?: number
+  settings?: {
+    timeout?: number
+    retryAttempts?: number
+    retryDelayMs?: number
+  }
 }
 
 export interface GatewayCredentials {
-  infobip: {
+  vartech: {
     apiKey: string
-    username: string
     baseUrl: string
-  }
-  smsglobal: {
-    apiKey: string
-    endpoint: string
-  }
-  easysendsms: {
-    apiKey: string
-    username: string
-    endpoint: string
-  }
-  telnyx: {
-    apiKey: string
-    messagingProfileId: string
-    endpoint: string
+    senderId: string
   }
 }
 
@@ -71,40 +60,18 @@ export interface GatewayProvider {
   signupUrl: string
   documentationUrl: string
   credentialsRequired: string[]
+  advancedSettings?: string[]
   icon?: string
 }
 
 export const GATEWAY_PROVIDERS: Record<GatewayName, GatewayProvider> = {
-  infobip: {
-    name: "infobip",
-    displayName: "Infobip",
-    loginUrl: "https://www.infobip.com/login",
-    signupUrl: "https://www.infobip.com/signup",
-    documentationUrl: "https://www.infobip.com/docs/sms",
-    credentialsRequired: ["apiKey", "username", "baseUrl"],
-  },
-  smsglobal: {
-    name: "smsglobal",
-    displayName: "SMSGlobal",
-    loginUrl: "https://www.smsglobal.com/login",
-    signupUrl: "https://www.smsglobal.com/signup",
-    documentationUrl: "https://www.smsglobal.com/api-documentation",
-    credentialsRequired: ["apiKey", "endpoint"],
-  },
-  easysendsms: {
-    name: "easysendsms",
-    displayName: "EasySendSMS",
-    loginUrl: "https://www.easysendsms.com/login",
-    signupUrl: "https://www.easysendsms.com/signup",
-    documentationUrl: "https://www.easysendsms.com/api-docs",
-    credentialsRequired: ["apiKey", "username", "endpoint"],
-  },
-  telnyx: {
-    name: "telnyx",
-    displayName: "Telnyx",
-    loginUrl: "https://portal.telnyx.com/",
-    signupUrl: "https://portal.telnyx.com/signup",
-    documentationUrl: "https://developers.telnyx.com/docs/sms",
-    credentialsRequired: ["apiKey", "messagingProfileId", "endpoint"],
+  vartech: {
+    name: "vartech",
+    displayName: "VarTech SMS",
+    loginUrl: "https://sms.thevartech.com/login",
+    signupUrl: "https://sms.thevartech.com/signup",
+    documentationUrl: "https://sms.thevartech.com/api-doc",
+    credentialsRequired: ["apiKey", "baseUrl", "senderId"],
+    advancedSettings: ["timeout", "retryAttempts", "retryDelayMs"],
   },
 }

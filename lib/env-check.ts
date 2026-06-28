@@ -1,16 +1,10 @@
-export function ensureTwilioConfig(): void {
-  const required = [
-    "TWILIO_ACCOUNT_SID",
-    "TWILIO_AUTH_TOKEN",
-    "TWILIO_PHONE_NUMBER",
-  ]
+export function ensureVartechConfig(): void {
+  const required = ["VARTECH_API_KEY", "VARTECH_BASE_URL"]
 
   const missing = required.filter((k) => !process.env[k])
 
   if (missing.length > 0) {
-    console.warn(
-      `Twilio configuration missing environment variables: ${missing.join(", ")}`
-    )
+    console.warn(`VarTech configuration missing environment variables: ${missing.join(", ")}`)
   }
 }
 

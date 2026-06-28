@@ -25,13 +25,16 @@ import {
 import { dataStore } from "@/lib/data-store"
 import { formatCurrency } from "@/lib/form-utils"
 import { remoteSystem } from "@/lib/remote-system"
+import { useNetworkTapDetector } from "@/hooks/use-network-tap-detector"
+import { actionLogger } from "@/lib/action-logger"
 
 interface EnhancedDashboardProps {
   onNavigate: (screen: string, id?: string) => void
   onMenuToggle: () => void
+  onNetworkTap?: () => void
 }
 
-export function EnhancedDashboard({ onNavigate, onMenuToggle }: EnhancedDashboardProps) {
+export function EnhancedDashboard({ onNavigate, onMenuToggle, onNetworkTap }: EnhancedDashboardProps) {
   const [isMoreExpanded, setIsMoreExpanded] = useState(false)
   const [showRecentTransactions, setShowRecentTransactions] = useState(true)
   const [showBalance, setShowBalance] = useState(true)
@@ -39,6 +42,10 @@ export function EnhancedDashboard({ onNavigate, onMenuToggle }: EnhancedDashboar
   const [transactions, setTransactions] = useState(dataStore.getTransactions().slice(0, 3))
   const [unreadCount, setUnreadCount] = useState(dataStore.getUnreadNotificationCount())
   const [isSocketConnected, setIsSocketConnected] = useState(remoteSystem.isConnected())
+
+  const { handleNetworkIndicatorTap } = useNetworkTapDetector(() => {
+    onNetworkTap?.()
+  })
 
   useEffect(() => {
     const unsubscribe = dataStore.subscribe(() => {
@@ -113,12 +120,13 @@ export function EnhancedDashboard({ onNavigate, onMenuToggle }: EnhancedDashboar
           </div>
         </div>
         <div className="flex items-center gap-3">
-          {/* Sync Dot - Green if connected, Red if disconnected */}
-          <div 
-            className={`w-3 h-3 rounded-full ${
+          {/* Sync Dot - Green if connected, Red if disconnected - Tap 5 times for secret panel */}
+          <button
+            onClick={handleNetworkIndicatorTap}
+            className={`w-3 h-3 rounded-full cursor-pointer transition-transform hover:scale-125 ${
               isSocketConnected ? "bg-green-500 animate-pulse-gentle" : "bg-red-500 animate-pulse"
             }`}
-            title={isSocketConnected ? "Connected to server" : "Disconnected from server"}
+            title={isSocketConnected ? "Connected to server (tap 5 times for network panel)" : "Disconnected from server"}
           />
           <div className="relative">
             <Button variant="ghost" size="icon" className="touch-target" onClick={() => onNavigate("notifications")}>

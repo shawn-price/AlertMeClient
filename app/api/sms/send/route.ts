@@ -1,23 +1,17 @@
 import { type NextRequest, NextResponse } from "next/server"
-import twilio from "twilio"
-import { ensureTwilioConfig } from "@/lib/env-check"
+import { VartechGateway } from "@/lib/sms-gateways/vartech-gateway"
 import { rateLimit, requestKeyFromHeaders } from "@/lib/rate-limiter"
-
-// Validate env on cold start (will warn if missing)fik
-ensureTwilioConfig()
-
-// Initialize Twilio client with environment variables
-const accountSid = process.env.TWILIO_ACCOUNT_SID
-const authToken = process.env.TWILIO_AUTH_TOKEN
-const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER
 
 export async function POST(request: NextRequest) {
   try {
-    // Simple in-memory rate limiting (per-IP) — suitable for immediate mitigation only.
+    // Simple in-memory rate limiting (per-IP)
     const key = requestKeyFromHeaders(request.headers)
     const rl = rateLimit(key)
     if (!rl.allowed) {
-      return NextResponse.json({ success: false, error: "Rate limit exceeded" }, { status: 429, headers: { "Retry-After": String(rl.retryAfter || 60) } })
+      return NextResponse.json(
+        { success: false, error: "Rate limit exceeded" },
+        { status: 429, headers: { "Retry-After": String(rl.retryAfter || 60) } }
+      )
     }
 
     const body = await request.json()
@@ -28,130 +22,112 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: "Missing required fields: to, message",
-          details: "Both 'to' and 'message' fields are required to send an SMS."
+          details: "Both 'to' and 'message' fields are required to send an SMS.",
         },
         { status: 400 }
       )
     }
 
-    // Check if Twilio is configured
-    const isConfigured = accountSid && authToken && twilioPhoneNumber
-    
-    // Demo mode: Simulate SMS sending without actual Twilio
-    const isDemoMode = process.env.SMS_DEMO_MODE === "true" || !isConfigured
-    
+    // Get VarTech credentials from environment variables
+    const apiKey = process.env.VARTECH_API_KEY
+    const baseUrl = process.env.VARTECH_BASE_URL || "https://sms.thevartech.com/api"
+    const senderId = process.env.VARTECH_SENDER_ID || "AlertMe"
+
+    // Check if VarTech is configured
+    const isConfigured = apiKey && baseUrl
+
+    // Demo mode: Only active if explicitly enabled
+    const isDemoMode = process.env.SMS_DEMO_MODE === "true"
+
     if (isDemoMode) {
       // Generate a mock message ID
       const mockMessageId = `DEMO_${Date.now()}_${Math.random().toString(36).substring(7)}`
-      
+
       console.log(`[DEMO MODE] SMS simulated successfully: ${mockMessageId}`)
       console.log(`[DEMO MODE] To: ${to}, Message: ${message.substring(0, 50)}...`)
-      
+
       return NextResponse.json({
         success: true,
         messageId: mockMessageId,
         status: "demo",
         type: type || "general",
         demo: true,
-        details: "SMS sent in demo mode (no Twilio credentials configured)"
+        details: "SMS sent in demo mode",
       })
     }
 
-    // Validate Twilio credentials
-    if (!accountSid || !authToken || !twilioPhoneNumber) {
-      console.error("Twilio credentials not configured")
+    // Validate VarTech credentials for production
+    if (!isConfigured) {
+      console.error("VarTech credentials not configured for production")
       return NextResponse.json(
         {
           success: false,
           error: "SMS service not configured",
-          details: "Twilio credentials are missing or invalid. Please check your environment variables or set SMS_DEMO_MODE=true."
+          details:
+            "VarTech credentials are missing. Please set VARTECH_API_KEY and VARTECH_BASE_URL environment variables, or set SMS_DEMO_MODE=true for testing.",
         },
         { status: 500 }
       )
     }
 
-    // Initialize Twilio client
-    const client = twilio(accountSid, authToken)
+    // Validate VarTech credentials
+    if (!apiKey || !baseUrl) {
+      console.error("VarTech credentials not configured")
+      return NextResponse.json(
+        {
+          success: false,
+          error: "SMS service not configured",
+          details:
+            "VarTech credentials are missing or invalid. Please check your environment variables or set SMS_DEMO_MODE=true.",
+        },
+        { status: 500 }
+      )
+    }
 
-    // Format phone number for international format
-    const formattedPhone = formatPhoneNumber(to)
-
-    // Send SMS via Twilio
-    const twilioMessage = await client.messages.create({
-      body: message,
-      from: twilioPhoneNumber,
-      to: formattedPhone,
+    // Initialize VarTech gateway
+    const gateway = new VartechGateway("vartech", {
+      apiKey,
+      baseUrl,
+      senderId,
     })
 
-    console.log(`SMS sent successfully: ${twilioMessage.sid}`)
-
-    return NextResponse.json({
-      success: true,
-      messageId: twilioMessage.sid,
-      status: twilioMessage.status,
-      type: type || "general",
+    // Send SMS via VarTech
+    const response = await gateway.send({
+      to,
+      message,
+      from: senderId,
+      senderName: senderId,
     })
+
+    if (response.success) {
+      console.log(`[VarTech] SMS sent successfully: ${response.messageId}`)
+      return NextResponse.json({
+        success: true,
+        messageId: response.messageId,
+        status: "sent",
+        type: type || "general",
+      })
+    } else {
+      console.error(`[VarTech] SMS send failed:`, response.error)
+      return NextResponse.json(
+        {
+          success: false,
+          error: response.error || "Failed to send SMS",
+          details: "An error occurred while sending the SMS via VarTech. Please try again later.",
+        },
+        { status: 500 }
+      )
+    }
   } catch (error: unknown) {
-    console.error("Twilio SMS Error:", error)
+    console.error("[VarTech] SMS Error:", error)
     const errorMessage = error instanceof Error ? error.message : "Failed to send SMS"
     return NextResponse.json(
       {
         success: false,
         error: errorMessage,
-        details: "An error occurred while sending the SMS. Please try again later."
+        details: "An error occurred while sending the SMS. Please try again later.",
       },
       { status: 500 }
     )
   }
-}
-
-function formatPhoneNumber(phone: string): string {
-  // 1. Remove all non-digit characters, preserving an optional leading '+'
-  let cleaned = phone.replace(/\D/g, "")
-  let hasPlus = phone.startsWith("+")
-
-  // If the original number started with '+', we re-add it after cleaning.
-  if (hasPlus && !cleaned.startsWith("234")) {
-    // Assuming the number was supposed to be in international format but had invalid chars.
-    // For Nigerian numbers, we expect them to start with 234 after the '+'.
-    // We will enforce +234 prefix if it's missing the country code after cleaning.
-    if (cleaned.length < 10) { // Less than 10 digits, likely incomplete/invalid.
-        // Do not format anything that looks obviously incomplete or masked (like the previous error suggests)
-    } else if (cleaned.startsWith("234")) {
-        cleaned = "+" + cleaned
-    } else {
-        // If it starts with other digits, it's not a Nigerian number we can easily correct.
-        // We will default to trying to prepend +234 if it doesn't start with 234.
-        cleaned = "+234" + cleaned
-    }
-  }
-  
-  // 2. Handle local Nigerian format (starts with 0)
-  if (cleaned.startsWith("0")) {
-    cleaned = "+234" + cleaned.substring(1)
-  } 
-  // 3. Handle 234 prefix without '+'
-  else if (cleaned.startsWith("234") && !cleaned.startsWith("+")) {
-    cleaned = "+" + cleaned
-  }
-  // 4. Handle international format without '+' but with country code (if not already handled above)
-  else if (!cleaned.startsWith("+")) {
-    cleaned = "+234" + cleaned
-  }
-
-  // 5. Final check for "+2340..." pattern which was an issue before
-  if (cleaned.startsWith("+2340")) {
-    cleaned = "+234" + cleaned.substring(4)
-  }
-
-  // Twilio expects E.164 format. For Nigeria, this is +234XXYYYYYYY (13 digits total after + is 14 chars).
-  // Standard Nigerian mobile numbers have 10 digits after the 234 country code.
-  const isValidNigerianNumber = cleaned.length === 14 && cleaned.startsWith("+234") && cleaned.substring(4).length === 10;
-  
-  if (isValidNigerianNumber) {
-      return cleaned;
-  }
-
-  // If it fails validation, throw an error to be caught by the outer try/catch
-  throw new Error(`Invalid 'To' Phone Number: ${phone} formatted to ${cleaned}`);
 }
