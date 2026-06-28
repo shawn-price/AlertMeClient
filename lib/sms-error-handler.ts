@@ -10,6 +10,8 @@ export enum SMSErrorType {
   INVALID_RECIPIENT = "INVALID_RECIPIENT",
   DELIVERY_FAILED = "DELIVERY_FAILED",
   TIMEOUT = "TIMEOUT",
+  MISSING_BENEFICIARY_PHONE = "MISSING_BENEFICIARY_PHONE",
+  UNSUPPORTED_PLATFORM = "UNSUPPORTED_PLATFORM",
   UNKNOWN = "UNKNOWN",
 }
 
@@ -43,6 +45,8 @@ const ERROR_MESSAGES: Record<SMSErrorType, string> = {
   [SMSErrorType.INVALID_RECIPIENT]: "Recipient information could not be verified. Please check and try again.",
   [SMSErrorType.DELIVERY_FAILED]: "SMS delivery failed. The message could not be sent to the recipient.",
   [SMSErrorType.TIMEOUT]: "Request timed out. Please try again.",
+  [SMSErrorType.MISSING_BENEFICIARY_PHONE]: "Beneficiary phone number not available. SMS alert will not be sent to beneficiary.",
+  [SMSErrorType.UNSUPPORTED_PLATFORM]: "This platform does not support direct SMS alerts to beneficiary.",
   [SMSErrorType.UNKNOWN]: "An unexpected error occurred while sending SMS. Please try again.",
 }
 

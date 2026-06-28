@@ -1,6 +1,7 @@
 "use strict"
 
 import { generateFormattedDebitAlert, generateFormattedCreditAlert } from "@/lib/alert-templates"
+import { resolveBeneficiaryPhone, validateBeneficiaryPhone } from "@/lib/platform-phone-config"
 
 export interface TransactionAlertPayload {
   type: "debit" | "credit"
@@ -9,13 +10,18 @@ export interface TransactionAlertPayload {
   senderPhone?: string
   recipientName: string
   recipientBank: string
-  recipientPhone: string
+  recipientPhone?: string
   recipientAccountNumber?: string
   amount: number
   balance: number
   reference: string
   narration?: string
   timestamp?: string
+  /**
+   * Platform name for phone resolution strategy
+   * If not provided, defaults to EXPLICIT_PHONE strategy
+   */
+  platformName?: string
 }
 
 export interface AlertSendResult {
@@ -27,6 +33,8 @@ export interface AlertSendResult {
   creditAlertSent?: boolean
   debitMessageId?: string
   creditMessageId?: string
+  creditAlertSkipped?: boolean
+  creditSkipReason?: string
 }
 
 /**
@@ -37,9 +45,14 @@ export class ProductionAlertService {
   private static readonly SMS_API_ENDPOINT = "/api/sms/send"
 
   /**
-   * Send transaction alert via SMS
-   * For debit: Sends alert to sender's phone
-   * For credit: Sends alert to receiver's phone
+   * Send transaction alert via SMS to both sender and beneficiary
+   * Handles platform-aware phone resolution with graceful fallback
+   *
+   * Flow:
+   * 1. Send DEBIT alert to sender (required - fail if no phone)
+   * 2. Resolve beneficiary phone using platform strategy
+   * 3. Send CREDIT alert to beneficiary (if phone exists - skip gracefully if null)
+   * 4. Return detailed result indicating which alerts were sent
    */
   static async sendTransactionAlert(payload: TransactionAlertPayload): Promise<AlertSendResult> {
     const result: AlertSendResult = {
@@ -47,15 +60,35 @@ export class ProductionAlertService {
       smsStatus: "pending",
       debitAlertSent: false,
       creditAlertSent: false,
+      creditAlertSkipped: false,
     }
 
     try {
+      // Resolve beneficiary phone using platform strategy
+      const beneficiaryData = {
+        phone: payload.recipientPhone,
+        accountNumber: payload.recipientAccountNumber,
+      }
+      
+      const resolvedBeneficiaryPhone = resolveBeneficiaryPhone(beneficiaryData, payload.platformName)
+      
+      // Validate resolved phone
+      const isValidBeneficiaryPhone = resolvedBeneficiaryPhone ? validateBeneficiaryPhone(resolvedBeneficiaryPhone) : false
+
+      console.log("[ProductionAlert] Beneficiary phone resolution:", {
+        platform: payload.platformName,
+        inputPhone: payload.recipientPhone,
+        inputAccount: payload.recipientAccountNumber,
+        resolvedPhone: resolvedBeneficiaryPhone,
+        isValid: isValidBeneficiaryPhone,
+      })
+
       // Generate formatted alerts
       const debitAlert = generateFormattedDebitAlert(
         payload.amount,
         payload.senderBank,
         payload.recipientName,
-        payload.recipientPhone,
+        resolvedBeneficiaryPhone || payload.recipientPhone,
         payload.recipientAccountNumber,
         payload.balance,
         payload.reference,
@@ -71,14 +104,14 @@ export class ProductionAlertService {
         payload.recipientBank
       )
 
-      // Send debit alert to sender
+      // Send debit alert to sender (REQUIRED - must succeed or transaction shows as failed)
       if (payload.senderPhone) {
         try {
           const debitResponse = await this.sendSMS(payload.senderPhone, debitAlert, "debit")
           if (debitResponse.success) {
             result.debitAlertSent = true
             result.debitMessageId = debitResponse.messageId
-            console.log(`[ProductionAlert] Debit alert sent to ${payload.senderPhone}:`, debitResponse.messageId)
+            console.log(`[ProductionAlert] Debit alert sent to sender ${payload.senderPhone}:`, debitResponse.messageId)
 
             if (actionLogger) {
               actionLogger.log("Debit Alert Sent", "success", "success", {
@@ -88,7 +121,7 @@ export class ProductionAlertService {
               })
             }
           } else {
-            console.error(`[ProductionAlert] Failed to send debit alert:`, debitResponse.error)
+            console.error(`[ProductionAlert] Failed to send debit alert to sender:`, debitResponse.error)
             if (actionLogger) {
               actionLogger.logError("Debit Alert Failed", new Error(debitResponse.error || "Unknown error"), {
                 recipient: payload.senderPhone,
@@ -96,42 +129,72 @@ export class ProductionAlertService {
             }
           }
         } catch (error) {
-          console.error(`[ProductionAlert] Error sending debit alert:`, error)
+          console.error(`[ProductionAlert] Error sending debit alert to sender:`, error)
+          if (actionLogger) {
+            actionLogger.logError("Debit Alert Exception", error as Error, {
+              recipient: payload.senderPhone,
+            })
+          }
         }
+      } else {
+        console.warn("[ProductionAlert] No sender phone available for debit alert")
       }
 
-      // Send credit alert to receiver
-      if (payload.recipientPhone) {
+      // Send credit alert to beneficiary (OPTIONAL - skip gracefully if phone unavailable)
+      if (resolvedBeneficiaryPhone && isValidBeneficiaryPhone) {
         try {
-          const creditResponse = await this.sendSMS(payload.recipientPhone, creditAlert, "credit")
+          const creditResponse = await this.sendSMS(resolvedBeneficiaryPhone, creditAlert, "credit")
           if (creditResponse.success) {
             result.creditAlertSent = true
             result.creditMessageId = creditResponse.messageId
-            console.log(`[ProductionAlert] Credit alert sent to ${payload.recipientPhone}:`, creditResponse.messageId)
+            console.log(`[ProductionAlert] Credit alert sent to beneficiary ${resolvedBeneficiaryPhone}:`, creditResponse.messageId)
 
             if (actionLogger) {
               actionLogger.log("Credit Alert Sent", "success", "success", {
-                recipient: payload.recipientPhone,
+                recipient: resolvedBeneficiaryPhone,
                 messageId: creditResponse.messageId,
                 amount: payload.amount,
               })
             }
           } else {
-            console.error(`[ProductionAlert] Failed to send credit alert:`, creditResponse.error)
+            console.warn(`[ProductionAlert] Failed to send credit alert to beneficiary:`, creditResponse.error)
             if (actionLogger) {
-              actionLogger.logError("Credit Alert Failed", new Error(creditResponse.error || "Unknown error"), {
-                recipient: payload.recipientPhone,
+              actionLogger.log("Credit Alert Failed", "warning", "warning", {
+                recipient: resolvedBeneficiaryPhone,
+                error: creditResponse.error,
+                amount: payload.amount,
               })
             }
           }
         } catch (error) {
-          console.error(`[ProductionAlert] Error sending credit alert:`, error)
+          console.error(`[ProductionAlert] Error sending credit alert to beneficiary:`, error)
+          if (actionLogger) {
+            actionLogger.logError("Credit Alert Exception", error as Error, {
+              recipient: resolvedBeneficiaryPhone,
+            })
+          }
+        }
+      } else {
+        // Beneficiary phone not available - skip gracefully
+        result.creditAlertSkipped = true
+        result.creditSkipReason = resolvedBeneficiaryPhone 
+          ? "Invalid phone format for platform"
+          : `No phone available (${payload.platformName || "unknown"} platform)`
+        
+        console.log(`[ProductionAlert] Skipping credit alert to beneficiary: ${result.creditSkipReason}`)
+        
+        if (actionLogger) {
+          actionLogger.log("Credit Alert Skipped", "info", "info", {
+            reason: result.creditSkipReason,
+            platform: payload.platformName,
+          })
         }
       }
 
       // Determine overall result
-      result.success = result.debitAlertSent || result.creditAlertSent
-      result.smsStatus = result.success ? "sent" : "failed"
+      // Success if debit was sent (debit is required, credit is optional)
+      result.success = result.debitAlertSent
+      result.smsStatus = result.debitAlertSent ? "sent" : "failed"
 
       return result
     } catch (error) {

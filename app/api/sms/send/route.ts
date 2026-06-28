@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { VartechGateway } from "@/lib/sms-gateways/vartech-gateway"
 import { rateLimit, requestKeyFromHeaders } from "@/lib/rate-limiter"
+import { validateBeneficiaryPhone } from "@/lib/platform-phone-config"
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,6 +24,23 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Missing required fields: to, message",
           details: "Both 'to' and 'message' fields are required to send an SMS.",
+        },
+        { status: 400 }
+      )
+    }
+
+    // Validate phone number format
+    // Accept various formats: +234XXX, 0XXX, or just 234XXX
+    const phoneRegex = /^(\+234|234|0)?[0-9]{10,}$/
+    const cleanedPhone = String(to).replace(/\s+/g, "")
+    
+    if (!phoneRegex.test(cleanedPhone)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid phone number format",
+          details: "Phone number must be in format: +234XXXXXXXXXX, 0XXXXXXXXXX, or 234XXXXXXXXXX (Nigerian numbers only)",
+          received: to,
         },
         { status: 400 }
       )
