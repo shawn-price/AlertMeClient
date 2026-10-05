@@ -28,9 +28,9 @@ export function AlertToast({ toast, onDismiss }: AlertToastProps) {
   const getIcon = () => {
     switch (toast.type) {
       case "success":
-        return <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+        return <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0" />
       case "failed":
-        return <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+        return <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
       case "attempting":
       case "pending":
         return <Loader2 className="h-5 w-5 text-blue-500 flex-shrink-0 animate-spin" />
@@ -51,9 +51,9 @@ export function AlertToast({ toast, onDismiss }: AlertToastProps) {
       case "pending":
         return "bg-blue-50 border-blue-200"
       case "info":
-        return "bg-gray-50 border-gray-200"
+        return "bg-muted/50 border-border"
       default:
-        return "bg-white border-gray-200"
+        return "bg-card border-border"
     }
   }
 
@@ -66,15 +66,15 @@ export function AlertToast({ toast, onDismiss }: AlertToastProps) {
         {getIcon()}
 
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-gray-900">{toast.title}</h3>
+          <h3 className="font-semibold text-foreground">{toast.title}</h3>
 
-          {toast.description && <p className="text-sm text-gray-600 mt-1">{toast.description}</p>}
+          {toast.description && <p className="text-sm text-muted-foreground mt-1">{toast.description}</p>}
 
           {/* Progress indicator for attempts */}
           {toast.attempts && toast.attempts.length > 0 && (
             <div className="mt-2 space-y-2">
               {/* Attempt message */}
-              <p className="text-xs text-gray-500">{createAttemptMessage(toast.attempts)}</p>
+              <p className="text-xs text-muted-foreground">{createAttemptMessage(toast.attempts)}</p>
 
               {/* Progress bar */}
               {toast.currentAttempt && (
@@ -96,8 +96,8 @@ export function AlertToast({ toast, onDismiss }: AlertToastProps) {
                     className="flex-1 h-1.5 rounded-full bg-gray-200 overflow-hidden"
                     title={`${formatGatewayName(attempt.gateway)}: ${attempt.status}`}
                   >
-                    {attempt.status === "success" && <div className="h-full w-full bg-green-500" />}
-                    {attempt.status === "failed" && <div className="h-full w-full bg-red-500" />}
+                    {attempt.status === "success" && <div className="h-full w-full bg-success" />}
+                    {attempt.status === "failed" && <div className="h-full w-full bg-destructive" />}
                     {attempt.status === "pending" && <div className="h-full w-full bg-blue-400 animate-pulse" />}
                   </div>
                 ))}
@@ -106,10 +106,10 @@ export function AlertToast({ toast, onDismiss }: AlertToastProps) {
               {/* Attempt details */}
               <div className="text-xs space-y-0.5 mt-1">
                 {toast.attempts.map((attempt, index) => (
-                  <div key={index} className="flex items-center justify-between text-gray-600">
+                  <div key={index} className="flex items-center justify-between text-muted-foreground">
                     <span>{formatGatewayName(attempt.gateway)}</span>
-                    {attempt.status === "success" && <span className="text-green-600 font-medium">✓ Sent</span>}
-                    {attempt.status === "failed" && <span className="text-red-600 font-medium">✗ Failed</span>}
+                    {attempt.status === "success" && <span className="text-success font-medium">✓ Sent</span>}
+                    {attempt.status === "failed" && <span className="text-destructive font-medium">✗ Failed</span>}
                     {attempt.status === "pending" && <span className="text-blue-600 font-medium">→ Retrying</span>}
                   </div>
                 ))}
@@ -132,7 +132,7 @@ export function AlertToast({ toast, onDismiss }: AlertToastProps) {
         {(toast.dismissible !== false || toast.type === "failed") && (
           <button
             onClick={onDismiss}
-            className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+            className="flex-shrink-0 text-gray-400 hover:text-muted-foreground transition-colors"
             aria-label="Dismiss"
           >
             <X className="h-4 w-4" />
