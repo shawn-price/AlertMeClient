@@ -133,9 +133,9 @@ export function NewBeneficiary({ onBack, onNavigate }: NewBeneficiaryProps) {
   })
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b sticky top-0 z-10">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b sticky top-0 z-10">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -146,14 +146,14 @@ export function NewBeneficiary({ onBack, onNavigate }: NewBeneficiaryProps) {
       </div>
 
       {/* Tab Navigation */}
-      <div className="bg-white px-4 py-3 border-b">
+      <div className="bg-card px-4 py-3 border-b">
         <div className="flex gap-2">
           {["New Beneficiary", "Saved Beneficiary"].map((tab) => (
             <Button
               key={tab}
               variant={activeTab === tab ? "default" : "ghost"}
               size="sm"
-              className={"rounded-full px-6 " + (activeTab === tab ? "bg-[#A4D233] hover:bg-[#8BC220] text-black" : "text-gray-600")}
+              className={"rounded-full px-6 " + (activeTab === tab ? "bg-accent hover:bg-accent/90 text-accent-foreground" : "text-muted-foreground")}
               onClick={() => setActiveTab(tab)}
             >
               {tab}
@@ -168,30 +168,30 @@ export function NewBeneficiary({ onBack, onNavigate }: NewBeneficiaryProps) {
             <div className="px-4 py-6 space-y-6">
               {/* Form-level Error Display */}
               {formError && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex gap-2">
-                  <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <div className="text-sm text-red-700">{formError}</div>
+                <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 flex gap-2">
+                  <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-destructive">{formError}</div>
                 </div>
               )}
 
               {/* From Account */}
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">From account</label>
-              <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-between">
+                <label className="text-sm font-medium text-foreground mb-2 block">From account</label>
+              <div className="bg-muted rounded-lg p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
                   <div>
                     <div className="text-sm font-medium">Savings account</div>
-                    <div className="text-xs text-gray-600">{dataStore.getUserData().name}</div>
+                    <div className="text-xs text-muted-foreground">{dataStore.getUserData().name}</div>
                   </div>
                 </div>
-                <ChevronDown className="h-5 w-5 text-gray-400" />
+                <ChevronDown className="h-5 w-5 text-muted-foreground" />
               </div>
               </div>
 
               {/* Bank with search */}
               <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">Bank</label>
+              <label className="text-sm font-medium text-foreground mb-2 block">Bank</label>
               <SearchableSelect
                 options={getAllPaymentPlatforms().map((bank) => ({
                   value: bank.name,
@@ -204,14 +204,14 @@ export function NewBeneficiary({ onBack, onNavigate }: NewBeneficiaryProps) {
                 }}
                 placeholder="Type or select bank"
                 searchPlaceholder="Search banks..."
-                className={"bg-white " + ((formState.errors as any).bank ? "border-red-500" : "")}
+                className={"bg-card " + ((formState.errors as any).bank ? "border-destructive" : "")}
               />
               <FormError name="bank" />
             </div>
 
             {/* Account Number with Beneficiary Lookup */}
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">Account Number</label>
+              <label className="text-sm font-medium text-foreground mb-2 block">Account Number</label>
               <BeneficiaryLookup
                 accountNumber={accountNumber}
                 onBeneficiaryFound={handleBeneficiaryFound}
@@ -222,18 +222,18 @@ export function NewBeneficiary({ onBack, onNavigate }: NewBeneficiaryProps) {
 
             {/* Beneficiary Name (can be edited if lookup fails) */}
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">Beneficiary Name</label>
+              <label className="text-sm font-medium text-foreground mb-2 block">Beneficiary Name</label>
               <Input
                 placeholder="Enter or confirm beneficiary name"
                 {...methods.register("beneficiaryName")}
-                className="bg-white"
+                className="bg-card"
               />
               <FormError name="beneficiaryName" />
             </div>
 
             {/* Amount */}
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">Amount</label>
+              <label className="text-sm font-medium text-foreground mb-2 block">Amount</label>
               {(() => {
                 const { ref: registerRef, ...amountRegister } = methods.register("amount")
                 return (
@@ -249,7 +249,7 @@ export function NewBeneficiary({ onBack, onNavigate }: NewBeneficiaryProps) {
                       // Also call react-hook-form's ref
                       if (typeof registerRef === 'function') registerRef(el)
                     }}
-                    className="bg-white"
+                    className="bg-card"
                     onBlur={(e) => {
                       const v = e.currentTarget.value
                       if (!v) return
@@ -264,34 +264,34 @@ export function NewBeneficiary({ onBack, onNavigate }: NewBeneficiaryProps) {
 
             {/* Remark */}
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">Remark (optional)</label>
+              <label className="text-sm font-medium text-foreground mb-2 block">Remark (optional)</label>
               <Input
                 placeholder="Enter remark"
                 {...methods.register("remark")}
-                className="bg-white"
+                className="bg-card"
               />
             </div>
 
             {/* Save as Beneficiary */}
-            <div className="flex items-center space-x-3 bg-blue-50 p-3 rounded-lg border border-blue-200">
+            <div className="flex items-center space-x-3 bg-primary/5 p-3 rounded-lg border border-primary/20">
               <Checkbox
                 id="save-beneficiary"
                 checked={watch("saveAsBeneficiary")}
                 onCheckedChange={(checked) => setValue("saveAsBeneficiary", !!checked)}
                 className="h-5 w-5"
               />
-              <label htmlFor="save-beneficiary" className="text-sm font-medium text-gray-700 cursor-pointer flex-1">
+              <label htmlFor="save-beneficiary" className="text-sm font-medium text-foreground cursor-pointer flex-1">
                 Save as beneficiary
               </label>
-              <span className="text-xs text-blue-600 font-medium">Recommended</span>
+              <span className="text-xs text-primary font-medium">Recommended</span>
             </div>
 
             {/* Continue Button */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-card border-t">
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-[#004A9F] hover:bg-[#003875] text-white py-3 rounded-full disabled:opacity-50"
+                className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-full disabled:opacity-50"
               >
                 {isSubmitting ? "Processing..." : "Continue"}
               </Button>
@@ -303,11 +303,11 @@ export function NewBeneficiary({ onBack, onNavigate }: NewBeneficiaryProps) {
         <div className="px-4 py-6 pb-24">
           {savedBeneficiaries.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-gray-400 mb-2">
+              <div className="text-muted-foreground mb-2">
                 <AlertCircle className="h-12 w-12 mx-auto opacity-50" />
               </div>
-              <p className="text-gray-600 text-sm">No saved beneficiaries yet</p>
-              <p className="text-gray-500 text-xs mt-1">Add a beneficiary to see them here</p>
+              <p className="text-muted-foreground text-sm">No saved beneficiaries yet</p>
+              <p className="text-muted-foreground text-xs mt-1">Add a beneficiary to see them here</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -315,12 +315,12 @@ export function NewBeneficiary({ onBack, onNavigate }: NewBeneficiaryProps) {
                 <Button
                   key={beneficiary.id}
                   variant="ghost"
-                  className="w-full h-auto p-4 justify-start bg-white hover:bg-gray-50 border border-gray-200 rounded-lg"
+                  className="w-full h-auto p-4 justify-start bg-card hover:bg-muted/50 border border-border rounded-lg"
                   onClick={() => handleSelectBeneficiary(beneficiary)}
                 >
                   <div className="w-full text-left">
-                    <div className="font-medium text-sm text-gray-900">{beneficiary.name}</div>
-                    <div className="text-xs text-gray-600 mt-1">{beneficiary.bank}</div>
+                    <div className="font-medium text-sm text-foreground">{beneficiary.name}</div>
+                    <div className="text-xs text-muted-foreground mt-1">{beneficiary.bank}</div>
                   </div>
                 </Button>
               ))}
