@@ -125,43 +125,43 @@ export function EcobankDomesticTransferForm({ onSubmit, isLoading = false }: Eco
     <Form methods={methods} onSubmit={onContinue}>
       <div className="px-4 py-6 space-y-6">
         {formError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex gap-2">
-            <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-red-700">{formError}</div>
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 flex gap-2">
+            <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-destructive">{formError}</div>
           </div>
         )}
 
         {/* Source Account */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">From Account</label>
-          <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-between">
+          <label className="text-sm font-medium text-foreground mb-2 block">From Account</label>
+          <div className="bg-muted rounded-lg p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-[#004A9F] rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                 <span className="text-white text-xs font-bold">E</span>
               </div>
               <div>
                 <div className="text-sm font-medium">Ecobank Account</div>
-                <div className="text-xs text-gray-600">{userData.accountNumber}</div>
+                <div className="text-xs text-muted-foreground">{userData.accountNumber}</div>
               </div>
             </div>
-            <ChevronDown className="h-5 w-5 text-gray-400" />
+            <ChevronDown className="h-5 w-5 text-muted-foreground" />
           </div>
         </div>
 
         {/* Bank - Disabled with Ecobank value */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Bank</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Bank</label>
           <Input
             value="Ecobank"
             disabled
-            className="bg-gray-100 text-gray-700 cursor-not-allowed"
+            className="bg-muted text-foreground cursor-not-allowed"
           />
-          <div className="text-xs text-gray-500 mt-1">Ecobank Nigeria</div>
+          <div className="text-xs text-muted-foreground mt-1">Ecobank Nigeria</div>
         </div>
 
         {/* Account Number with Real-time Lookup */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Account Number (10 digits) *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Account Number (10 digits) *</label>
           <BeneficiaryLookup
             accountNumber={accountNumber}
             onBeneficiaryFound={handleBeneficiaryFound}
@@ -172,18 +172,18 @@ export function EcobankDomesticTransferForm({ onSubmit, isLoading = false }: Eco
 
         {/* Beneficiary Name */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Beneficiary Name *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Beneficiary Name *</label>
           <Input
             placeholder="Enter or confirm beneficiary name"
             {...methods.register("beneficiaryName")}
-            className="bg-white"
+            className="bg-card"
           />
           <FormError name="beneficiaryName" />
         </div>
 
         {/* Amount */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Amount (Max: ₦10,000,000) *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Amount (Max: ₦10,000,000) *</label>
           {(() => {
             const { ref: registerRef, ...amountRegister } = methods.register("amount")
             return (
@@ -197,7 +197,7 @@ export function EcobankDomesticTransferForm({ onSubmit, isLoading = false }: Eco
                   amountInputRef.current = el
                   if (typeof registerRef === 'function') registerRef(el)
                 }}
-                className="bg-white"
+                className="bg-card"
                 onBlur={(e) => {
                   const v = e.currentTarget.value
                   if (!v) return
@@ -208,40 +208,40 @@ export function EcobankDomesticTransferForm({ onSubmit, isLoading = false }: Eco
             )
           })()}
           <FormError name="amount" />
-          <div className="text-xs text-[#00B2A9] mt-1">₦0 transfer fee for Ecobank to Ecobank</div>
+          <div className="text-xs text-secondary mt-1">₦0 transfer fee for Ecobank to Ecobank</div>
         </div>
 
         {/* Remark (optional) */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Remark (Optional)</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Remark (Optional)</label>
           <Input
             placeholder="Enter transaction remark"
             {...methods.register("remark")}
-            className="bg-white"
+            className="bg-card"
             maxLength={100}
           />
-          <div className="text-xs text-gray-500 mt-1">Max 100 characters</div>
+          <div className="text-xs text-muted-foreground mt-1">Max 100 characters</div>
         </div>
 
         {/* Save Beneficiary */}
-        <div className="flex items-center space-x-3 bg-[#004A9F]/10 p-3 rounded-lg border border-[#004A9F]/20">
+        <div className="flex items-center space-x-3 bg-primary/10 p-3 rounded-lg border border-primary/20">
           <Checkbox
             id="save-beneficiary"
             checked={watch("saveAsBeneficiary")}
             onCheckedChange={(checked) => setValue("saveAsBeneficiary", !!checked)}
             className="h-5 w-5"
           />
-          <label htmlFor="save-beneficiary" className="text-sm font-medium text-gray-700 cursor-pointer flex-1">
+          <label htmlFor="save-beneficiary" className="text-sm font-medium text-foreground cursor-pointer flex-1">
             Save as beneficiary for future transfers
           </label>
         </div>
 
         {/* Submit Button */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-card border-t">
           <Button
             type="submit"
             disabled={isSubmitting || isLoading}
-            className="w-full bg-[#004A9F] hover:bg-[#003875] text-white py-3 rounded-full disabled:opacity-50"
+            className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-full disabled:opacity-50"
           >
             {isSubmitting || isLoading ? "Processing..." : "Continue"}
           </Button>
