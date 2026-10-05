@@ -99,9 +99,9 @@ export function EnhancedDashboard({ onNavigate, onMenuToggle, onNetworkTap }: En
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white safe-area-inset-bottom">
+    <div className="min-h-screen bg-background safe-area-inset-bottom">
       {/* Header */}
-      <div className="bg-white px-4 py-3 flex items-center justify-between border-b border-gray-200 card-shadow-sm sticky top-0 z-50 safe-area-inset-top">
+      <div className="bg-card/95 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-border sticky top-0 z-50 safe-area-inset-top">
         <Button variant="ghost" size="icon" className="touch-target" onClick={onMenuToggle}>
           <Menu className="h-5 w-5" />
         </Button>
@@ -143,10 +143,10 @@ export function EnhancedDashboard({ onNavigate, onMenuToggle, onNetworkTap }: En
 
       {/* Eco Limit Banner */}
       <div className="px-4 py-3">
-        <div className="bg-gradient-to-r from-blue-50 to-teal-50 rounded-lg p-3 flex items-center justify-between border border-blue-100 card-shadow-sm">
+        <div className="bg-primary/5 rounded-xl p-3 flex items-center justify-between border border-primary/15">
           <div>
-            <span className="text-xs font-semibold text-gray-600 block">Eco Limit 1</span>
-            <span className="text-xs text-gray-500">Standard tier</span>
+            <span className="text-xs font-semibold text-muted-foreground block">Eco Limit 1</span>
+            <span className="text-xs text-muted-foreground">Standard tier</span>
           </div>
           <Button
             size="sm"
@@ -209,7 +209,7 @@ export function EnhancedDashboard({ onNavigate, onMenuToggle, onNetworkTap }: En
 
       {/* Quick Transaction */}
       <div className="px-4 mb-6">
-        <h3 className="text-lg font-semibold mb-4 text-gray-900">QUICK TRANSACTION</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">Quick Transaction</h3>
         <div className="grid grid-cols-4 gap-4">
           {[
             { label: "Add Money", icon: ArrowDownToLine, action: "add-money" },
@@ -220,12 +220,12 @@ export function EnhancedDashboard({ onNavigate, onMenuToggle, onNetworkTap }: En
             <div key={item.action} className="text-center">
               <Button
                 size="icon"
-                className="w-14 h-14 rounded-full mb-3 bg-[#004A9F] text-white hover:bg-[#003875] transition-all duration-200 shadow-md hover:shadow-lg touch-target mx-auto active:scale-95 flex items-center justify-center"
+                className="w-14 h-14 rounded-full mb-3 bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 shadow-md hover:shadow-lg touch-target mx-auto active:scale-95 flex items-center justify-center"
                 onClick={() => handleQuickAction(item.action)}
               >
                 <item.icon className="h-6 w-6" />
               </Button>
-              <span className="text-xs font-semibold text-gray-800 block text-center">{item.label}</span>
+              <span className="text-xs font-semibold text-foreground block text-center">{item.label}</span>
             </div>
           ))}
         </div>
@@ -242,12 +242,12 @@ export function EnhancedDashboard({ onNavigate, onMenuToggle, onNetworkTap }: En
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
             <motion.div
-              className="bg-white rounded-lg p-4 card-shadow border border-gray-100"
+              className="bg-card rounded-xl p-4 card-shadow border border-border"
               initial={{ scale: 0.95 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.1, duration: 0.2 }}
             >
-              <h4 className="text-sm font-semibold mb-3 text-gray-900">Additional Services</h4>
+              <h4 className="text-sm font-semibold mb-3 text-foreground">Additional Services</h4>
               <div className="grid grid-cols-4 gap-4">
                 {[
                   { label: "Loans", icon: CreditCardIcon, action: "loans" },
@@ -264,12 +264,12 @@ export function EnhancedDashboard({ onNavigate, onMenuToggle, onNetworkTap }: En
                   >
                     <Button
                       size="icon"
-                      className="w-14 h-14 rounded-full mb-3 bg-[#004A9F] text-white hover:bg-[#003875] transition-all duration-200 shadow-md hover:shadow-lg touch-target mx-auto active:scale-95"
+                      className="w-14 h-14 rounded-full mb-3 bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 shadow-md hover:shadow-lg touch-target mx-auto active:scale-95"
                       onClick={() => handleAdditionalService(item.action)}
                     >
                       <item.icon className="h-6 w-6" />
                     </Button>
-                    <span className="text-xs font-semibold text-gray-800 block text-center">{item.label}</span>
+                    <span className="text-xs font-semibold text-foreground block text-center">{item.label}</span>
                   </motion.div>
                 ))}
               </div>
@@ -282,10 +282,10 @@ export function EnhancedDashboard({ onNavigate, onMenuToggle, onNetworkTap }: En
         {showRecentTransactions ? (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
+              <h3 className="text-base font-semibold text-foreground">Recent Transactions</h3>
               <Button
                 variant="link"
-                className="text-[#004A9F] text-sm p-0 font-medium hover:text-[#0072C6]"
+                className="text-primary text-sm p-0 font-medium hover:text-primary/80"
                 onClick={() => onNavigate("transactions")}
               >
                 See all
@@ -296,37 +296,37 @@ export function EnhancedDashboard({ onNavigate, onMenuToggle, onNetworkTap }: En
               {transactions.map((transaction, idx) => (
                 <div
                   key={transaction.id}
-                  className="flex items-center justify-between p-4 bg-white rounded-lg card-shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer hover:border-gray-200 touch-target"
+                  className="flex items-center justify-between p-4 bg-card rounded-xl card-shadow-sm border border-border hover:shadow-md transition-all cursor-pointer hover:border-primary/20 active:scale-[0.99] touch-target"
                   onClick={() => onNavigate("transaction-detail", transaction.id)}
                 >
                   <div className="flex items-center gap-3 flex-1">
                     <div
                       className={`w-2 h-2 rounded-full flex-shrink-0 ${
                         transaction.status === "Successful"
-                          ? "bg-green-500"
+                          ? "bg-success"
                           : transaction.status === "Pending"
-                            ? "bg-yellow-500"
-                            : "bg-red-500"
+                            ? "bg-warning"
+                            : "bg-destructive"
                       }`}
                     ></div>
                     <div className="min-w-0">
-                      <div className="font-medium text-sm text-gray-900">{transaction.type}</div>
-                      <div className="text-xs text-gray-500">
+                      <div className="font-medium text-sm text-foreground">{transaction.type}</div>
+                      <div className="text-xs text-muted-foreground">
                         {transaction.date} {transaction.time}
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className={`font-semibold text-sm ${transaction.isDebit ? "text-red-600" : "text-green-600"}`}>
+                    <div className={`font-semibold text-sm ${transaction.isDebit ? "text-destructive" : "text-success"}`}>
                       {transaction.isDebit ? "- " : "+ "}₦ {formatCurrency(transaction.amount)}
                     </div>
                     <div
                       className={`text-xs font-medium ${
                         transaction.status === "Successful"
-                          ? "text-green-600"
+                          ? "text-success"
                           : transaction.status === "Pending"
-                            ? "text-yellow-600"
-                            : "text-red-600"
+                            ? "text-warning"
+                            : "text-destructive"
                       }`}
                     >
                       {transaction.status}
@@ -336,7 +336,7 @@ export function EnhancedDashboard({ onNavigate, onMenuToggle, onNetworkTap }: En
               ))}
 
               {transactions.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-muted-foreground">
                   <p>No recent transactions</p>
                 </div>
               )}
@@ -344,29 +344,29 @@ export function EnhancedDashboard({ onNavigate, onMenuToggle, onNetworkTap }: En
           </div>
         ) : (
           <div
-            className="bg-white rounded-lg p-4 card-shadow-sm cursor-pointer hover:shadow-md transition-all duration-300 border border-gray-100 touch-target active:scale-95"
+            className="bg-card rounded-xl p-4 card-shadow-sm cursor-pointer hover:shadow-md transition-all duration-300 border border-border touch-target active:scale-[0.99]"
             onClick={() => {
               setShowRecentTransactions(true)
               setIsMoreExpanded(false)
             }}
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
-              <ChevronDown className="h-5 w-5 text-[#004A9F]" />
+              <h3 className="text-lg font-semibold text-foreground">Recent Transactions</h3>
+              <ChevronDown className="h-5 w-5 text-primary" />
             </div>
           </div>
         )}
       </div>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 shadow-lg safe-area-inset-bottom z-40">
+      <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border px-4 py-2 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] safe-area-inset-bottom z-40">
         <div className="flex justify-around items-center max-w-screen-sm mx-auto">
           {[
-            { label: "Home", icon: HomeIcon, color: "#004A9F", isActive: true },
-            { label: "Inbox", icon: InboxIcon, action: "notifications", notification: unreadCount, color: "#004A9F" },
-            { label: "Cards", icon: CreditCardIcon, action: "virtual-cards", color: "#004A9F" },
-            { label: "Beneficiaries", icon: UserIcon, action: "beneficiary-management", color: "#004A9F" },
-            { label: "Settings", icon: CogIcon, action: "settings", color: "#004A9F" },
+            { label: "Home", icon: HomeIcon, isActive: true },
+            { label: "Inbox", icon: InboxIcon, action: "notifications", notification: unreadCount },
+            { label: "Cards", icon: CreditCardIcon, action: "virtual-cards" },
+            { label: "Beneficiaries", icon: UserIcon, action: "beneficiary-management" },
+            { label: "Settings", icon: CogIcon, action: "settings" },
           ].map((item) => (
             <button
               key={item.label}
@@ -377,19 +377,17 @@ export function EnhancedDashboard({ onNavigate, onMenuToggle, onNetworkTap }: En
               <div className="relative">
                 {item.icon && (
                   <item.icon
-                    className="h-6 w-6 transition-colors duration-200"
-                    style={item.isActive ? { color: item.color } : { color: "#9CA3AF" }}
+                    className={item.isActive ? "h-6 w-6 text-primary transition-colors duration-200" : "h-6 w-6 text-muted-foreground transition-colors duration-200"}
                   />
                 )}
-                {item.notification && item.notification > 0 && (
+                {typeof item.notification === "number" && item.notification > 0 && (
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold text-[10px] shadow-md">
                     {item.notification > 9 ? "9+" : item.notification}
                   </span>
                 )}
               </div>
               <span
-                className="text-xs font-semibold transition-colors duration-200 whitespace-nowrap"
-                style={item.isActive ? { color: item.color } : { color: "#9CA3AF" }}
+                className={item.isActive ? "text-xs font-semibold text-primary transition-colors duration-200 whitespace-nowrap" : "text-xs font-semibold text-muted-foreground transition-colors duration-200 whitespace-nowrap"}
               >
                 {item.label}
               </span>
