@@ -93,9 +93,9 @@ export function POSScreen({ onBack, onNavigate }: POSScreenProps) {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -119,18 +119,18 @@ export function POSScreen({ onBack, onNavigate }: POSScreenProps) {
                   key={service.id}
                   className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                     selectedService === service.id
-                      ? "border-[#004A9F] bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/40"
                   }`}
                   onClick={() => setSelectedService(service.id)}
                 >
                   <div className="flex items-center gap-3 mb-2">
-                    <IconComponent className="h-5 w-5 text-[#004A9F]" />
+                    <IconComponent className="h-5 w-5 text-primary" />
                     <div className="flex-1">
                       <div className="font-medium">{service.name}</div>
-                      <div className="text-sm text-gray-600">{service.description}</div>
+                      <div className="text-sm text-muted-foreground">{service.description}</div>
                     </div>
-                    <Badge className="bg-gray-100 text-gray-800">{service.fee}</Badge>
+                    <Badge className="bg-muted text-foreground">{service.fee}</Badge>
                   </div>
                 </div>
               )
@@ -172,7 +172,7 @@ export function POSScreen({ onBack, onNavigate }: POSScreenProps) {
                 />
               </div>
 
-              <Button className="w-full bg-[#A4D233] hover:bg-[#8BC220] text-black py-3" disabled={!amount}>
+              <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground py-3" disabled={!amount}>
                 Find Nearby Agents
               </Button>
             </CardContent>
@@ -189,19 +189,19 @@ export function POSScreen({ onBack, onNavigate }: POSScreenProps) {
           </CardHeader>
           <CardContent className="space-y-3">
             {nearbyAgents.map((agent) => (
-              <div key={agent.id} className="p-4 bg-gray-50 rounded-lg">
+              <div key={agent.id} className="p-4 bg-muted/50 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <div className="font-medium">{agent.name}</div>
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-2 h-2 rounded-full ${agent.status === "online" ? "bg-green-500" : "bg-gray-400"}`}
+                      className={`w-2 h-2 rounded-full ${agent.status === "online" ? "bg-success" : "bg-muted-foreground"}`}
                     />
-                    <span className={`text-xs ${agent.status === "online" ? "text-green-600" : "text-gray-500"}`}>
+                    <span className={`text-xs ${agent.status === "online" ? "text-success" : "text-muted-foreground"}`}>
                       {agent.status}
                     </span>
                   </div>
                 </div>
-                <div className="text-sm text-gray-600 mb-2">{agent.address}</div>
+                <div className="text-sm text-muted-foreground mb-2">{agent.address}</div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4 text-sm">
                     <span>{agent.distance}</span>
@@ -209,7 +209,7 @@ export function POSScreen({ onBack, onNavigate }: POSScreenProps) {
                   </div>
                   <div className="flex gap-1">
                     {agent.services.map((service) => (
-                      <Badge key={service} className="bg-[#004A9F] text-white text-xs">
+                      <Badge key={service} className="bg-primary text-white text-xs">
                         {service}
                       </Badge>
                     ))}
@@ -230,19 +230,19 @@ export function POSScreen({ onBack, onNavigate }: POSScreenProps) {
           </CardHeader>
           <CardContent className="space-y-3">
             {recentTransactions.map((transaction) => (
-              <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div key={transaction.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-success rounded-full"></div>
                   <div>
                     <div className="font-medium text-sm">{transaction.type}</div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-muted-foreground">
                       {transaction.agent} • {new Date(transaction.date).toLocaleDateString()}
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="font-medium">₦{formatCurrency(transaction.amount)}</div>
-                  <div className="text-xs text-green-600">{transaction.status}</div>
+                  <div className="text-xs text-success">{transaction.status}</div>
                 </div>
               </div>
             ))}

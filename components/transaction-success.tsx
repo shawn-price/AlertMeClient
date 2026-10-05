@@ -125,9 +125,9 @@ function TransactionSuccessComponent({ onNavigate, transferData }: TransactionSu
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b">
         <Button variant="ghost" size="icon" onClick={() => onNavigate("dashboard")}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -139,7 +139,7 @@ function TransactionSuccessComponent({ onNavigate, transferData }: TransactionSu
 
       {/* Success Content */}
       <div className="px-4 py-12 text-center">
-        <div className="w-20 h-20 bg-[#004A9F] rounded-full flex items-center justify-center mx-auto mb-6 animate-scale-in">
+        <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-6 animate-scale-in">
           <Check className="h-10 w-10 text-white" />
         </div>
 
@@ -149,50 +149,50 @@ function TransactionSuccessComponent({ onNavigate, transferData }: TransactionSu
           ₦ {transferData?.amount ? formatCurrency(Number.parseFloat(transferData.amount)) : "0.00"}
         </div>
 
-        <div className="text-sm text-gray-600 mb-6">
-          To: <span className="font-semibold text-gray-900">{transferData?.beneficiaryName || "Recipient"}</span>
+        <div className="text-sm text-muted-foreground mb-6">
+          To: <span className="font-semibold text-foreground">{transferData?.beneficiaryName || "Recipient"}</span>
         </div>
 
         {/* SMS Status Indicator with Preloader */}
         <div className="mb-6">
           {smsStatus === "pending" ? (
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full">
-              <Loader2 className="h-4 w-4 text-[#004A9F] animate-spin" />
-              <span className="text-sm text-[#004A9F] font-medium">Sending SMS notification...</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full">
+              <Loader2 className="h-4 w-4 text-primary animate-spin" />
+              <span className="text-sm text-primary font-medium">Sending SMS notification...</span>
             </div>
           ) : smsStatus === "sent" ? (
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full">
-              <MessageSquare className="h-4 w-4 text-green-600" />
-              <span className="text-sm text-green-600 font-medium">SMS sent</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-success/10 rounded-full">
+              <MessageSquare className="h-4 w-4 text-success" />
+              <span className="text-sm text-success font-medium">SMS sent</span>
             </div>
           ) : (
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 rounded-full">
-              <MessageSquare className="h-4 w-4 text-yellow-600" />
-              <span className="text-sm text-yellow-600 font-medium">SMS pending</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-warning/10 rounded-full">
+              <MessageSquare className="h-4 w-4 text-warning" />
+              <span className="text-sm text-warning font-medium">SMS pending</span>
             </div>
           )}
         </div>
 
-        <p className="text-sm text-gray-600 mb-12 max-w-sm mx-auto">
+        <p className="text-sm text-muted-foreground mb-12 max-w-sm mx-auto">
           The recipient account is expected to be credited within 5 minutes, subject to notification by the bank
         </p>
 
         {/* Transaction Details */}
-        <div className="bg-white rounded-lg p-4 mb-6 text-left space-y-3 text-sm">
+        <div className="bg-card rounded-lg p-4 mb-6 text-left space-y-3 text-sm">
           <div className="flex justify-between">
-            <span className="text-gray-600">Bank:</span>
+            <span className="text-muted-foreground">Bank:</span>
             <span className="font-semibold">{transferData?.bank}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Account:</span>
+            <span className="text-muted-foreground">Account:</span>
             <span className="font-semibold">{transferData?.accountNumber}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Reference:</span>
+            <span className="text-muted-foreground">Reference:</span>
             <span className="font-semibold">{transferData?.id}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Time:</span>
+            <span className="text-muted-foreground">Time:</span>
             <span className="font-semibold">{new Date().toLocaleTimeString()}</span>
           </div>
         </div>
@@ -200,14 +200,14 @@ function TransactionSuccessComponent({ onNavigate, transferData }: TransactionSu
         {/* Buttons for navigation */}
         <div className="space-y-3">
           <Button
-            className="w-full bg-[#004A9F] hover:bg-[#003875] text-white py-3 rounded-full"
+            className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-full"
             onClick={() => onNavigate("detailed-receipt", transferData?.id)}
           >
             View Detailed Receipt
           </Button>
           <Button
             variant="outline"
-            className="w-full text-[#004A9F] border-[#004A9F] py-3 rounded-full hover:bg-blue-50 bg-transparent"
+            className="w-full text-primary border-primary py-3 rounded-full hover:bg-primary/5 bg-transparent"
             onClick={() => onNavigate("dashboard")}
           >
             Back to Dashboard
