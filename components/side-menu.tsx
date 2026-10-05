@@ -72,7 +72,7 @@ export function SideMenu({ isOpen, onClose, onNavigate }: SideMenuProps) {
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="left" className="w-80 p-0">
         <SheetTitle className="sr-only">Menu</SheetTitle>
-        <div className="bg-white h-full">
+        <div className="bg-card h-full">
           {/* Profile Section */}
           <div className="p-6 border-b">
             <div
@@ -80,7 +80,7 @@ export function SideMenu({ isOpen, onClose, onNavigate }: SideMenuProps) {
             >
               <div className="flex items-center gap-4 mb-4">
                 <div 
-                  className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center overflow-hidden flex-shrink-0 ring-2 ring-white"
+                  className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center overflow-hidden flex-shrink-0 ring-2 ring-card"
                   onClick={() => {
                     onNavigate("beneficiary-management")
                     onClose()
@@ -107,8 +107,8 @@ export function SideMenu({ isOpen, onClose, onNavigate }: SideMenuProps) {
                   role="button"
                   tabIndex={0}
                 >
-                  <h3 className="font-semibold text-lg text-gray-900 truncate">{userData.name.toUpperCase()}</h3>
-                  <p className="text-sm text-gray-600 truncate">{userData.email}</p>
+                  <h3 className="font-semibold text-lg text-foreground truncate">{userData.name.toUpperCase()}</h3>
+                  <p className="text-sm text-muted-foreground truncate">{userData.email}</p>
                 </div>
                 <Button
                   variant="ghost"
@@ -140,9 +140,9 @@ export function SideMenu({ isOpen, onClose, onNavigate }: SideMenuProps) {
                     onClose()
                   }}
                 >
-                  <IconComponent className="h-5 w-5 mr-4 text-[#004A9F]" />
+                  <IconComponent className="h-5 w-5 mr-4 text-primary" />
                   <span className="text-base">{item.label}</span>
-                  {item.hasDropdown && <span className="ml-auto text-gray-400">▼</span>}
+                  {item.hasDropdown && <span className="ml-auto text-muted-foreground">▼</span>}
                 </Button>
               )
             })}

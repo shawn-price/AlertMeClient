@@ -75,14 +75,14 @@ export function AddFundsModal({ isOpen, onClose }: AddFundsModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-sm mx-auto bg-white dark:bg-gray-900">
-        <DialogHeader className="bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 -m-6 mb-4 p-6 rounded-t-2xl border-b border-gray-200/50 dark:border-gray-700/50">
+      <DialogContent className="max-w-sm mx-auto bg-card">
+        <DialogHeader className="bg-gradient-to-r from-muted/50 to-card -m-6 mb-4 p-6 rounded-t-2xl border-b border-border/50">
           <DialogTitle className="text-base font-semibold">Add Funds</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* Current Balance */}
-          <div className="bg-[#004A9F] text-white p-4 rounded-lg text-center">
+          <div className="bg-primary text-white p-4 rounded-lg text-center">
             <div className="text-sm opacity-80">Current Balance</div>
             <div className="text-2xl font-bold">₦ {formatCurrency(currentBalance)}</div>
           </div>
@@ -136,7 +136,7 @@ export function AddFundsModal({ isOpen, onClose }: AddFundsModalProps) {
             </Button>
             <Button
               onClick={handleAddFunds}
-              className="flex-1 bg-[#A4D233] hover:bg-[#8BC220] text-black"
+              className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground"
               disabled={!amount || !account || isProcessing}
             >
               {isProcessing ? "Processing..." : "Add Funds"}
