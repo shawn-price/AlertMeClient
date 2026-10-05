@@ -78,13 +78,13 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
     {
       icon: Plus,
       label: "Add Funds",
-      color: "bg-green-500",
+      color: "bg-success",
       onClick: () => setShowAddFunds(true),
     },
     {
       icon: Share2,
       label: "Share Details",
-      color: "bg-blue-500",
+      color: "bg-primary/50",
       onClick: () => setShowShareModal(true),
     },
     {
@@ -192,9 +192,9 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -207,20 +207,20 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
         <div className="grid grid-cols-3 gap-3">
           <Card className="text-center">
             <CardContent className="p-4">
-              <div className="text-lg font-bold text-[#004A9F]">{userStats.balance}</div>
-              <div className="text-xs text-gray-600">Current Balance</div>
+              <div className="text-lg font-bold text-primary">{userStats.balance}</div>
+              <div className="text-xs text-muted-foreground">Current Balance</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="p-4">
-              <div className="text-lg font-bold text-[#00B2A9]">{userStats.beneficiaries}</div>
-              <div className="text-xs text-gray-600">Beneficiaries</div>
+              <div className="text-lg font-bold text-secondary">{userStats.beneficiaries}</div>
+              <div className="text-xs text-muted-foreground">Beneficiaries</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="p-4">
-              <div className="text-lg font-bold text-[#A4D233]">{userStats.recentTransactions}</div>
-              <div className="text-xs text-gray-600">Recent Transactions</div>
+              <div className="text-lg font-bold text-accent">{userStats.recentTransactions}</div>
+              <div className="text-xs text-muted-foreground">Recent Transactions</div>
             </CardContent>
           </Card>
         </div>
@@ -238,7 +238,7 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
                   <Button
                     key={index}
                     variant="outline"
-                    className="h-20 flex flex-col gap-2 border-gray-200 bg-transparent"
+                    className="h-20 flex flex-col gap-2 border-border bg-transparent"
                     onClick={action.onClick}
                   >
                     <div className={`w-8 h-8 rounded-full ${action.color} flex items-center justify-center`}>
@@ -267,12 +267,12 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
                   className="w-full justify-start h-auto p-4 text-left"
                   onClick={item.onClick}
                 >
-                  <IconComponent className="h-5 w-5 mr-3 text-[#004A9F]" />
+                  <IconComponent className="h-5 w-5 mr-3 text-primary" />
                   <div className="flex-1">
                     <div className="font-medium">{item.label}</div>
-                    <div className="text-sm text-gray-500">{item.description}</div>
+                    <div className="text-sm text-muted-foreground">{item.description}</div>
                   </div>
-                  <ArrowLeft className="h-4 w-4 text-gray-400 rotate-180" />
+                  <ArrowLeft className="h-4 w-4 text-muted-foreground rotate-180" />
                 </Button>
               )
             })}
@@ -294,12 +294,12 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
                   className="w-full justify-start h-auto p-4 text-left"
                   onClick={item.onClick}
                 >
-                  <IconComponent className="h-5 w-5 mr-3 text-[#004A9F]" />
+                  <IconComponent className="h-5 w-5 mr-3 text-primary" />
                   <div className="flex-1">
                     <div className="font-medium">{item.label}</div>
-                    <div className="text-sm text-gray-500">{item.description}</div>
+                    <div className="text-sm text-muted-foreground">{item.description}</div>
                   </div>
-                  <ArrowLeft className="h-4 w-4 text-gray-400 rotate-180" />
+                  <ArrowLeft className="h-4 w-4 text-muted-foreground rotate-180" />
                 </Button>
               )
             })}
@@ -314,10 +314,10 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
       <AddFundsModal isOpen={showAddFunds} onClose={() => setShowAddFunds(false)} />
       {showStorageModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-start justify-center p-4">
-          <div className="max-w-3xl w-full mt-12 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700">
+          <div className="max-w-3xl w-full mt-12 bg-card rounded-2xl shadow-2xl overflow-hidden border border-border">
             <div className="flex items-center justify-between px-6 py-4 border-b">
               <div className="flex items-center gap-3">
-                <Archive className="h-5 w-5 text-[#004A9F]" />
+                <Archive className="h-5 w-5 text-primary" />
                 <h3 className="text-lg font-semibold">Storage Manager</h3>
               </div>
               <div className="flex items-center gap-2">
@@ -327,9 +327,9 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm text-gray-600">Storage Statistics</div>
+                  <div className="text-sm text-muted-foreground">Storage Statistics</div>
                 </div>
-                <div className="text-sm text-gray-700 font-medium">
+                <div className="text-sm text-foreground font-medium">
                   Total beneficiaries: {storageStats.totalBeneficiaries} • Transactions: {storageStats.totalTransactions}
                 </div>
               </div>
@@ -367,8 +367,8 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
                 </div>
 
                 <div>
-                  <div className="text-sm text-gray-600 mb-1">Content Preview</div>
-                  <pre className="max-h-72 overflow-auto p-3 bg-gray-50 border rounded text-xs text-gray-700">{storageContent || "(No content loaded). Click 'View Content' to load."}</pre>
+                  <div className="text-sm text-muted-foreground mb-1">Content Preview</div>
+                  <pre className="max-h-72 overflow-auto p-3 bg-muted/50 border rounded text-xs text-foreground">{storageContent || "(No content loaded). Click 'View Content' to load."}</pre>
                 </div>
               </div>
             </div>
@@ -379,8 +379,8 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
       {/* SMS Gateway Settings Modal */}
       {showSMSGatewaySettings && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
+          <div className="bg-card rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-card border-b p-4 flex items-center justify-between">
               <h2 className="text-xl font-semibold">SMS Gateway Settings</h2>
               <Button
                 variant="ghost"
@@ -410,7 +410,7 @@ export function SettingsScreen({ onNavigate, onBack }: SettingsScreenProps) {
                 variant="ghost"
                 size="icon"
                 onClick={() => setShowProcessLog(false)}
-                className="text-gray-400 hover:text-white"
+                className="text-muted-foreground hover:text-white"
               >
                 ✕
               </Button>
