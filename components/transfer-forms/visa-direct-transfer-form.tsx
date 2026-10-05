@@ -66,7 +66,7 @@ const MOCK_CARDS: VirtualCard[] = [
     isActive: true,
     isLocked: false,
     type: "visa",
-    color: "from-blue-500 to-blue-700",
+    color: "from-primary to-primary/70",
   },
   {
     id: "2",
@@ -90,7 +90,7 @@ const MOCK_CARDS: VirtualCard[] = [
     isActive: true,
     isLocked: false,
     type: "visa",
-    color: "from-green-500 to-green-700",
+    color: "from-success to-success/70",
   },
 ]
 
@@ -214,15 +214,15 @@ export function VisaDirectTransferForm({ onSubmit, isLoading = false }: VisaDire
     <Form methods={methods} onSubmit={onContinue}>
       <div className="px-4 py-6 space-y-6">
         {formError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex gap-2">
-            <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-red-700">{formError}</div>
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 flex gap-2">
+            <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-destructive">{formError}</div>
           </div>
         )}
 
         {/* From Card Selection with search */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">From Card *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">From Card *</label>
           <SearchableSelect
             options={availableCards
               .filter(card => card.isActive && !card.isLocked)
@@ -237,10 +237,10 @@ export function VisaDirectTransferForm({ onSubmit, isLoading = false }: VisaDire
             }}
             placeholder="Type or select card"
             searchPlaceholder="Search cards..."
-            className={"bg-white " + ((formState.errors as any).fromCard ? "border-red-500" : "")}
+            className={"bg-card " + ((formState.errors as any).fromCard ? "border-destructive" : "")}
           />
           {selectedCard && (
-            <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+            <div className="mt-2 p-3 bg-muted/50 rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className={`w-8 h-5 bg-gradient-to-r ${selectedCard.color} rounded flex items-center justify-center`}>
@@ -248,12 +248,12 @@ export function VisaDirectTransferForm({ onSubmit, isLoading = false }: VisaDire
                   </div>
                   <div>
                     <div className="text-sm font-medium">{selectedCard.name}</div>
-                    <div className="text-xs text-gray-500">{formatCardDisplay(selectedCard.cardNumber)}</div>
+                    <div className="text-xs text-muted-foreground">{formatCardDisplay(selectedCard.cardNumber)}</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-medium text-[#004A9F]">₦{formatCurrency(selectedCard.balance)}</div>
-                  <div className="text-xs text-gray-500">Available</div>
+                  <div className="text-sm font-medium text-primary">₦{formatCurrency(selectedCard.balance)}</div>
+                  <div className="text-xs text-muted-foreground">Available</div>
                 </div>
               </div>
             </div>
@@ -263,7 +263,7 @@ export function VisaDirectTransferForm({ onSubmit, isLoading = false }: VisaDire
 
         {/* Recipient Card Number */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Recipient Card Number (16 digits) *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Recipient Card Number (16 digits) *</label>
           <div className="relative">
             <Input
               placeholder="e.g., 4532123456789010"
@@ -271,11 +271,11 @@ export function VisaDirectTransferForm({ onSubmit, isLoading = false }: VisaDire
               onChange={(e) => onCardNumberChange(e.target.value)}
               inputMode="numeric"
               maxLength={16}
-              className="bg-white pr-10"
+              className="bg-card pr-10"
             />
             {cardNumber.length === 16 && (
               <div className="absolute right-3 top-3">
-                <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-success" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                 </svg>
               </div>
@@ -286,18 +286,18 @@ export function VisaDirectTransferForm({ onSubmit, isLoading = false }: VisaDire
 
         {/* Cardholder Name */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Cardholder Name *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Cardholder Name *</label>
           <Input
             placeholder="Enter name on card"
             {...methods.register("cardHolderName")}
-            className="bg-white uppercase"
+            className="bg-card uppercase"
           />
           <FormError name="cardHolderName" />
         </div>
 
         {/* Amount */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Amount (Max: ₦500,000) *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Amount (Max: ₦500,000) *</label>
           {(() => {
             const { ref: registerRef, ...amountRegister } = methods.register("amount")
             return (
@@ -311,7 +311,7 @@ export function VisaDirectTransferForm({ onSubmit, isLoading = false }: VisaDire
                   amountInputRef.current = el
                   if (typeof registerRef === 'function') registerRef(el)
                 }}
-                className="bg-white"
+                className="bg-card"
                 onBlur={(e) => {
                   const v = e.currentTarget.value
                   if (!v) return
@@ -326,35 +326,35 @@ export function VisaDirectTransferForm({ onSubmit, isLoading = false }: VisaDire
 
         {/* Remark (optional) */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Remark (Optional)</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Remark (Optional)</label>
           <Input
             placeholder="Enter transaction remark"
             {...methods.register("remark")}
-            className="bg-white"
+            className="bg-card"
             maxLength={100}
           />
-          <div className="text-xs text-gray-500 mt-1">Max 100 characters</div>
+          <div className="text-xs text-muted-foreground mt-1">Max 100 characters</div>
         </div>
 
         {/* Save Card */}
-        <div className="flex items-center space-x-3 bg-blue-50 p-3 rounded-lg border border-blue-200">
+        <div className="flex items-center space-x-3 bg-primary/5 p-3 rounded-lg border border-primary/20">
           <Checkbox
             id="save-beneficiary"
             checked={watch("saveAsBeneficiary")}
             onCheckedChange={(checked) => setValue("saveAsBeneficiary", !!checked)}
             className="h-5 w-5"
           />
-          <label htmlFor="save-beneficiary" className="text-sm font-medium text-gray-700 cursor-pointer flex-1">
+          <label htmlFor="save-beneficiary" className="text-sm font-medium text-foreground cursor-pointer flex-1">
             Save card for future transfers
           </label>
         </div>
 
         {/* Submit Button */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-card border-t">
           <Button
             type="submit"
             disabled={isSubmitting || isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-full disabled:opacity-50"
+            className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-full disabled:opacity-50"
           >
             {isSubmitting || isLoading ? "Processing..." : "Continue"}
           </Button>
