@@ -2,6 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ------------------------------------------------------------------
+   Design tokens — single source of truth for the Tailwind CSS vars.
+   Brand colors (primary/secondary/accent) are ALSO applied at runtime
+   by lib/theme-utils.ts for the ThemeCustomizer; these defaults keep
+   the app correct on first paint and keep dark mode functional.
+------------------------------------------------------------------- */
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 222 30% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 30% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 30% 12%;
+    /* Ecobank blue #004A9F */
+    --primary: 211 100% 31%;
+    --primary-foreground: 0 0% 100%;
+    /* Ecobank teal #00B2A9 */
+    --secondary: 176 100% 35%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 20% 94%;
+    --muted-foreground: 220 12% 42%;
+    /* Ecobank green #A4D233 */
+    --accent: 78 65% 51%;
+    --accent-foreground: 222 30% 12%;
+    --destructive: 0 72% 48%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 152 68% 36%;
+    --warning: 38 92% 48%;
+    --border: 220 16% 90%;
+    --input: 220 16% 86%;
+    --ring: 211 100% 31%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222 34% 7%;
+    --foreground: 210 20% 96%;
+    --card: 222 28% 11%;
+    --card-foreground: 210 20% 96%;
+    --popover: 222 28% 11%;
+    --popover-foreground: 210 20% 96%;
+    --primary: 210 90% 56%;
+    --primary-foreground: 222 34% 7%;
+    --secondary: 176 80% 42%;
+    --secondary-foreground: 222 34% 7%;
+    --muted: 222 20% 18%;
+    --muted-foreground: 217 14% 65%;
+    --accent: 78 60% 48%;
+    --accent-foreground: 222 30% 12%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 152 60% 45%;
+    --warning: 38 90% 55%;
+    --border: 222 18% 20%;
+    --input: 222 18% 24%;
+    --ring: 210 90% 56%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
@@ -30,6 +94,18 @@ body {
   }
 }
 
+/* Respect reduced-motion preferences: disable non-essential animation */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -37,8 +113,8 @@ body {
 
   .glass-effect {
     backdrop-filter: blur(12px);
-    background-color: rgba(249, 250, 251, 0.7);
-    border: 1px solid rgba(229, 231, 235, 1);
+    background-color: hsl(var(--card) / 0.7);
+    border: 1px solid hsl(var(--border));
   }
 
   .card-shadow {

@@ -182,6 +182,11 @@ export const applyTheme = (theme: StoredTheme): void => {
     // Inject dynamic CSS overrides for hardcoded colors
     injectThemeStyles(theme)
 
+    // Toggle the Tailwind `dark` class so existing dark: variants and the
+    // .dark token set activate for the dark theme preset. This preserves the
+    // existing preset system while making the dual-appearance CSS real.
+    document.documentElement.classList.toggle("dark", theme.themeId === "dark")
+
     // Store theme in localStorage for persistence
     localStorage.setItem("ecobank-theme", JSON.stringify(theme))
     
