@@ -101,9 +101,9 @@ export function CurrencyScreen({ onBack, onNavigate }: CurrencyScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -174,12 +174,12 @@ export function CurrencyScreen({ onBack, onNavigate }: CurrencyScreenProps) {
                   value={convertedAmount}
                   readOnly
                   placeholder="Converted amount"
-                  className="flex-1 bg-gray-50"
+                  className="flex-1 bg-muted/50"
                 />
               </div>
             </div>
 
-            <Button onClick={handleConvert} className="w-full bg-[#A4D233] hover:bg-[#8BC220] text-black py-3">
+            <Button onClick={handleConvert} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground py-3">
               Convert Currency
             </Button>
           </CardContent>
@@ -192,17 +192,17 @@ export function CurrencyScreen({ onBack, onNavigate }: CurrencyScreenProps) {
           </CardHeader>
           <CardContent className="space-y-3">
             {exchangeRates.map((rate, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="font-medium">{rate.pair}</div>
-                  <div className={`flex items-center gap-1 ${rate.trend === "up" ? "text-green-600" : "text-red-600"}`}>
+                  <div className={`flex items-center gap-1 ${rate.trend === "up" ? "text-success" : "text-destructive"}`}>
                     {rate.trend === "up" ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                     <span className="text-xs">{Math.abs(rate.change)}%</span>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="font-medium">₦{rate.rate}</div>
-                  <div className={`text-xs ${rate.trend === "up" ? "text-green-600" : "text-red-600"}`}>
+                  <div className={`text-xs ${rate.trend === "up" ? "text-success" : "text-destructive"}`}>
                     {rate.change > 0 ? "+" : ""}
                     {rate.change}%
                   </div>
@@ -219,34 +219,34 @@ export function CurrencyScreen({ onBack, onNavigate }: CurrencyScreenProps) {
           </CardHeader>
           <CardContent className="space-y-3">
             {recentTransactions.map((transaction) => (
-              <div key={transaction.id} className="p-4 bg-gray-50 rounded-lg">
+              <div key={transaction.id} className="p-4 bg-muted/50 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <div className="font-medium">
                     {transaction.from} → {transaction.to}
                   </div>
-                  <Badge className="bg-green-100 text-green-800">{transaction.status}</Badge>
+                  <Badge className="bg-success/15 text-success">{transaction.status}</Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <div className="text-gray-600">Amount Sent</div>
+                    <div className="text-muted-foreground">Amount Sent</div>
                     <div className="font-medium">
                       {transaction.from === "NGN" ? "₦" : "$"}
                       {formatCurrency(transaction.amount)}
                     </div>
                   </div>
                   <div>
-                    <div className="text-gray-600">Amount Received</div>
+                    <div className="text-muted-foreground">Amount Received</div>
                     <div className="font-medium">
                       {transaction.to === "NGN" ? "₦" : "$"}
                       {formatCurrency(transaction.converted)}
                     </div>
                   </div>
                   <div>
-                    <div className="text-gray-600">Exchange Rate</div>
+                    <div className="text-muted-foreground">Exchange Rate</div>
                     <div className="font-medium">₦{transaction.rate}</div>
                   </div>
                   <div>
-                    <div className="text-gray-600">Date</div>
+                    <div className="text-muted-foreground">Date</div>
                     <div className="font-medium">{new Date(transaction.date).toLocaleDateString()}</div>
                   </div>
                 </div>

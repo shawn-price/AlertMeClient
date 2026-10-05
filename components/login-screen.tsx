@@ -81,7 +81,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#004A9F] via-[#0072C6] to-[#00B2A9] flex flex-col items-center justify-center px-6 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-[#0072C6] to-[#00B2A9] flex flex-col items-center justify-center px-6 relative overflow-hidden">
       <div className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse"></div>
       <div className="absolute bottom-32 right-8 w-24 h-24 bg-white/5 rounded-full blur-lg animate-bounce"></div>
       <div className="absolute top-1/3 right-1/4 w-16 h-16 bg-white/10 rounded-full blur-md animate-pulse delay-1000"></div>
@@ -100,22 +100,22 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
           <div className="text-white/90 text-base font-medium mb-2">The Pan African Bank</div>
         </div>
 
-        <Card className="bg-white/95 backdrop-blur-xl shadow-2xl border-0 overflow-hidden">
+        <Card className="bg-card/95 backdrop-blur-xl shadow-2xl border-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none"></div>
           <CardContent className="p-8 space-y-6 relative">
             <div className="text-center mb-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-2">Sign In</h2>
-              <p className="text-gray-600 text-sm">Enter your account number and PIN</p>
+              <h2 className="text-xl font-bold text-foreground mb-2">Sign In</h2>
+              <p className="text-muted-foreground text-sm">Enter your account number and PIN</p>
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{error}</div>
+              <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-lg text-sm">{error}</div>
             )}
 
             <Form methods={methods} onSubmit={handleLogin}>
               <div className="space-y-5">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 mb-2 block">Account Number</label>
+                  <label className="text-sm font-semibold text-foreground mb-2 block">Account Number</label>
                   <Input
                     type="text"
                     placeholder="Enter account number"
@@ -123,7 +123,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                     maxLength={10}
                     pattern="\d{10}"
                     {...methods.register("accountNumber")}
-                    className="w-full h-12 rounded-xl border-2 border-gray-200 focus:border-[#004A9F] focus:ring-0 bg-white/80 backdrop-blur-sm transition-all duration-200 hover:border-gray-300"
+                    className="w-full h-12 rounded-xl border-2 border-border focus:border-primary focus:ring-0 bg-card/80 backdrop-blur-sm transition-all duration-200 hover:border-primary/40"
                     onChange={(e) => {
                       const val = e.target.value.replace(/\D/g, "").slice(0,10)
                       methods.setValue("accountNumber", val)
@@ -134,7 +134,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 mb-2 block">4-Digit PIN</label>
+                  <label className="text-sm font-semibold text-foreground mb-2 block">4-Digit PIN</label>
                   <div className="relative">
                     <Input
                       type={showPin ? "text" : "password"}
@@ -142,20 +142,20 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                       {...methods.register("pin")}
                       onChange={handlePinChange}
                       maxLength={4}
-                      className="w-full h-12 rounded-xl border-2 border-gray-200 focus:border-[#004A9F] focus:ring-0 bg-white/80 backdrop-blur-sm transition-all duration-200 hover:border-gray-300 pr-12"
+                      className="w-full h-12 rounded-xl border-2 border-border focus:border-primary focus:ring-0 bg-card/80 backdrop-blur-sm transition-all duration-200 hover:border-primary/40 pr-12"
                     />
                     <FormError name="pin" />
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-gray-500 hover:text-gray-700 rounded-lg"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground rounded-lg"
                       onClick={() => setShowPin(!showPin)}
                     >
                       {showPin ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
-                  <p className="text-xs text-gray-500">Default PIN for demo: 1234</p>
+                  <p className="text-xs text-muted-foreground">Default PIN for demo: 1234</p>
                 </div>
               </div>
             </Form>
@@ -163,7 +163,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             <Button
               onClick={methods.handleSubmit(handleLogin)}
               disabled={isLoading}
-              className="w-full h-12 bg-gradient-to-r from-[#A4D233] to-[#8BC220] hover:from-[#8BC220] hover:to-[#7AB01F] text-black font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-12 bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 text-accent-foreground font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <div className="flex items-center gap-2">
@@ -178,16 +178,16 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             <div className="text-center space-y-4">
               <Button
                 variant="link"
-                className="text-[#004A9F] text-sm font-semibold hover:text-[#003875] transition-colors"
+                className="text-primary text-sm font-semibold hover:text-primary/80 transition-colors"
               >
                 Forgot PIN?
               </Button>
-              <div className="text-xs text-gray-500 flex items-center justify-center gap-1">
+              <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                 Don't have an account?{" "}
                 <Button
                   variant="link"
                   onClick={() => setShowRegistration(true)}
-                  className="text-[#004A9F] text-xs p-0 font-semibold hover:text-[#003875] transition-colors"
+                  className="text-primary text-xs p-0 font-semibold hover:text-primary/80 transition-colors"
                 >
                   Register
                 </Button>
