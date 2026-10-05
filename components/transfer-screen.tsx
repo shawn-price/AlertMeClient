@@ -21,9 +21,9 @@ function TransferScreenComponent({ onBack, onNavigate, transferData }: TransferS
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b sticky top-0 z-10">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b sticky top-0 z-10">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -38,12 +38,12 @@ function TransferScreenComponent({ onBack, onNavigate, transferData }: TransferS
         {/* From */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-2 block">From</label>
-          <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-between">
+          <div className="bg-muted rounded-lg p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
               <div>
                 <div className="text-sm font-medium">Savings account</div>
-                <div className="text-xs text-gray-600">{userData.name}</div>
+                <div className="text-xs text-muted-foreground">{userData.name}</div>
               </div>
             </div>
             <ChevronDown className="h-5 w-5 text-gray-400" />
@@ -53,31 +53,31 @@ function TransferScreenComponent({ onBack, onNavigate, transferData }: TransferS
         {/* To Beneficiary */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-2 block">To Beneficiary</label>
-          <div className="bg-gray-100 rounded-lg p-4">
+          <div className="bg-muted rounded-lg p-4">
             <div className="font-medium text-sm mb-1">{transferData?.beneficiaryName}</div>
-            <div className="text-xs text-gray-500">{transferData?.bank}</div>
+            <div className="text-xs text-muted-foreground">{transferData?.bank}</div>
           </div>
         </div>
 
         {/* Amount */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-2 block">Amount</label>
-          <div className="bg-gray-100 rounded-lg p-4">
+          <div className="bg-muted rounded-lg p-4">
             <div className="text-2xl font-bold">
               ₦ {transferData?.amount ? formatCurrency(Number.parseFloat(transferData.amount)) : "0.00"}
             </div>
           </div>
           <div className="text-right mt-2">
-            <span className="text-sm text-[#004A9F]">Transfer fees: ₦ {transferFee.toFixed(2)}</span>
+            <span className="text-sm text-primary">Transfer fees: ₦ {transferFee.toFixed(2)}</span>
           </div>
         </div>
       </div>
 
       {/* Continue Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-card border-t">
         <Button
           onClick={handleContinue}
-          className="w-full bg-[#004A9F] hover:bg-[#003875] text-white py-3 rounded-full"
+          className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-full"
         >
           Continue
         </Button>

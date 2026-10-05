@@ -31,9 +31,9 @@ function PinConfirmationComponent({ onBack, onNavigate, transferData }: PinConfi
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -44,12 +44,12 @@ function PinConfirmationComponent({ onBack, onNavigate, transferData }: PinConfi
       {/* From Account */}
       <div className="px-4 py-4">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600">From</span>
-          <Button variant="link" className="text-red-500 text-sm p-0" onClick={onBack}>
+          <span className="text-sm text-muted-foreground">From</span>
+          <Button variant="link" className="text-destructive text-sm p-0" onClick={onBack}>
             Cancel
           </Button>
         </div>
-        <div className="bg-gray-100 rounded-lg p-3 flex items-center justify-between mt-2">
+        <div className="bg-muted rounded-lg p-3 flex items-center justify-between mt-2">
           <div className="flex items-center gap-3">
             <div className="w-6 h-6 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
             <span className="text-sm">Savings account</span>
@@ -61,7 +61,7 @@ function PinConfirmationComponent({ onBack, onNavigate, transferData }: PinConfi
       {/* PIN Entry */}
       <div className="px-4 py-8 text-center">
         <h2 className="text-xl font-semibold mb-2">Confirm Transfer</h2>
-        <p className="text-sm text-gray-600 mb-8">Please enter your 4-digit pin to proceed or complete transaction</p>
+        <p className="text-sm text-muted-foreground mb-8">Please enter your 4-digit pin to proceed or complete transaction</p>
 
         {/* PIN Dots */}
         <div className="flex justify-center gap-4 mb-8">
@@ -78,7 +78,7 @@ function PinConfirmationComponent({ onBack, onNavigate, transferData }: PinConfi
         <Button
           onClick={handleSubmit}
           disabled={pin.length !== 4}
-          className="w-full bg-[#004A9F] hover:bg-[#003875] text-white py-3 rounded-full mb-8 disabled:opacity-50"
+          className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-full mb-8 disabled:opacity-50"
         >
           Submit
         </Button>
@@ -89,7 +89,7 @@ function PinConfirmationComponent({ onBack, onNavigate, transferData }: PinConfi
             <Button
               key={num}
               variant="outline"
-              className="h-16 text-xl font-semibold bg-white"
+              className="h-16 text-xl font-semibold bg-card"
               onClick={() => handleNumberPress(num.toString())}
             >
               {num}
@@ -98,12 +98,12 @@ function PinConfirmationComponent({ onBack, onNavigate, transferData }: PinConfi
           <div></div>
           <Button
             variant="outline"
-            className="h-16 text-xl font-semibold bg-white"
+            className="h-16 text-xl font-semibold bg-card"
             onClick={() => handleNumberPress("0")}
           >
             0
           </Button>
-          <Button variant="outline" className="h-16 bg-white" onClick={handleDelete}>
+          <Button variant="outline" className="h-16 bg-card" onClick={handleDelete}>
             <Delete className="h-6 w-6" />
           </Button>
         </div>
