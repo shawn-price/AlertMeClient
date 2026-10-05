@@ -131,9 +131,9 @@ export function PayBillsScreen({ onBack, onNavigate }: PayBillsScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -146,9 +146,9 @@ export function PayBillsScreen({ onBack, onNavigate }: PayBillsScreenProps) {
       <div className="px-4 py-6 space-y-6">
         {/* Error Message */}
         {formError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex gap-2">
-            <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-red-700">{formError}</div>
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 flex gap-2">
+            <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-destructive">{formError}</div>
           </div>
         )}
 
@@ -167,8 +167,8 @@ export function PayBillsScreen({ onBack, onNavigate }: PayBillsScreenProps) {
                     variant={selectedCategory === category.id ? "default" : "outline"}
                     className={`h-20 flex flex-col gap-2 ${
                       selectedCategory === category.id
-                        ? "bg-[#004A9F] hover:bg-[#003875]"
-                        : "border-gray-200 bg-transparent"
+                        ? "bg-primary hover:bg-primary/90"
+                        : "border-border bg-transparent"
                     }`}
                     onClick={() => setSelectedCategory(category.id)}
                   >
@@ -233,18 +233,18 @@ export function PayBillsScreen({ onBack, onNavigate }: PayBillsScreenProps) {
               </div>
 
               {amount && (
-                <div className="bg-gray-50 p-3 rounded-lg">
+                <div className="bg-muted/50 p-3 rounded-lg">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-gray-600">Bill Amount</span>
+                    <span className="text-sm text-muted-foreground">Bill Amount</span>
                     <span className="font-semibold">₦{formatCurrency(Number(amount))}</span>
                   </div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-gray-600">Bill Fee</span>
+                    <span className="text-sm text-muted-foreground">Bill Fee</span>
                     <span className="font-semibold">₦50.00</span>
                   </div>
                   <div className="flex justify-between items-center pt-2 border-t">
                     <span className="text-sm font-bold">Total</span>
-                    <span className="font-bold text-[#004A9F]">₦{formatCurrency(Number(amount) + 50)}</span>
+                    <span className="font-bold text-primary">₦{formatCurrency(Number(amount) + 50)}</span>
                   </div>
                 </div>
               )}
@@ -252,7 +252,7 @@ export function PayBillsScreen({ onBack, onNavigate }: PayBillsScreenProps) {
               <Button
                 onClick={handlePayBill}
                 disabled={!selectedProvider || !customerID || !amount || isProcessing}
-                className="w-full bg-[#A4D233] hover:bg-[#8BC220] text-black py-3"
+                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground py-3"
               >
                 {isProcessing ? "Processing..." : "Pay Bill"}
               </Button>
@@ -270,19 +270,19 @@ export function PayBillsScreen({ onBack, onNavigate }: PayBillsScreenProps) {
           </CardHeader>
           <CardContent className="space-y-3">
             {recentBills.map((bill) => (
-              <div key={bill.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div key={bill.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-success rounded-full"></div>
                   <div>
                     <div className="font-medium text-sm">
                       {bill.category} - {bill.provider}
                     </div>
-                    <div className="text-xs text-gray-500">{new Date(bill.date).toLocaleDateString()}</div>
+                    <div className="text-xs text-muted-foreground">{new Date(bill.date).toLocaleDateString()}</div>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="font-medium">₦{formatCurrency(bill.amount)}</div>
-                  <div className="text-xs text-green-600">{bill.status}</div>
+                  <div className="text-xs text-success">{bill.status}</div>
                 </div>
               </div>
             ))}

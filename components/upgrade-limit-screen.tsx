@@ -25,7 +25,7 @@ export function UpgradeLimitScreen({ onBack, onNavigate }: UpgradeLimitScreenPro
       id: "eco1",
       name: "Eco Limit 1",
       icon: Star,
-      color: "from-gray-400 to-gray-600",
+      color: "from-muted-foreground/60 to-muted-foreground",
       current: true,
       dailyLimit: 50000,
       monthlyLimit: 200000,
@@ -37,7 +37,7 @@ export function UpgradeLimitScreen({ onBack, onNavigate }: UpgradeLimitScreenPro
       id: "eco2",
       name: "Eco Limit 2",
       icon: Zap,
-      color: "from-blue-500 to-blue-700",
+      color: "from-primary to-primary/70",
       current: false,
       dailyLimit: 200000,
       monthlyLimit: 1000000,
@@ -74,7 +74,7 @@ export function UpgradeLimitScreen({ onBack, onNavigate }: UpgradeLimitScreenPro
       id: "premium",
       name: "Premium Banking",
       icon: Globe,
-      color: "from-yellow-500 to-yellow-700",
+      color: "from-warning to-warning/70",
       current: false,
       dailyLimit: 10000000,
       monthlyLimit: 50000000,
@@ -115,20 +115,20 @@ export function UpgradeLimitScreen({ onBack, onNavigate }: UpgradeLimitScreenPro
 
   if (isUpgrading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted/50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#004A9F] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <h2 className="text-xl font-semibold mb-2">Upgrading Account...</h2>
-          <p className="text-gray-600">Please wait while we process your upgrade</p>
+          <p className="text-muted-foreground">Please wait while we process your upgrade</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -140,7 +140,7 @@ export function UpgradeLimitScreen({ onBack, onNavigate }: UpgradeLimitScreenPro
 
       <div className="px-4 py-6 space-y-6">
         {/* Current Status */}
-        <Card className="bg-gradient-to-r from-[#004A9F] to-[#0072C6] text-white">
+        <Card className="bg-gradient-to-r from-primary to-primary/80 text-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -167,7 +167,7 @@ export function UpgradeLimitScreen({ onBack, onNavigate }: UpgradeLimitScreenPro
           {tiers.map((tier) => {
             const IconComponent = tier.icon
             return (
-              <Card key={tier.id} className={`${tier.current ? "border-[#004A9F] bg-blue-50" : "border-gray-200"}`}>
+              <Card key={tier.id} className={`${tier.current ? "border-primary bg-primary/5" : "border-border"}`}>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -178,22 +178,22 @@ export function UpgradeLimitScreen({ onBack, onNavigate }: UpgradeLimitScreenPro
                       </div>
                       <div>
                         <CardTitle className="text-base">{tier.name}</CardTitle>
-                        <div className="text-sm text-gray-600">{tier.price}</div>
+                        <div className="text-sm text-muted-foreground">{tier.price}</div>
                       </div>
                     </div>
-                    {tier.current && <Badge className="bg-[#004A9F] text-white">Current</Badge>}
+                    {tier.current && <Badge className="bg-primary text-white">Current</Badge>}
                   </div>
                 </CardHeader>
 
                 <CardContent className="space-y-4">
                   {/* Limits */}
-                  <div className="grid grid-cols-2 gap-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="grid grid-cols-2 gap-4 p-3 bg-muted/50 rounded-lg">
                     <div className="text-center">
-                      <div className="text-xs text-gray-600">Daily Limit</div>
+                      <div className="text-xs text-muted-foreground">Daily Limit</div>
                       <div className="font-semibold">₦{formatCurrency(tier.dailyLimit)}</div>
                     </div>
-                    <div className="text-center">Fn
-                      <div className="text-xs text-gray-600">Monthly Limit</div>
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground">Monthly Limit</div>
                       <div className="font-semibold">₦{formatCurrency(tier.monthlyLimit)}</div>
                     </div>
                   </div>
@@ -204,7 +204,7 @@ export function UpgradeLimitScreen({ onBack, onNavigate }: UpgradeLimitScreenPro
                     <div className="space-y-1">
                       {tier.features.map((feature, index) => (
                         <div key={index} className="flex items-center gap-2 text-sm">
-                          <CheckCircle className="h-3 w-3 text-green-500" />
+                          <CheckCircle className="h-3 w-3 text-success" />
                           <span>{feature}</span>
                         </div>
                       ))}
@@ -214,14 +214,14 @@ export function UpgradeLimitScreen({ onBack, onNavigate }: UpgradeLimitScreenPro
                   {/* Requirements */}
                   <div>
                     <div className="text-sm font-medium mb-2">Requirements:</div>
-                    <div className="text-xs text-gray-600">{tier.requirements.join(" • ")}</div>
+                    <div className="text-xs text-muted-foreground">{tier.requirements.join(" • ")}</div>
                   </div>
 
                   {/* Action Button */}
                   {!tier.current && (
                     <Button
                       onClick={() => handleUpgrade(tier.id)}
-                      className="w-full bg-[#A4D233] hover:bg-[#8BC220] text-black"
+                      className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
                     >
                       Upgrade to {tier.name}
                     </Button>
@@ -239,22 +239,22 @@ export function UpgradeLimitScreen({ onBack, onNavigate }: UpgradeLimitScreenPro
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                <Zap className="h-4 w-4 text-green-600" />
+              <div className="w-8 h-8 bg-success/15 rounded-full flex items-center justify-center">
+                <Zap className="h-4 w-4 text-success" />
               </div>
               <div>
                 <div className="font-medium text-sm">Higher Transaction Limits</div>
-                <div className="text-xs text-gray-600">Send and receive more money daily</div>
+                <div className="text-xs text-muted-foreground">Send and receive more money daily</div>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <Globe className="h-4 w-4 text-blue-600" />
+              <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                <Globe className="h-4 w-4 text-primary" />
               </div>
               <div>
                 <div className="font-medium text-sm">International Services</div>
-                <div className="text-xs text-gray-600">Access global banking features</div>
+                <div className="text-xs text-muted-foreground">Access global banking features</div>
               </div>
             </div>
 
@@ -264,7 +264,7 @@ export function UpgradeLimitScreen({ onBack, onNavigate }: UpgradeLimitScreenPro
               </div>
               <div>
                 <div className="font-medium text-sm">Premium Support</div>
-                <div className="text-xs text-gray-600">Priority customer service</div>
+                <div className="text-xs text-muted-foreground">Priority customer service</div>
               </div>
             </div>
           </CardContent>
