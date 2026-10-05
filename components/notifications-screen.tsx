@@ -59,29 +59,29 @@ export function NotificationsScreen({ onBack }: NotificationsScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-lg font-semibold">Notifications</h1>
-        <Bell className="h-5 w-5 text-[#004A9F]" />
+        <Bell className="h-5 w-5 text-primary" />
       </div>
 
       <div className="px-4 py-6">
         {notifications.length === 0 ? (
           <div className="text-center py-12">
             <Bell className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-600 mb-2">No Notifications</h3>
-            <p className="text-gray-500">You're all caught up! Notifications will appear here.</p>
+            <h3 className="text-lg font-semibold text-muted-foreground mb-2">No Notifications</h3>
+            <p className="text-muted-foreground">You're all caught up! Notifications will appear here.</p>
           </div>
         ) : (
           <div className="space-y-3">
             {notifications.map((notification) => (
               <Card
                 key={notification.id}
-                className={`border-l-4 ${getNotificationColor(notification.type)} ${!notification.read ? "bg-blue-50" : "bg-white"}`}
+                className={`border-l-4 ${getNotificationColor(notification.type)} ${!notification.read ? "bg-blue-50" : "bg-card"}`}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
@@ -90,10 +90,10 @@ export function NotificationsScreen({ onBack }: NotificationsScreenProps) {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-medium text-sm">{notification.title}</h4>
-                          {!notification.read && <Badge className="bg-[#004A9F] text-white text-xs">New</Badge>}
+                          {!notification.read && <Badge className="bg-primary text-white text-xs">New</Badge>}
                         </div>
-                        <p className="text-sm text-gray-600 mb-2">{notification.message}</p>
-                        <p className="text-xs text-gray-500">{new Date(notification.timestamp).toLocaleString()}</p>
+                        <p className="text-sm text-muted-foreground mb-2">{notification.message}</p>
+                        <p className="text-xs text-muted-foreground">{new Date(notification.timestamp).toLocaleString()}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -103,7 +103,7 @@ export function NotificationsScreen({ onBack }: NotificationsScreenProps) {
                         </Button>
                       )}
                       <Button variant="ghost" size="sm">
-                        <Trash2 className="h-4 w-4 text-red-500" />
+                        <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>
                   </div>

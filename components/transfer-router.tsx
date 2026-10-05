@@ -86,9 +86,9 @@ export function TransferRouter({ transferType, onBack, onSubmit }: TransferRoute
   const { title, form } = getTitleAndForm()
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b sticky top-0 z-10">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b sticky top-0 z-10">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
