@@ -174,30 +174,30 @@ export function InternationalTransferForm({ onSubmit, isLoading = false }: Inter
     <Form methods={methods} onSubmit={onContinue}>
       <div className="px-4 py-6 space-y-6">
         {formError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex gap-2">
-            <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-red-700">{formError}</div>
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 flex gap-2">
+            <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-destructive">{formError}</div>
           </div>
         )}
 
         {/* Source Account */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Source Account</label>
-          <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-between">
+          <label className="text-sm font-medium text-foreground mb-2 block">Source Account</label>
+          <div className="bg-muted rounded-lg p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full"></div>
               <div>
                 <div className="text-sm font-medium">Main Account</div>
-                <div className="text-xs text-gray-600">{userData.name}</div>
+                <div className="text-xs text-muted-foreground">{userData.name}</div>
               </div>
             </div>
-            <ChevronDown className="h-5 w-5 text-gray-400" />
+            <ChevronDown className="h-5 w-5 text-muted-foreground" />
           </div>
         </div>
 
         {/* Destination Country with search */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Destination Country *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Destination Country *</label>
           <SearchableSelect
             options={COUNTRIES.map((country) => ({
               value: country.name,
@@ -210,62 +210,62 @@ export function InternationalTransferForm({ onSubmit, isLoading = false }: Inter
             }}
             placeholder="Type or select country"
             searchPlaceholder="Search countries..."
-            className={"bg-white " + ((formState.errors as any).country ? "border-red-500" : "")}
+            className={"bg-card " + ((formState.errors as any).country ? "border-destructive" : "")}
           />
           <FormError name="country" />
         </div>
 
         {/* Bank Name */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Recipient Bank Name *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Recipient Bank Name *</label>
           <Input
             placeholder="Enter bank name"
             {...methods.register("bankName")}
-            className="bg-white"
+            className="bg-card"
           />
           <FormError name="bankName" />
         </div>
 
         {/* SWIFT Code */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">SWIFT Code *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">SWIFT Code *</label>
           <Input
             placeholder="e.g., CHASUS33"
             {...methods.register("swiftCode")}
-            className="bg-white uppercase"
+            className="bg-card uppercase"
           />
           <FormError name="swiftCode" />
         </div>
 
         {/* IBAN */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">IBAN (International Bank Account Number) *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">IBAN (International Bank Account Number) *</label>
           <Input
             placeholder="e.g., DE89370400440532013000"
             {...methods.register("iban")}
-            className="bg-white uppercase"
+            className="bg-card uppercase"
           />
           <FormError name="iban" />
         </div>
 
         {/* Beneficiary Name */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Beneficiary Name *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Beneficiary Name *</label>
           <Input
             placeholder="Enter beneficiary full name"
             {...methods.register("beneficiaryName")}
-            className="bg-white"
+            className="bg-card"
           />
           <FormError name="beneficiaryName" />
         </div>
 
         {/* Beneficiary Address */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Beneficiary Address *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Beneficiary Address *</label>
           <Input
             placeholder="Enter complete address"
             {...methods.register("beneficiaryAddress")}
-            className="bg-white"
+            className="bg-card"
             maxLength={100}
           />
           <FormError name="beneficiaryAddress" />
@@ -273,9 +273,9 @@ export function InternationalTransferForm({ onSubmit, isLoading = false }: Inter
 
         {/* Currency */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Currency *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Currency *</label>
           <Select value={watch("currency")} onValueChange={(value) => { setValue("currency", value as any) }}>
-            <SelectTrigger className="bg-white">
+            <SelectTrigger className="bg-card">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -291,7 +291,7 @@ export function InternationalTransferForm({ onSubmit, isLoading = false }: Inter
 
         {/* Amount with international limit */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Amount in ₦ (Max: ₦100,000) *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Amount in ₦ (Max: ₦100,000) *</label>
           {(() => {
             const { ref: registerRef, ...amountRegister } = methods.register("amount")
             return (
@@ -305,7 +305,7 @@ export function InternationalTransferForm({ onSubmit, isLoading = false }: Inter
                   amountInputRef.current = el
                   if (typeof registerRef === 'function') registerRef(el)
                 }}
-                className="bg-white"
+                className="bg-card"
                 onBlur={(e) => {
                   const v = e.currentTarget.value
                   if (!v) return
@@ -320,9 +320,9 @@ export function InternationalTransferForm({ onSubmit, isLoading = false }: Inter
 
         {/* Purpose of Transfer - CBN requirement */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Purpose of Transfer *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Purpose of Transfer *</label>
           <Select value={watch("purposeOfTransfer")} onValueChange={(value) => { setValue("purposeOfTransfer", value) }}>
-            <SelectTrigger className="bg-white">
+            <SelectTrigger className="bg-card">
               <SelectValue placeholder="Select purpose" />
             </SelectTrigger>
             <SelectContent>
@@ -344,17 +344,17 @@ export function InternationalTransferForm({ onSubmit, isLoading = false }: Inter
             onCheckedChange={(checked) => setValue("saveAsBeneficiary", !!checked)}
             className="h-5 w-5"
           />
-          <label htmlFor="save-beneficiary" className="text-sm font-medium text-gray-700 cursor-pointer flex-1">
+          <label htmlFor="save-beneficiary" className="text-sm font-medium text-foreground cursor-pointer flex-1">
             Save for future transfers
           </label>
         </div>
 
         {/* Submit Button */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-card border-t">
           <Button
             type="submit"
             disabled={isSubmitting || isLoading}
-            className="w-full bg-[#004A9F] hover:bg-[#003875] text-white py-3 rounded-full disabled:opacity-50"
+            className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-full disabled:opacity-50"
           >
             {isSubmitting || isLoading ? "Processing..." : "Continue"}
           </Button>

@@ -141,30 +141,30 @@ export function MobileMoneyTransferForm({ onSubmit, isLoading = false }: MobileM
     <Form methods={methods} onSubmit={onContinue}>
       <div className="px-4 py-6 space-y-6">
         {formError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex gap-2">
-            <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-red-700">{formError}</div>
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 flex gap-2">
+            <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-destructive">{formError}</div>
           </div>
         )}
 
         {/* Source Account */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Source Account</label>
-          <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-between">
+          <label className="text-sm font-medium text-foreground mb-2 block">Source Account</label>
+          <div className="bg-muted rounded-lg p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-600 rounded-full"></div>
+              <div className="w-8 h-8 bg-gradient-to-r from-success to-success/70 rounded-full"></div>
               <div>
                 <div className="text-sm font-medium">Main Account</div>
-                <div className="text-xs text-gray-600">{userData.name}</div>
+                <div className="text-xs text-muted-foreground">{userData.name}</div>
               </div>
             </div>
-            <ChevronDown className="h-5 w-5 text-gray-400" />
+            <ChevronDown className="h-5 w-5 text-muted-foreground" />
           </div>
         </div>
 
         {/* Mobile Money Provider with search */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Mobile Money Provider *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Mobile Money Provider *</label>
           <SearchableSelect
             options={MOBILE_MONEY_PROVIDERS.map((provider) => ({
               value: provider.name,
@@ -177,38 +177,38 @@ export function MobileMoneyTransferForm({ onSubmit, isLoading = false }: MobileM
             }}
             placeholder="Type or select provider"
             searchPlaceholder="Search providers..."
-            className={"bg-white " + ((formState.errors as any).provider ? "border-red-500" : "")}
+            className={"bg-card " + ((formState.errors as any).provider ? "border-destructive" : "")}
           />
           <FormError name="provider" />
         </div>
 
         {/* Phone Number */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Phone Number *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Phone Number *</label>
           <Input
             placeholder="e.g., 08012345678 or +2348012345678"
             {...methods.register("phoneNumber")}
-            className="bg-white"
+            className="bg-card"
             type="tel"
           />
           <FormError name="phoneNumber" />
-          <div className="text-xs text-gray-500 mt-1">Must be valid Nigerian mobile number</div>
+          <div className="text-xs text-muted-foreground mt-1">Must be valid Nigerian mobile number</div>
         </div>
 
         {/* Beneficiary Name */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Recipient Name *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Recipient Name *</label>
           <Input
             placeholder="Enter recipient's name"
             {...methods.register("beneficiaryName")}
-            className="bg-white"
+            className="bg-card"
           />
           <FormError name="beneficiaryName" />
         </div>
 
         {/* Amount with mobile money limit */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Amount (Max: ₦1,000,000) *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Amount (Max: ₦1,000,000) *</label>
           {(() => {
             const { ref: registerRef, ...amountRegister } = methods.register("amount")
             return (
@@ -222,7 +222,7 @@ export function MobileMoneyTransferForm({ onSubmit, isLoading = false }: MobileM
                   amountInputRef.current = el
                   if (typeof registerRef === 'function') registerRef(el)
                 }}
-                className="bg-white"
+                className="bg-card"
                 onBlur={(e) => {
                   const v = e.currentTarget.value
                   if (!v) return
@@ -237,35 +237,35 @@ export function MobileMoneyTransferForm({ onSubmit, isLoading = false }: MobileM
 
         {/* Remark (optional) */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Remark (Optional)</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Remark (Optional)</label>
           <Input
             placeholder="Enter transaction remark"
             {...methods.register("remark")}
-            className="bg-white"
+            className="bg-card"
             maxLength={100}
           />
-          <div className="text-xs text-gray-500 mt-1">Max 100 characters</div>
+          <div className="text-xs text-muted-foreground mt-1">Max 100 characters</div>
         </div>
 
         {/* Save Beneficiary */}
-        <div className="flex items-center space-x-3 bg-green-50 p-3 rounded-lg border border-green-200">
+        <div className="flex items-center space-x-3 bg-success/10 p-3 rounded-lg border border-success/30">
           <Checkbox
             id="save-beneficiary"
             checked={watch("saveAsBeneficiary")}
             onCheckedChange={(checked) => setValue("saveAsBeneficiary", !!checked)}
             className="h-5 w-5"
           />
-          <label htmlFor="save-beneficiary" className="text-sm font-medium text-gray-700 cursor-pointer flex-1">
+          <label htmlFor="save-beneficiary" className="text-sm font-medium text-foreground cursor-pointer flex-1">
             Save for future transfers
           </label>
         </div>
 
         {/* Submit Button */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-card border-t">
           <Button
             type="submit"
             disabled={isSubmitting || isLoading}
-            className="w-full bg-[#00B2A9] hover:bg-[#009c93] text-white py-3 rounded-full disabled:opacity-50"
+            className="w-full bg-secondary hover:bg-secondary/90 text-white py-3 rounded-full disabled:opacity-50"
           >
             {isSubmitting || isLoading ? "Processing..." : "Continue"}
           </Button>

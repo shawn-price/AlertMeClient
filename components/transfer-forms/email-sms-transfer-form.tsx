@@ -153,21 +153,21 @@ export function EmailSmsTransferForm({ onSubmit, isLoading = false }: EmailSmsTr
     <Form methods={methods} onSubmit={onContinue}>
       <div className="px-4 py-6 space-y-6">
         {formError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex gap-2">
-            <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-red-700">{formError}</div>
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 flex gap-2">
+            <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-destructive">{formError}</div>
           </div>
         )}
 
         {/* Info Banner */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <div className="bg-blue-100 p-2 rounded-full">
-              <MessageSquare className="h-5 w-5 text-blue-600" />
+            <div className="bg-primary/10 p-2 rounded-full">
+              <MessageSquare className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-blue-800">Transfer via Email or SMS</h4>
-              <p className="text-xs text-blue-600 mt-1">
+              <h4 className="text-sm font-semibold text-primary">Transfer via Email or SMS</h4>
+              <p className="text-xs text-primary mt-1">
                 Send money to anyone, even without a bank account. The recipient will receive a link to claim funds.
               </p>
             </div>
@@ -176,22 +176,22 @@ export function EmailSmsTransferForm({ onSubmit, isLoading = false }: EmailSmsTr
 
         {/* Source Account */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">From Account</label>
-          <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-between">
+          <label className="text-sm font-medium text-foreground mb-2 block">From Account</label>
+          <div className="bg-muted rounded-lg p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"></div>
               <div>
                 <div className="text-sm font-medium">Ecobank Account</div>
-                <div className="text-xs text-gray-600">{userData.accountNumber}</div>
+                <div className="text-xs text-muted-foreground">{userData.accountNumber}</div>
               </div>
             </div>
-            <ChevronDown className="h-5 w-5 text-gray-400" />
+            <ChevronDown className="h-5 w-5 text-muted-foreground" />
           </div>
         </div>
 
         {/* Transfer Method */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Transfer Method *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Transfer Method *</label>
           <Select 
             value={watch("transferMethod")} 
             onValueChange={(value) => { 
@@ -199,7 +199,7 @@ export function EmailSmsTransferForm({ onSubmit, isLoading = false }: EmailSmsTr
               clearErrors(["recipientEmail", "recipientPhone"])
             }}
           >
-            <SelectTrigger className="bg-white">
+            <SelectTrigger className="bg-card">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -222,23 +222,23 @@ export function EmailSmsTransferForm({ onSubmit, isLoading = false }: EmailSmsTr
         {/* Recipient Contact - Phone or Email based on method */}
         {transferMethod === "sms" ? (
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">Recipient Phone Number *</label>
+            <label className="text-sm font-medium text-foreground mb-2 block">Recipient Phone Number *</label>
             <Input
               placeholder="e.g., 08012345678 or +2348012345678"
               {...methods.register("recipientPhone")}
-              className="bg-white"
+              className="bg-card"
               type="tel"
             />
             <FormError name="recipientPhone" />
-            <div className="text-xs text-gray-500 mt-1">Must be valid Nigerian mobile number</div>
+            <div className="text-xs text-muted-foreground mt-1">Must be valid Nigerian mobile number</div>
           </div>
         ) : (
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">Recipient Email Address *</label>
+            <label className="text-sm font-medium text-foreground mb-2 block">Recipient Email Address *</label>
             <Input
               placeholder="e.g., recipient@email.com"
               {...methods.register("recipientEmail")}
-              className="bg-white"
+              className="bg-card"
               type="email"
             />
             <FormError name="recipientEmail" />
@@ -247,19 +247,19 @@ export function EmailSmsTransferForm({ onSubmit, isLoading = false }: EmailSmsTr
 
         {/* Recipient Name */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Recipient Name *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Recipient Name *</label>
           <Input
             placeholder="Enter recipient's full name"
             {...methods.register("recipientName")}
-            className="bg-white"
+            className="bg-card"
           />
           <FormError name="recipientName" />
-          <div className="text-xs text-gray-500 mt-1">Name that will be shown to recipient</div>
+          <div className="text-xs text-muted-foreground mt-1">Name that will be shown to recipient</div>
         </div>
 
         {/* Amount */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Amount (Max: ₦100,000) *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Amount (Max: ₦100,000) *</label>
           {(() => {
             const { ref: registerRef, ...amountRegister } = methods.register("amount")
             return (
@@ -273,7 +273,7 @@ export function EmailSmsTransferForm({ onSubmit, isLoading = false }: EmailSmsTr
                   amountInputRef.current = el
                   if (typeof registerRef === 'function') registerRef(el)
                 }}
-                className="bg-white"
+                className="bg-card"
                 onBlur={(e) => {
                   const v = e.currentTarget.value
                   if (!v) return
@@ -288,7 +288,7 @@ export function EmailSmsTransferForm({ onSubmit, isLoading = false }: EmailSmsTr
 
         {/* Expiry Period */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Claim Link Expiry</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Claim Link Expiry</label>
           <SearchableSelect
             options={[
               { value: "1", label: "1 day" },
@@ -301,29 +301,29 @@ export function EmailSmsTransferForm({ onSubmit, isLoading = false }: EmailSmsTr
             onValueChange={(value) => setValue("expiryDays", parseInt(value))}
             placeholder="Select expiry"
             searchPlaceholder="Search days..."
-            className="bg-white"
+            className="bg-card"
           />
-          <div className="text-xs text-gray-500 mt-1">Recipient can claim within this period</div>
+          <div className="text-xs text-muted-foreground mt-1">Recipient can claim within this period</div>
         </div>
 
         {/* Remark (optional) */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Message to Recipient (Optional)</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">Message to Recipient (Optional)</label>
           <Input
             placeholder="Enter a personal message"
             {...methods.register("remark")}
-            className="bg-white"
+            className="bg-card"
             maxLength={100}
           />
-          <div className="text-xs text-gray-500 mt-1">Max 100 characters</div>
+          <div className="text-xs text-muted-foreground mt-1">Max 100 characters</div>
         </div>
 
         {/* Submit Button */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-card border-t">
           <Button
             type="submit"
             disabled={isSubmitting || isLoading}
-            className="w-full bg-[#004A9F] hover:bg-[#003875] text-white py-3 rounded-full disabled:opacity-50"
+            className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-full disabled:opacity-50"
           >
             {isSubmitting || isLoading ? "Processing..." : "Send Transfer"}
           </Button>
