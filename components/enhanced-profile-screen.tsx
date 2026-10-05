@@ -93,9 +93,9 @@ export function EnhancedProfileScreen({ onBack }: EnhancedProfileScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted/50">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b shadow-sm">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b shadow-sm">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -110,7 +110,7 @@ export function EnhancedProfileScreen({ onBack }: EnhancedProfileScreenProps) {
         <Card>
           <CardContent className="p-6 text-center">
             <div className="relative inline-block">
-              <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden bg-gradient-to-r from-[#004A9F] to-[#0072C6]">
+              <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden bg-gradient-to-r from-primary to-primary/80">
                 {profile.profilePicture ? (
                   <img
                     src={profile.profilePicture || "/placeholder.svg"}
@@ -123,7 +123,7 @@ export function EnhancedProfileScreen({ onBack }: EnhancedProfileScreenProps) {
               </div>
               <Button
                 size="icon"
-                className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-[#A4D233] hover:bg-[#8BC220] text-black"
+                className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-accent hover:bg-accent/90 text-accent-foreground"
                 onClick={triggerImageUpload}
                 disabled={isUploading}
               >
@@ -133,12 +133,12 @@ export function EnhancedProfileScreen({ onBack }: EnhancedProfileScreenProps) {
             </div>
             <div className="font-semibold text-lg">{profile.name}</div>
             <Badge
-              className={`mt-2 ${profile.status === "Active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+              className={`mt-2 ${profile.status === "Active" ? "bg-success/15 text-success" : "bg-destructive/15 text-destructive"}`}
             >
               {profile.status}
             </Badge>
             {isUploading && (
-              <div className="mt-2 text-sm text-gray-500">Uploading image...</div>
+              <div className="mt-2 text-sm text-muted-foreground">Uploading image...</div>
             )}
           </CardContent>
         </Card>
@@ -151,16 +151,16 @@ export function EnhancedProfileScreen({ onBack }: EnhancedProfileScreenProps) {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm text-gray-600">Account Number</Label>
+                <Label className="text-sm text-muted-foreground">Account Number</Label>
                 <div className="font-medium">{profile.accountNumber}</div>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Current Balance</Label>
-                <div className="font-medium text-[#004A9F]">₦ {formatCurrency(profile.balance)}</div>
+                <Label className="text-sm text-muted-foreground">Current Balance</Label>
+                <div className="font-medium text-primary">₦ {formatCurrency(profile.balance)}</div>
               </div>
             </div>
             <div>
-              <Label htmlFor="bvn" className="text-sm text-gray-600">BVN</Label>
+              <Label htmlFor="bvn" className="text-sm text-muted-foreground">BVN</Label>
               {isEditing ? (
                 <Input
                   id="bvn"
@@ -260,7 +260,7 @@ export function EnhancedProfileScreen({ onBack }: EnhancedProfileScreenProps) {
             <Button variant="outline" onClick={handleCancel} className="flex-1 bg-transparent">
               Cancel
             </Button>
-            <Button onClick={handleSave} className="flex-1 bg-[#004A9F] hover:bg-[#003875]">
+            <Button onClick={handleSave} className="flex-1 bg-primary hover:bg-primary/90">
               <Save className="h-4 w-4 mr-2" />
               Save Changes
             </Button>

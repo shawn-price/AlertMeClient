@@ -110,20 +110,20 @@ export function AddMoneyScreen({ onBack, onNavigate }: AddMoneyScreenProps) {
 
   if (isProcessing) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted/50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#004A9F] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <h2 className="text-xl font-semibold mb-2">Processing Payment...</h2>
-          <p className="text-gray-600">Please wait while we add money to your account</p>
+          <p className="text-muted-foreground">Please wait while we add money to your account</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -135,7 +135,7 @@ export function AddMoneyScreen({ onBack, onNavigate }: AddMoneyScreenProps) {
 
       <div className="px-4 py-6 space-y-6">
         {/* Current Balance */}
-        <Card className="bg-gradient-to-r from-[#004A9F] to-[#0072C6] text-white">
+        <Card className="bg-gradient-to-r from-primary to-primary/80 text-white">
           <CardContent className="p-4 text-center">
             <div className="text-sm opacity-80">Current Balance</div>
             <div className="text-2xl font-bold">₦ {formatCurrency(dataStore.getUserData().balance)}</div>
@@ -155,18 +155,18 @@ export function AddMoneyScreen({ onBack, onNavigate }: AddMoneyScreenProps) {
                   key={method.id}
                   className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
                     selectedMethod === method.id
-                      ? "border-[#004A9F] bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/40"
                   }`}
                   onClick={() => setSelectedMethod(method.id)}
                 >
                   <div className="flex items-center gap-3">
-                    <IconComponent className="h-5 w-5 text-[#004A9F]" />
+                    <IconComponent className="h-5 w-5 text-primary" />
                     <div className="flex-1">
                       <div className="font-medium text-sm">{method.name}</div>
-                      <div className="text-xs text-gray-600">{method.description}</div>
+                      <div className="text-xs text-muted-foreground">{method.description}</div>
                     </div>
-                    <div className="text-xs text-gray-500">{method.fee}</div>
+                    <div className="text-xs text-muted-foreground">{method.fee}</div>
                   </div>
                 </div>
               )
@@ -264,11 +264,11 @@ export function AddMoneyScreen({ onBack, onNavigate }: AddMoneyScreenProps) {
             <CardContent className="p-4">
               <div className="text-center">
                 <h3 className="font-semibold mb-2">USSD Instructions</h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Dial <span className="font-mono bg-gray-100 px-2 py-1 rounded">*737*1*{amount}#</span> from your
+                <p className="text-sm text-muted-foreground mb-4">
+                  Dial <span className="font-mono bg-muted px-2 py-1 rounded">*737*1*{amount}#</span> from your
                   registered phone number
                 </p>
-                <p className="text-xs text-gray-500">Follow the prompts to complete the transaction</p>
+                <p className="text-xs text-muted-foreground">Follow the prompts to complete the transaction</p>
               </div>
             </CardContent>
           </Card>
@@ -277,7 +277,7 @@ export function AddMoneyScreen({ onBack, onNavigate }: AddMoneyScreenProps) {
         {/* Add Money Button */}
         <Button
           onClick={handleAddMoney}
-          className="w-full bg-[#A4D233] hover:bg-[#8BC220] text-black py-3"
+          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground py-3"
           disabled={!selectedMethod || !amount}
         >
           <Plus className="h-4 w-4 mr-2" />
