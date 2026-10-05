@@ -19,7 +19,7 @@ export function TransactionDetailScreen({ transactionId, onBack }: TransactionDe
 
   if (!transaction) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted/50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Transaction Not Found</h2>
           <Button onClick={onBack}>Go Back</Button>
@@ -37,20 +37,20 @@ export function TransactionDetailScreen({ transactionId, onBack }: TransactionDe
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Successful":
-        return "bg-green-100 text-green-800"
+        return "bg-success/15 text-success"
       case "Pending":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-warning/15 text-warning"
       case "Failed":
-        return "bg-red-100 text-red-800"
+        return "bg-destructive/15 text-destructive"
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-muted text-foreground"
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -67,15 +67,15 @@ export function TransactionDetailScreen({ transactionId, onBack }: TransactionDe
 
       <div className="px-4 py-6 space-y-6">
         {/* Status Card */}
-        <Card className="bg-white">
+        <Card className="bg-card">
           <CardContent className="p-6 text-center">
             <div
               className={`w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center ${
                 transaction.status === "Successful"
-                  ? "bg-green-500"
+                  ? "bg-success"
                   : transaction.status === "Pending"
-                    ? "bg-yellow-500"
-                    : "bg-red-500"
+                    ? "bg-warning"
+                    : "bg-destructive"
               }`}
             >
               <Check className="h-8 w-8 text-white" />
@@ -95,33 +95,33 @@ export function TransactionDetailScreen({ transactionId, onBack }: TransactionDe
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-sm text-gray-600">Date</div>
+                <div className="text-sm text-muted-foreground">Date</div>
                 <div className="font-medium">{new Date(transaction.date).toLocaleDateString()}</div>
               </div>
               <div>
-                <div className="text-sm text-gray-600">Time</div>
+                <div className="text-sm text-muted-foreground">Time</div>
                 <div className="font-medium">{transaction.time}</div>
               </div>
             </div>
 
             <div>
-              <div className="text-sm text-gray-600">Reference Number</div>
+              <div className="text-sm text-muted-foreground">Reference Number</div>
               <div className="flex items-center gap-2">
                 <span className="font-medium">{transaction.reference}</span>
                 <Button variant="ghost" size="sm" onClick={copyReference}>
-                  {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                  {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
                 </Button>
               </div>
             </div>
 
             <div>
-              <div className="text-sm text-gray-600">Description</div>
+              <div className="text-sm text-muted-foreground">Description</div>
               <div className="font-medium">{transaction.description}</div>
             </div>
 
             {transaction.fee && (
               <div>
-                <div className="text-sm text-gray-600">Transaction Fee</div>
+                <div className="text-sm text-muted-foreground">Transaction Fee</div>
                 <div className="font-medium">₦{transaction.fee.toFixed(2)}</div>
               </div>
             )}
@@ -135,13 +135,13 @@ export function TransactionDetailScreen({ transactionId, onBack }: TransactionDe
               <h3 className="font-semibold text-lg mb-4">{transaction.isDebit ? "Recipient" : "Sender"} Information</h3>
 
               <div>
-                <div className="text-sm text-gray-600">Name</div>
+                <div className="text-sm text-muted-foreground">Name</div>
                 <div className="font-medium">{transaction.recipient || transaction.sender}</div>
               </div>
 
               {(transaction.recipientAccount || transaction.senderAccount) && (
                 <div>
-                  <div className="text-sm text-gray-600">Account Number</div>
+                  <div className="text-sm text-muted-foreground">Account Number</div>
                   <div className="font-medium">
                     {transaction.isDebit ? transaction.recipientAccount : transaction.senderAccount}
                   </div>
@@ -150,7 +150,7 @@ export function TransactionDetailScreen({ transactionId, onBack }: TransactionDe
 
               {(transaction.recipientBank || transaction.senderBank) && (
                 <div>
-                  <div className="text-sm text-gray-600">Bank</div>
+                  <div className="text-sm text-muted-foreground">Bank</div>
                   <div className="font-medium">
                     {transaction.isDebit ? transaction.recipientBank : transaction.senderBank}
                   </div>
@@ -166,17 +166,17 @@ export function TransactionDetailScreen({ transactionId, onBack }: TransactionDe
             <h3 className="font-semibold text-lg mb-4">Your Account Information</h3>
 
             <div>
-              <div className="text-sm text-gray-600">Account Name</div>
+              <div className="text-sm text-muted-foreground">Account Name</div>
               <div className="font-medium">{dataStore.getUserData().name}</div>
             </div>
 
             <div>
-              <div className="text-sm text-gray-600">Account Number</div>
+              <div className="text-sm text-muted-foreground">Account Number</div>
               <div className="font-medium">{dataStore.getUserData().accountNumber}</div>
             </div>
 
             <div>
-              <div className="text-sm text-gray-600">Bank</div>
+              <div className="text-sm text-muted-foreground">Bank</div>
               <div className="font-medium">Ecobank Nigeria</div>
             </div>
           </CardContent>
@@ -184,7 +184,7 @@ export function TransactionDetailScreen({ transactionId, onBack }: TransactionDe
 
         {/* Action Buttons */}
         <div className="space-y-3">
-          <Button className="w-full bg-[#004A9F] hover:bg-[#003875] text-white py-3">Download Receipt</Button>
+          <Button className="w-full bg-primary hover:bg-primary/90 text-white py-3">Download Receipt</Button>
           <Button variant="outline" className="w-full py-3 bg-transparent">
             Share Transaction
           </Button>
