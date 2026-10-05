@@ -41,7 +41,7 @@ export function VirtualCardsScreen({ onBack, onNavigate }: VirtualCardsScreenPro
       isActive: true,
       isLocked: false,
       type: "visa",
-      color: "from-blue-500 to-blue-700",
+      color: "from-primary to-primary/70",
     },
     {
       id: "2",
@@ -125,9 +125,9 @@ export function VirtualCardsScreen({ onBack, onNavigate }: VirtualCardsScreenPro
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -142,24 +142,24 @@ export function VirtualCardsScreen({ onBack, onNavigate }: VirtualCardsScreenPro
         <div className="grid grid-cols-3 gap-3">
           <Card className="text-center">
             <CardContent className="p-4">
-              <div className="text-lg font-bold text-[#004A9F]">{cards.length}</div>
-              <div className="text-xs text-gray-600">Total Cards</div>
+              <div className="text-lg font-bold text-primary">{cards.length}</div>
+              <div className="text-xs text-muted-foreground">Total Cards</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="p-4">
-              <div className="text-lg font-bold text-[#00B2A9]">
+              <div className="text-lg font-bold text-secondary">
                 {cards.filter((c) => c.isActive && !c.isLocked).length}
               </div>
-              <div className="text-xs text-gray-600">Active</div>
+              <div className="text-xs text-muted-foreground">Active</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="p-4">
-              <div className="text-lg font-bold text-[#A4D233]">
+              <div className="text-lg font-bold text-accent">
                 ₦{formatCurrency(cards.reduce((sum, card) => sum + card.balance, 0))}
               </div>
-              <div className="text-xs text-gray-600">Total Balance</div>
+              <div className="text-xs text-muted-foreground">Total Balance</div>
             </CardContent>
           </Card>
         </div>
@@ -167,7 +167,7 @@ export function VirtualCardsScreen({ onBack, onNavigate }: VirtualCardsScreenPro
         {/* Create Card Button */}
         <Button
           onClick={() => setShowCreateModal(true)}
-          className="w-full bg-[#004A9F] hover:bg-[#003875] text-white py-3"
+          className="w-full bg-primary hover:bg-primary/90 text-white py-3"
         >
           <Plus className="h-4 w-4 mr-2" />
           Create New Virtual Card
@@ -187,7 +187,7 @@ export function VirtualCardsScreen({ onBack, onNavigate }: VirtualCardsScreenPro
                     </div>
                     <div className="flex gap-2">
                       {card.isLocked && <Lock className="h-4 w-4" />}
-                      <Badge className={`${card.isActive ? "bg-green-500" : "bg-red-500"} text-white`}>
+                      <Badge className={`${card.isActive ? "bg-success" : "bg-destructive"} text-white`}>
                         {card.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </div>
@@ -216,7 +216,7 @@ export function VirtualCardsScreen({ onBack, onNavigate }: VirtualCardsScreenPro
                 </div>
 
                 {/* Card Actions */}
-                <div className="p-4 bg-white">
+                <div className="p-4 bg-card">
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
                       <Button
@@ -233,7 +233,7 @@ export function VirtualCardsScreen({ onBack, onNavigate }: VirtualCardsScreenPro
                         variant="outline"
                         size="sm"
                         onClick={() => toggleCardLock(card.id)}
-                        className={card.isLocked ? "text-red-600" : "text-green-600"}
+                        className={card.isLocked ? "text-destructive" : "text-success"}
                       >
                         {card.isLocked ? <Unlock className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
                       </Button>
@@ -243,7 +243,7 @@ export function VirtualCardsScreen({ onBack, onNavigate }: VirtualCardsScreenPro
                         <Settings className="h-4 w-4" />
                       </Button>
                       <Button variant="outline" size="sm" onClick={() => deleteCard(card.id)}>
-                        <Trash2 className="h-4 w-4 text-red-500" />
+                        <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>
                   </div>
@@ -255,10 +255,10 @@ export function VirtualCardsScreen({ onBack, onNavigate }: VirtualCardsScreenPro
 
         {cards.length === 0 && (
           <div className="text-center py-12">
-            <CreditCard className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-600 mb-2">No Virtual Cards</h3>
-            <p className="text-gray-500 mb-4">Create your first virtual card to get started</p>
-            <Button onClick={() => setShowCreateModal(true)} className="bg-[#004A9F] hover:bg-[#003875]">
+            <CreditCard className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-muted-foreground mb-2">No Virtual Cards</h3>
+            <p className="text-muted-foreground mb-4">Create your first virtual card to get started</p>
+            <Button onClick={() => setShowCreateModal(true)} className="bg-primary hover:bg-primary/90">
               Create Card
             </Button>
           </div>
@@ -267,8 +267,8 @@ export function VirtualCardsScreen({ onBack, onNavigate }: VirtualCardsScreenPro
 
       {/* Create Card Modal */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-        <DialogContent className="max-w-sm mx-auto bg-white dark:bg-gray-900">
-          <DialogHeader className="bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 -m-6 mb-4 p-6 rounded-t-2xl border-b border-gray-200/50 dark:border-gray-700/50">
+        <DialogContent className="max-w-sm mx-auto bg-card">
+          <DialogHeader className="bg-gradient-to-r from-muted/50 to-card -m-6 mb-4 p-6 rounded-t-2xl border-b border-border/50">
             <DialogTitle className="text-base font-semibold">Create Virtual Card</DialogTitle>
           </DialogHeader>
 
@@ -298,7 +298,7 @@ export function VirtualCardsScreen({ onBack, onNavigate }: VirtualCardsScreenPro
               <Button variant="outline" onClick={() => setShowCreateModal(false)} className="flex-1">
                 Cancel
               </Button>
-              <Button onClick={handleCreateCard} className="flex-1 bg-[#004A9F] hover:bg-[#003875]">
+              <Button onClick={handleCreateCard} className="flex-1 bg-primary hover:bg-primary/90">
                 Create Card
               </Button>
             </div>

@@ -104,9 +104,9 @@ export function DetailedReceiptScreen({ onBack, transferData }: DetailedReceiptS
 
   if (!receiptData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted/50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-[#004A9F] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p>Generating receipt...</p>
         </div>
       </div>
@@ -114,9 +114,9 @@ export function DetailedReceiptScreen({ onBack, transferData }: DetailedReceiptS
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-muted/50 pb-24">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -133,47 +133,47 @@ export function DetailedReceiptScreen({ onBack, transferData }: DetailedReceiptS
 
       <div className="px-4 py-6">
         {/* Receipt Card */}
-        <Card className="bg-white shadow-lg">
+        <Card className="bg-card shadow-lg">
           <CardContent className="p-6">
             {/* Header */}
             <div className="text-center mb-6 pb-4 border-b border-dashed">
-              <div className="text-2xl font-bold text-[#004A9F] mb-2">Ecobank Nigeria</div>
-              <div className="text-sm text-gray-600">The Pan African Bank</div>
-              <div className="text-xs text-gray-500 mt-2">TRANSACTION RECEIPT</div>
+              <div className="text-2xl font-bold text-primary mb-2">Ecobank Nigeria</div>
+              <div className="text-sm text-muted-foreground">The Pan African Bank</div>
+              <div className="text-xs text-muted-foreground mt-2">TRANSACTION RECEIPT</div>
             </div>
 
             {/* Receipt Details */}
             <div className="space-y-4 mb-6">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Receipt No:</span>
+                <span className="text-sm text-muted-foreground">Receipt No:</span>
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-sm">{receiptData.receiptNumber}</span>
                   <Button variant="ghost" size="sm" onClick={copyReceiptNumber}>
-                    {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+                    {copied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
                   </Button>
                 </div>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Transaction Ref:</span>
+                <span className="text-sm text-muted-foreground">Transaction Ref:</span>
                 <span className="font-mono text-sm">{receiptData.transactionRef}</span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Date & Time:</span>
+                <span className="text-sm text-muted-foreground">Date & Time:</span>
                 <span className="text-sm">
                   {receiptData.date} {receiptData.time}
                 </span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Channel:</span>
+                <span className="text-sm text-muted-foreground">Channel:</span>
                 <span className="text-sm">{receiptData.channel}</span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Status:</span>
-                <span className="text-sm text-green-600 font-medium">{receiptData.status}</span>
+                <span className="text-sm text-muted-foreground">Status:</span>
+                <span className="text-sm text-success font-medium">{receiptData.status}</span>
               </div>
             </div>
 
@@ -183,38 +183,38 @@ export function DetailedReceiptScreen({ onBack, transferData }: DetailedReceiptS
 
               <div className="space-y-4">
                 {/* Sender Details */}
-                <div className="bg-blue-50 rounded p-3">
-                  <div className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-2">FROM (SENDER)</div>
+                <div className="bg-primary/5 rounded p-3">
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide font-semibold mb-2">FROM (SENDER)</div>
                   <div className="space-y-1">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Name:</span>
+                      <span className="text-muted-foreground">Name:</span>
                       <span className="font-medium">{receiptData.sender.name}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Account:</span>
+                      <span className="text-muted-foreground">Account:</span>
                       <span className="font-mono text-xs">{receiptData.sender.account}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Bank:</span>
+                      <span className="text-muted-foreground">Bank:</span>
                       <span className="font-medium">{receiptData.sender.bank}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Recipient Details */}
-                <div className="bg-green-50 rounded p-3">
-                  <div className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-2">TO (RECIPIENT)</div>
+                <div className="bg-success/10 rounded p-3">
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide font-semibold mb-2">TO (RECIPIENT)</div>
                   <div className="space-y-1">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Name:</span>
+                      <span className="text-muted-foreground">Name:</span>
                       <span className="font-medium">{receiptData.recipient.name || "N/A"}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Account:</span>
+                      <span className="text-muted-foreground">Account:</span>
                       <span className="font-mono text-xs">{receiptData.recipient.account || "N/A"}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Bank:</span>
+                      <span className="text-muted-foreground">Bank:</span>
                       <span className="font-medium">{receiptData.recipient.bank || "N/A"}</span>
                     </div>
                   </div>
@@ -222,8 +222,8 @@ export function DetailedReceiptScreen({ onBack, transferData }: DetailedReceiptS
 
                 {/* Transaction Purpose */}
                 <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wide mb-1 font-semibold">TRANSACTION PURPOSE</div>
-                  <div className="text-sm bg-gray-50 p-2 rounded">{receiptData.remark}</div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1 font-semibold">TRANSACTION PURPOSE</div>
+                  <div className="text-sm bg-muted/50 p-2 rounded">{receiptData.remark}</div>
                 </div>
               </div>
             </div>
@@ -250,13 +250,13 @@ export function DetailedReceiptScreen({ onBack, transferData }: DetailedReceiptS
 
             {/* Footer */}
             <div className="border-t border-dashed pt-4 text-center">
-              <div className="text-xs text-gray-500 mb-2">
+              <div className="text-xs text-muted-foreground mb-2">
                 This is a computer generated receipt and does not require signature
               </div>
-              <div className="text-xs text-gray-400">
+              <div className="text-xs text-muted-foreground">
                 Generated on {receiptData.date} at {receiptData.time}
               </div>
-              <div className="text-xs text-gray-400 mt-2">
+              <div className="text-xs text-muted-foreground mt-2">
                 For enquiries, call 0700-ECOBANK or visit www.ecobank.com
               </div>
             </div>
@@ -265,7 +265,7 @@ export function DetailedReceiptScreen({ onBack, transferData }: DetailedReceiptS
 
         {/* Action Buttons */}
         <div className="mt-6 space-y-3">
-          <Button onClick={handleDownload} className="w-full bg-[#004A9F] hover:bg-[#003875] text-white py-3">
+          <Button onClick={handleDownload} className="w-full bg-primary hover:bg-primary/90 text-white py-3">
             <Download className="h-4 w-4 mr-2" />
             Download PDF Receipt
           </Button>
