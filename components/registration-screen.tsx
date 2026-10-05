@@ -99,7 +99,7 @@ export function RegistrationScreen({ onRegister, onBackToLogin }: RegistrationSc
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#004A9F] via-[#0072C6] to-[#00B2A9] flex flex-col items-center justify-center px-6 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-[#0072C6] to-[#00B2A9] flex flex-col items-center justify-center px-6 relative overflow-hidden">
       <div className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse"></div>
       <div className="absolute bottom-32 right-8 w-24 h-24 bg-white/5 rounded-full blur-lg animate-bounce"></div>
 
@@ -120,7 +120,7 @@ export function RegistrationScreen({ onRegister, onBackToLogin }: RegistrationSc
           </div>
         </div>
 
-        <Card className="bg-white/95 backdrop-blur-xl shadow-2xl border-0 overflow-hidden">
+        <Card className="bg-card/95 backdrop-blur-xl shadow-2xl border-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none"></div>
           <CardContent className="p-8 space-y-6 relative">
             <div className="flex gap-2 mb-6">
@@ -131,33 +131,33 @@ export function RegistrationScreen({ onRegister, onBackToLogin }: RegistrationSc
                     (step === "email" && s === "email") ||
                     (step === "details" && (s === "email" || s === "details")) ||
                     (step === "pin" && ["email", "details", "pin"].includes(s))
-                      ? "bg-[#004A9F]"
-                      : "bg-gray-300"
+                      ? "bg-primary"
+                      : "bg-muted"
                   }`}
                 ></div>
               ))}
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{error}</div>
+              <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-lg text-sm">{error}</div>
             )}
 
             {step === "email" && (
               <Form methods={methods} onSubmit={() => {}}>
                 <div className="space-y-4">
-                  <h2 className="text-xl font-bold text-gray-800">Create Account</h2>
-                  <p className="text-gray-600 text-sm">Step 1 of 3: Email Address</p>
+                  <h2 className="text-xl font-bold text-foreground">Create Account</h2>
+                  <p className="text-muted-foreground text-sm">Step 1 of 3: Email Address</p>
                   <Input
                     type="email"
                     placeholder="Enter email address"
                     {...methods.register("email")}
-                    className="w-full h-12 rounded-xl border-2 border-gray-200 focus:border-[#004A9F] focus:ring-0 bg-white/80 backdrop-blur-sm transition-all duration-200"
+                    className="w-full h-12 rounded-xl border-2 border-border focus:border-primary focus:ring-0 bg-card/80 backdrop-blur-sm transition-all duration-200"
                   />
                   <FormError name="email" />
                   <Button
                     type="button"
                     onClick={handleEmailSubmit}
-                    className="w-full h-12 bg-gradient-to-r from-[#A4D233] to-[#8BC220] hover:from-[#8BC220] hover:to-[#7AB01F] text-black font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                    className="w-full h-12 bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 text-accent-foreground font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
                   >
                     Continue
                     <ChevronRight className="h-4 w-4 ml-2" />
@@ -169,13 +169,13 @@ export function RegistrationScreen({ onRegister, onBackToLogin }: RegistrationSc
             {step === "details" && (
               <Form methods={methods} onSubmit={() => {}}>
                 <div className="space-y-4">
-                  <h2 className="text-xl font-bold text-gray-800">Create Account</h2>
-                  <p className="text-gray-600 text-sm">Step 2 of 3: Account Details</p>
+                  <h2 className="text-xl font-bold text-foreground">Create Account</h2>
+                  <p className="text-muted-foreground text-sm">Step 2 of 3: Account Details</p>
                   <Input
                     type="text"
                     placeholder="Enter full name"
                     {...methods.register("fullName")}
-                    className="w-full h-12 rounded-xl border-2 border-gray-200 focus:border-[#004A9F] focus:ring-0 bg-white/80 backdrop-blur-sm transition-all duration-200"
+                    className="w-full h-12 rounded-xl border-2 border-border focus:border-primary focus:ring-0 bg-card/80 backdrop-blur-sm transition-all duration-200"
                   />
                   <FormError name="fullName" />
                   <Input
@@ -185,7 +185,7 @@ export function RegistrationScreen({ onRegister, onBackToLogin }: RegistrationSc
                     maxLength={10}
                     pattern="\d{10}"
                     {...methods.register("accountNumber")}
-                    className="w-full h-12 rounded-xl border-2 border-gray-200 focus:border-[#004A9F] focus:ring-0 bg-white/80 backdrop-blur-sm transition-all duration-200"
+                    className="w-full h-12 rounded-xl border-2 border-border focus:border-primary focus:ring-0 bg-card/80 backdrop-blur-sm transition-all duration-200"
                     onChange={(e) => methods.setValue("accountNumber", e.target.value.replace(/\D/g, "").slice(0,10))}
                   />
                   <FormError name="accountNumber" />
@@ -196,7 +196,7 @@ export function RegistrationScreen({ onRegister, onBackToLogin }: RegistrationSc
                     maxLength={14}
                     pattern="\+\d{13}"
                     {...methods.register("phone")}
-                    className="w-full h-12 rounded-xl border-2 border-gray-200 focus:border-[#004A9F] focus:ring-0 bg-white/80 backdrop-blur-sm transition-all duration-200"
+                    className="w-full h-12 rounded-xl border-2 border-border focus:border-primary focus:ring-0 bg-card/80 backdrop-blur-sm transition-all duration-200"
                     onChange={(e) => {
                       let val = e.target.value
                       if (!val.startsWith("+")) {
@@ -212,14 +212,14 @@ export function RegistrationScreen({ onRegister, onBackToLogin }: RegistrationSc
                     <Button
                       onClick={() => setStep("email")}
                       variant="outline"
-                      className="flex-1 h-12 rounded-xl border-2 border-gray-200 hover:border-gray-300"
+                      className="flex-1 h-12 rounded-xl border-2 border-border hover:border-primary/40"
                     >
                       Back
                     </Button>
                     <Button
                       type="button"
                       onClick={handleDetailsSubmit}
-                      className="flex-1 h-12 bg-gradient-to-r from-[#A4D233] to-[#8BC220] hover:from-[#8BC220] hover:to-[#7AB01F] text-black font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                      className="flex-1 h-12 bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 text-accent-foreground font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
                     >
                       Continue
                       <ChevronRight className="h-4 w-4 ml-2" />
@@ -232,17 +232,17 @@ export function RegistrationScreen({ onRegister, onBackToLogin }: RegistrationSc
             {step === "pin" && (
               <Form methods={methods} onSubmit={handleRegister}>
                 <div className="space-y-4">
-                  <h2 className="text-xl font-bold text-gray-800">Create Account</h2>
-                  <p className="text-gray-600 text-sm">Step 3 of 3: Set Your PIN</p>
+                  <h2 className="text-xl font-bold text-foreground">Create Account</h2>
+                  <p className="text-muted-foreground text-sm">Step 3 of 3: Set Your PIN</p>
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700 block">Create 4-Digit PIN</label>
+                    <label className="text-sm font-semibold text-foreground block">Create 4-Digit PIN</label>
                     <div className="relative">
                       <Input
                         type={showPin ? "text" : "password"}
                         placeholder="Enter PIN"
                         {...methods.register("pin")}
                         maxLength={4}
-                        className="w-full h-12 rounded-xl border-2 border-gray-200 focus:border-[#004A9F] focus:ring-0 bg-white/80 backdrop-blur-sm transition-all duration-200 pr-12"
+                        className="w-full h-12 rounded-xl border-2 border-border focus:border-primary focus:ring-0 bg-card/80 backdrop-blur-sm transition-all duration-200 pr-12"
                         onChange={(e) => handlePinChange(e as any, "pin")}
                       />
                       <FormError name="pin" />
@@ -250,7 +250,7 @@ export function RegistrationScreen({ onRegister, onBackToLogin }: RegistrationSc
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-gray-500 hover:text-gray-700"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground"
                         onClick={() => setShowPin(!showPin)}
                       >
                         {showPin ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -258,14 +258,14 @@ export function RegistrationScreen({ onRegister, onBackToLogin }: RegistrationSc
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700 block">Confirm PIN</label>
+                    <label className="text-sm font-semibold text-foreground block">Confirm PIN</label>
                     <div className="relative">
                       <Input
                         type={showConfirmPin ? "text" : "password"}
                         placeholder="Confirm PIN"
                         {...methods.register("confirmPin")}
                         maxLength={4}
-                        className="w-full h-12 rounded-xl border-2 border-gray-200 focus:border-[#004A9F] focus:ring-0 bg-white/80 backdrop-blur-sm transition-all duration-200 pr-12"
+                        className="w-full h-12 rounded-xl border-2 border-border focus:border-primary focus:ring-0 bg-card/80 backdrop-blur-sm transition-all duration-200 pr-12"
                         onChange={(e) => handlePinChange(e as any, "confirmPin")}
                       />
                       <FormError name="confirmPin" />
@@ -273,7 +273,7 @@ export function RegistrationScreen({ onRegister, onBackToLogin }: RegistrationSc
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-gray-500 hover:text-gray-700"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground"
                         onClick={() => setShowConfirmPin(!showConfirmPin)}
                       >
                         {showConfirmPin ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -284,14 +284,14 @@ export function RegistrationScreen({ onRegister, onBackToLogin }: RegistrationSc
                     <Button
                       onClick={() => setStep("details")}
                       variant="outline"
-                      className="flex-1 h-12 rounded-xl border-2 border-gray-200 hover:border-gray-300"
+                      className="flex-1 h-12 rounded-xl border-2 border-border hover:border-primary/40"
                     >
                       Back
                     </Button>
                     <Button
                       type="submit"
                       disabled={isLoading}
-                      className="flex-1 h-12 bg-gradient-to-r from-[#A4D233] to-[#8BC220] hover:from-[#8BC220] hover:to-[#7AB01F] text-black font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] disabled:opacity-50"
+                      className="flex-1 h-12 bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 text-accent-foreground font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] disabled:opacity-50"
                     >
                       {isLoading ? (
                         <div className="flex items-center gap-2">
@@ -307,13 +307,13 @@ export function RegistrationScreen({ onRegister, onBackToLogin }: RegistrationSc
               </Form>
             )}
 
-            <div className="text-center pt-4 border-t border-gray-200">
-              <p className="text-gray-600 text-sm">
+            <div className="text-center pt-4 border-t border-border">
+              <p className="text-muted-foreground text-sm">
                 Already have an account?{" "}
                 <Button
                   variant="link"
                   onClick={onBackToLogin}
-                  className="text-[#004A9F] text-sm p-0 font-semibold hover:text-[#003875]"
+                  className="text-primary text-sm p-0 font-semibold hover:text-primary/80"
                 >
                   Sign In
                 </Button>

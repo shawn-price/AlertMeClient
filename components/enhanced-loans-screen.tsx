@@ -135,9 +135,9 @@ export function EnhancedLoansScreen({ onBack, onNavigate }: EnhancedLoansScreenP
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted/50">
       {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b shadow-sm">
+      <div className="bg-card px-4 py-4 flex items-center justify-between border-b shadow-sm">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -150,7 +150,7 @@ export function EnhancedLoansScreen({ onBack, onNavigate }: EnhancedLoansScreenP
       <div className="px-4 py-6 space-y-6">
         <Button
           onClick={() => onNavigate("loan-requirements")}
-          className="w-full bg-[#A4D233] hover:bg-[#8BC220] text-black py-3 flex items-center justify-center gap-2"
+          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground py-3 flex items-center justify-center gap-2"
         >
           <ClipboardList className="h-4 w-4" />
           Review Loan Requirements
@@ -167,18 +167,18 @@ export function EnhancedLoansScreen({ onBack, onNavigate }: EnhancedLoansScreenP
             </CardHeader>
             <CardContent className="space-y-3">
               {loanApplications.map((application) => (
-                <div key={application.id} className="p-4 bg-gray-50 rounded-lg space-y-3">
+                <div key={application.id} className="p-4 bg-muted/50 rounded-lg space-y-3">
                   <div className="flex items-center justify-between mb-2">
                     <div className="font-medium">{application.type}</div>
                     <Badge
                       className={`${
                         application.status === "Approved"
-                          ? "bg-green-100 text-green-800"
+                          ? "bg-success/15 text-success"
                           : application.status === "Rejected"
-                            ? "bg-red-100 text-red-800"
+                            ? "bg-destructive/15 text-destructive"
                             : application.status === "Under Review"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-blue-100 text-blue-800"
+                              ? "bg-warning/15 text-warning"
+                              : "bg-primary/10 text-primary"
                       }`}
                     >
                       {application.status}
@@ -186,19 +186,19 @@ export function EnhancedLoansScreen({ onBack, onNavigate }: EnhancedLoansScreenP
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <div className="text-gray-600">Amount</div>
+                      <div className="text-muted-foreground">Amount</div>
                       <div className="font-medium">₦{formatCurrency(application.amount)}</div>
                     </div>
                     <div>
-                      <div className="text-gray-600">Monthly Payment</div>
+                      <div className="text-muted-foreground">Monthly Payment</div>
                       <div className="font-medium">₦{formatCurrency(application.monthlyPayment)}</div>
                     </div>
                     <div>
-                      <div className="text-gray-600">Term</div>
+                      <div className="text-muted-foreground">Term</div>
                       <div className="font-medium">{application.term} months</div>
                     </div>
                     <div>
-                      <div className="text-gray-600">Applied</div>
+                      <div className="text-muted-foreground">Applied</div>
                       <div className="font-medium">{new Date(application.applicationDate).toLocaleDateString()}</div>
                     </div>
                   </div>
@@ -206,7 +206,7 @@ export function EnhancedLoansScreen({ onBack, onNavigate }: EnhancedLoansScreenP
                     {(application.status === "Submitted" || application.status === "Under Review") && (
                       <Button
                         onClick={() => setSelectedApplication(application)}
-                        className="bg-[#A4D233] hover:bg-[#8BC220] text-black py-2 text-sm"
+                        className="bg-accent hover:bg-accent/90 text-accent-foreground py-2 text-sm"
                       >
                         <Upload className="h-4 w-4 mr-2" />
                         Documents
@@ -215,7 +215,7 @@ export function EnhancedLoansScreen({ onBack, onNavigate }: EnhancedLoansScreenP
                     {application.status === "Approved" && (
                       <Button
                         onClick={() => onNavigate("loan-agreement")}
-                        className="bg-[#004A9F] hover:bg-[#003875] text-white py-2 text-sm col-span-2"
+                        className="bg-primary hover:bg-primary/90 text-white py-2 text-sm col-span-2"
                       >
                         <FileText className="h-4 w-4 mr-2" />
                         View & Sign Agreement
@@ -266,7 +266,7 @@ export function EnhancedLoansScreen({ onBack, onNavigate }: EnhancedLoansScreenP
                 max={selectedLoanType ? loanTypes.find((t) => t.id === selectedLoanType)?.maxAmount : undefined}
               />
               {selectedLoanType && (
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Maximum: ₦{formatCurrency(loanTypes.find((t) => t.id === selectedLoanType)?.maxAmount || 0)}
                 </p>
               )}
@@ -310,7 +310,7 @@ export function EnhancedLoansScreen({ onBack, onNavigate }: EnhancedLoansScreenP
 
             {/* Loan Calculator Results */}
             {loanDetails && (
-              <div className="bg-[#004A9F] text-white p-4 rounded-lg">
+              <div className="bg-primary text-white p-4 rounded-lg">
                 <h4 className="font-semibold mb-3">Loan Summary</h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
@@ -345,22 +345,22 @@ export function EnhancedLoansScreen({ onBack, onNavigate }: EnhancedLoansScreenP
               <div
                 key={loan.id}
                 className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                  selectedLoanType === loan.id ? "border-[#004A9F] bg-blue-50" : "border-gray-200 hover:border-gray-300"
+                  selectedLoanType === loan.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
                 }`}
                 onClick={() => setSelectedLoanType(loan.id)}
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="font-medium">{loan.name}</div>
-                  <Badge className="bg-[#A4D233] text-black">{loan.rate}% APR</Badge>
+                  <Badge className="bg-accent text-accent-foreground">{loan.rate}% APR</Badge>
                 </div>
-                <div className="text-sm text-gray-600 mb-3">{loan.description}</div>
+                <div className="text-sm text-muted-foreground mb-3">{loan.description}</div>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <div className="text-gray-600">Max Amount</div>
+                    <div className="text-muted-foreground">Max Amount</div>
                     <div className="font-medium">₦{formatCurrency(loan.maxAmount)}</div>
                   </div>
                   <div>
-                    <div className="text-gray-600">Term</div>
+                    <div className="text-muted-foreground">Term</div>
                     <div className="font-medium">{loan.term}</div>
                   </div>
                 </div>
@@ -371,7 +371,7 @@ export function EnhancedLoansScreen({ onBack, onNavigate }: EnhancedLoansScreenP
 
         {/* Apply Button */}
         <Button
-          className="w-full bg-[#004A9F] hover:bg-[#003875] text-white py-3"
+          className="w-full bg-primary hover:bg-primary/90 text-white py-3"
           disabled={!selectedLoanType || !loanAmount || !loanTerm || !loanPurpose || isSubmitting}
           onClick={handleApplyForLoan}
         >
