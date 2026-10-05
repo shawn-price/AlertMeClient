@@ -26,7 +26,7 @@ export function TransferOptions({ onBack, onNavigate }: TransferOptionsProps) {
       id: "ecobank-domestic",
       title: "Ecobank Domestic",
       icon: ArrowLeftRight,
-      bgColor: "bg-[#004A9F]",
+      bgColor: "bg-primary",
       screen: "ecobank-domestic",
       description: "Transfer to other Ecobank accounts in Nigeria",
       fee: "₦0",
@@ -35,7 +35,7 @@ export function TransferOptions({ onBack, onNavigate }: TransferOptionsProps) {
       id: "other-banks",
       title: "Other Local Banks",
       icon: Building2,
-      bgColor: "bg-gray-600",
+      bgColor: "bg-muted-foreground",
       screen: "other-banks",
       description: "Transfer to other banks in Nigeria",
       fee: "₦30",
@@ -44,7 +44,7 @@ export function TransferOptions({ onBack, onNavigate }: TransferOptionsProps) {
       id: "ecobank-africa",
       title: "Ecobank Africa",
       icon: Globe,
-      bgColor: "bg-[#00B2A9]",
+      bgColor: "bg-secondary",
       screen: "ecobank-africa",
       description: "Transfer to Ecobank accounts across Africa",
       fee: "₦50",
@@ -97,9 +97,9 @@ export function TransferOptions({ onBack, onNavigate }: TransferOptionsProps) {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-muted">
       {/* Enhanced Header */}
-      <div className="bg-gradient-to-r from-[#004A9F] to-[#0072C6] text-white px-4 py-6 shadow-lg">
+      <div className="bg-gradient-to-r from-primary to-primary/80 text-white px-4 py-6 shadow-lg">
         <div className="flex items-center justify-between mb-4">
           <Button 
             variant="ghost" 
@@ -127,8 +127,8 @@ export function TransferOptions({ onBack, onNavigate }: TransferOptionsProps) {
       {/* Transfer Options */}
       <div className="px-4 py-6">
         <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-800">Choose Transfer Type</h2>
-          <p className="text-sm text-gray-500">Select how you want to send money</p>
+          <h2 className="text-lg font-semibold text-foreground">Choose Transfer Type</h2>
+          <p className="text-sm text-muted-foreground">Select how you want to send money</p>
         </div>
 
         <div className="space-y-3">
@@ -141,7 +141,7 @@ export function TransferOptions({ onBack, onNavigate }: TransferOptionsProps) {
               >
                 <Button
                   variant="ghost"
-                  className="w-full h-auto p-0 justify-between bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+                  className="w-full h-auto p-0 justify-between bg-card hover:bg-muted/50 border border-border rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
                   onClick={() => onNavigate(option.screen)}
                 >
                   <div className="flex items-center gap-4 p-4 flex-1">
@@ -149,13 +149,13 @@ export function TransferOptions({ onBack, onNavigate }: TransferOptionsProps) {
                       <IconComponent className="h-6 w-6 text-white" />
                     </div>
                     <div className="text-left flex-1">
-                      <div className="text-base font-semibold text-gray-900">{option.title}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">{option.description}</div>
-                      <div className="text-xs text-[#00B2A9] font-medium mt-1">Fee: {option.fee}</div>
+                      <div className="text-base font-semibold text-foreground">{option.title}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">{option.description}</div>
+                      <div className="text-xs text-secondary font-medium mt-1">Fee: {option.fee}</div>
                     </div>
                   </div>
                   <div className="pr-4">
-                    <ChevronRight className="h-5 w-5 text-gray-300 group-hover:text-[#004A9F] group-hover:translate-x-1 transition-all duration-300" />
+                    <ChevronRight className="h-5 w-5 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-1 transition-all duration-300" />
                   </div>
                 </Button>
               </div>
@@ -166,12 +166,12 @@ export function TransferOptions({ onBack, onNavigate }: TransferOptionsProps) {
 
       {/* Quick Help */}
       <div className="px-4 py-4">
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 border border-blue-100">
-          <h3 className="text-sm font-semibold text-gray-800 mb-2">Need Help?</h3>
-          <p className="text-xs text-gray-600">
+        <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-2xl p-4 border border-primary/15">
+          <h3 className="text-sm font-semibold text-foreground mb-2">Need Help?</h3>
+          <p className="text-xs text-muted-foreground">
             Contact our customer support for assistance with transfers. Available 24/7.
           </p>
-          <Button variant="link" className="text-[#004A9F] p-0 h-auto text-xs mt-2">
+          <Button variant="link" className="text-primary p-0 h-auto text-xs mt-2">
             Contact Support →
           </Button>
         </div>
