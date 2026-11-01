@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { AlertToastState, formatGatewayName, createAttemptMessage } from "@/lib/alert-toast-context"
+import { AlertToastState } from "@/lib/alert-toast-context"
 import { X, CheckCircle2, AlertCircle, Clock, Loader2 } from "lucide-react"
 
 interface AlertToastProps {
@@ -69,53 +69,6 @@ export function AlertToast({ toast, onDismiss }: AlertToastProps) {
           <h3 className="font-semibold text-foreground">{toast.title}</h3>
 
           {toast.description && <p className="text-sm text-muted-foreground mt-1">{toast.description}</p>}
-
-          {/* Progress indicator for attempts */}
-          {toast.attempts && toast.attempts.length > 0 && (
-            <div className="mt-2 space-y-2">
-              {/* Attempt message */}
-              <p className="text-xs text-muted-foreground">{createAttemptMessage(toast.attempts)}</p>
-
-              {/* Progress bar */}
-              {toast.currentAttempt && (
-                <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                  <div
-                    className="h-full bg-blue-500 transition-all duration-300"
-                    style={{
-                      width: `${((toast.currentAttempt.index + 1) / toast.currentAttempt.total) * 100}%`,
-                    }}
-                  />
-                </div>
-              )}
-
-              {/* Attempt timeline */}
-              <div className="flex gap-1 mt-1">
-                {toast.attempts.map((attempt, index) => (
-                  <div
-                    key={index}
-                    className="flex-1 h-1.5 rounded-full bg-gray-200 overflow-hidden"
-                    title={`${formatGatewayName(attempt.gateway)}: ${attempt.status}`}
-                  >
-                    {attempt.status === "success" && <div className="h-full w-full bg-success" />}
-                    {attempt.status === "failed" && <div className="h-full w-full bg-destructive" />}
-                    {attempt.status === "pending" && <div className="h-full w-full bg-blue-400 animate-pulse" />}
-                  </div>
-                ))}
-              </div>
-
-              {/* Attempt details */}
-              <div className="text-xs space-y-0.5 mt-1">
-                {toast.attempts.map((attempt, index) => (
-                  <div key={index} className="flex items-center justify-between text-muted-foreground">
-                    <span>{formatGatewayName(attempt.gateway)}</span>
-                    {attempt.status === "success" && <span className="text-success font-medium">✓ Sent</span>}
-                    {attempt.status === "failed" && <span className="text-destructive font-medium">✗ Failed</span>}
-                    {attempt.status === "pending" && <span className="text-blue-600 font-medium">→ Retrying</span>}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Action button */}
           {toast.action && (

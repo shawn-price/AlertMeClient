@@ -7,12 +7,6 @@ import {
 } from "./alert-templates"
 import { NIGERIAN_BANKS } from "./banks-data"
 
-export interface SMSAlert {
-  to: string
-  message: string
-  type: "debit" | "credit" | "balance" | "general"
-}
-
 export interface SMSTemplate {
   id: string
   name: string
@@ -21,148 +15,11 @@ export interface SMSTemplate {
   category: "transaction" | "marketing" | "notification"
 }
 
-export interface BusinessCard {
-  sender: string
-  accountNumber?: string
-  bank?: string
-  phone?: string
-  email?: string
-}
-
 export class SMSService {
-  private static retryAttempts = 3
-  private static retryDelay = 1000 // ms
-  private static lastError: string | null = null
-
-  static getLastError(): string | null {
-    return this.lastError
-  }
-
-  // Re-export alert generators for backward compatibility
   static generateDebitAlert = generateDebitAlert
   static generateCreditAlert = generateCreditAlert
   static generateBalanceInquiryAlert = generateBalanceInquiryAlert
   static generateLowBalanceAlert = generateLowBalanceAlert
-
-  private static async retryFetch(
-    url: string,
-    options: RequestInit,
-    attempts = 0
-  ): Promise<Response> {
-    try {
-      const response = await fetch(url, options)
-      if (!response.ok && attempts < this.retryAttempts - 1) {
-        await new Promise((resolve) => setTimeout(resolve, this.retryDelay))
-        return this.retryFetch(url, options, attempts + 1)
-      }
-      return response
-    } catch (error) {
-      if (attempts < this.retryAttempts - 1) {
-        await new Promise((resolve) => setTimeout(resolve, this.retryDelay))
-        return this.retryFetch(url, options, attempts + 1)
-      }
-      throw error
-    }
-  }
-
-  static async sendTransactionAlert(alert: SMSAlert): Promise<boolean> {
-    try {
-      const response = await this.retryFetch("/api/sms/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(alert),
-      })
-
-      const result = await response.json()
-
-      if (!result.success) {
-        this.lastError = `Failed to send SMS: ${result.error || "Unknown error"}`
-        console.error(this.lastError)
-        return false
-      }
-
-      console.log(`SMS sent successfully: ${result.messageId}`)
-      this.lastError = null
-      return true
-    } catch (error) {
-      this.lastError = `SMS Service Error: ${error instanceof Error ? error.message : String(error)}`
-      console.error(this.lastError)
-      return false
-    }
-  }
-
-  static async sendDynamicTransactionAlert(
-    bankName: string,
-    transactionData: {
-      amount: number
-      recipient: string
-      sender: string
-      balance: number
-      reference: string
-      beneficiaryName: string
-      accountNumber: string
-      description: string
-      transactionType: string
-    },
-    complianceOptions?: {
-      includeRegulatoryDisclaimer?: boolean
-      includeOptOut?: boolean
-    }
-  ): Promise<boolean> {
-    try {
-      const template = await this.getTemplateForBank(bankName)
-      if (!template) {
-        console.warn(`No template found for bank: ${bankName}, using default template`)
-        const defaultTemplate = this.getDefaultTemplates().find(t => t.id === "debit_alert")
-        if (!defaultTemplate) {
-          throw new Error("No default template available")
-        }
-        const message = this.processTemplate(defaultTemplate.content, {
-          amount: transactionData.amount.toString(),
-          recipient: transactionData.recipient,
-          balance: transactionData.balance.toString(),
-          reference: transactionData.reference,
-          time: new Date().toLocaleTimeString(),
-        })
-        
-        return this.sendTransactionAlert({
-          to: transactionData.recipient,
-          message,
-          type: "debit"
-        })
-      }
-      
-      let message = this.processTemplate(template.content, {
-        account_number: transactionData.accountNumber,
-        amount: transactionData.amount.toString(),
-        transaction_type: transactionData.transactionType,
-        beneficiary_name: transactionData.beneficiaryName,
-        description: transactionData.description,
-        balance: transactionData.balance.toString(),
-        reference: transactionData.reference,
-        date: new Date().toLocaleDateString(),
-        time: new Date().toLocaleTimeString(),
-      })
-      
-      if (complianceOptions?.includeRegulatoryDisclaimer) {
-        message += "\n\nThis is a system-generated message. Do not reply."
-      }
-      
-      if (complianceOptions?.includeOptOut) {
-        message += "\nReply STOP to opt out of transaction alerts."
-      }
-      
-      return this.sendTransactionAlert({
-        to: transactionData.recipient,
-        message,
-        type: "debit"
-      })
-    } catch (error) {
-      this.lastError = `Dynamic SMS Service Error: ${error instanceof Error ? error.message : String(error)}`
-      console.error(this.lastError)
-      return false
-    }
-  }
 
   static async getTemplateForBank(bankName: string): Promise<SMSTemplate | null> {
     const templates = this.getDefaultTemplates()
@@ -213,44 +70,6 @@ export class SMSService {
       type: data.type,
       templateCount: data.count,
     }))
-  }
-
-  static async sendBusinessCard(to: string, card: BusinessCard): Promise<boolean> {
-    try {
-      const response = await this.retryFetch("/api/sms/business-card", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to, ...card }),
-      })
-
-      const result = await response.json()
-      if (!result.success) {
-        this.lastError = `Business Card SMS Error: ${result.error || "Unknown error"}`
-        return false
-      }
-      this.lastError = null
-      return true
-    } catch (error) {
-      this.lastError = `Business Card SMS Error: ${error instanceof Error ? error.message : String(error)}`
-      console.error(this.lastError)
-      return false
-    }
-  }
-
-  static async sendBulkSMS(alerts: SMSAlert[]): Promise<{ sent: number; failed: number }> {
-    let sent = 0
-    let failed = 0
-
-    for (const alert of alerts) {
-      const success = await this.sendTransactionAlert(alert)
-      if (success) {
-        sent++
-      } else {
-        failed++
-      }
-    }
-
-    return { sent, failed }
   }
 
   static validatePhoneNumber(phone: string): boolean {

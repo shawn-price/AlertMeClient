@@ -9,14 +9,13 @@
 
 AlertMe (Ecobank Express Lite) is a high-fidelity Red Team simulation platform engineered to investigate the technical and psychological vulnerabilities in modern mobile banking ecosystems.
 
-From an ethical hacker’s perspective, this application serves as a controlled environment to study Client-Side Trust Exploitation. It replicates the UI/UX of a legitimate banking PWA to demonstrate how "Fake Alert" vectors—leveraging SMS API integration and local data manipulation—can be utilized in sophisticated Social Engineering campaigns to bypass user skepticism and security awareness protocols.
+From an ethical hacker’s perspective, this application serves as a controlled environment to study Client-Side Trust Exploitation. It replicates the UI/UX of a legitimate banking PWA to demonstrate how "Fake Alert" vectors—leveraging local data manipulation—can be utilized in sophisticated Social Engineering campaigns to bypass user skepticism and security awareness protocols.
 
 link: https://alertmeclient.vercel.app/
 
 📊 Technical Specifications
 Vector	Implementation	Vulnerability Focus
 UX Spoofing	Next.js 15.2 & Radix UI	Human-Computer Interaction (HCI) Trust
-Payload Delivery	Twilio SMS Gateway	SMS Spoofing & Phishing (Smishing)
 Data Persistence	LocalStorage/IndexedDB	Client-side sensitive data exposure
 Network Layer	Edge API Routes	Interception and Mock-Response manipulation
 Offline Mode	Service Workers	Persistence in isolated/unreliable environments
@@ -32,19 +31,7 @@ content_copy
 expand_less
 git clone https://github.com/your-username/alertme-research.git
 cd alertme-research
-2️⃣ Configure Attack Vectors (API Setup)
-
-Populate your .env.local with your SMS gateway credentials to enable "Fake Alert" triggers:
-
-code
-Env
-download
-content_copy
-expand_less
-TWILIO_ACCOUNT_SID=AC_RESEARCH_SID
-TWILIO_AUTH_TOKEN=AUTH_TOKEN_HASH
-TWILIO_PHONE_NUMBER=SPOOFED_SENDER_ID
-3️⃣ Initialize the Environment
+2️⃣ Initialize the Environment
 code
 Bash
 download
@@ -54,9 +41,10 @@ npm install && npm run dev
 
 Target Environment: http://localhost:3000
 
+Automatic SMS delivery is not available. Templates can be edited and previewed locally; receipt and business-card SMS sharing opens the device messaging app for the user to send. Older implementation documents describe historical functionality and are not current setup instructions.
+
 🗺️ Cybersecurity Research Roadmap
 Phase	Milestone	Objective
-Phase I	SMS Spoofing Integration	Researching message sender-ID trust factors
 Phase II	Credential Harvesting Simulation	Analyzing user input patterns in mock login layers
 Phase III	Deep Link Injection	Exploring PWA entry-point vulnerabilities
 Phase IV	Biometric Bypass Mock	Demonstrating UI-level biometric deception

@@ -16,13 +16,10 @@ import {
   Edit,
   Trash2,
   Eye,
-  Send,
-  Users,
   Smartphone,
   CreditCard,
   Check,
   Copy,
-  RefreshCw,
   Building2,
   Wallet,
   Star,
@@ -94,14 +91,10 @@ export function SMSTemplateComposer({ onBack }: SMSTemplateComposerProps) {
   const [selectedType, setSelectedType] = useState<"all" | "bank" | "wallet">("all")
   const [showTemplateModal, setShowTemplateModal] = useState(false)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
-  const [showBusinessCardModal, setShowBusinessCardModal] = useState(false)
-  const [showSendSMSModal, setShowSendSMSModal] = useState(false)
   const [editingTemplate, setEditingTemplate] = useState<SMSTemplate | null>(null)
   const [previewTemplate, setPreviewTemplate] = useState<SMSTemplate | null>(null)
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<string>("")
-  const [beneficiaries, setBeneficiaries] = useState(dataStore.getBeneficiaries())
-  const [isSending, setIsSending] = useState(false)
-  const [sendSuccess, setSendSuccess] = useState<boolean | null>(null)
+  const [beneficiaries] = useState(dataStore.getBeneficiaries())
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("templates")
 
@@ -120,8 +113,6 @@ export function SMSTemplateComposer({ onBack }: SMSTemplateComposerProps) {
     email: dataStore.getUserData().email,
   })
 
-  const [selectedRecipient, setSelectedRecipient] = useState("")
-  const [customMessage, setCustomMessage] = useState("")
 
   // Load templates from storage on mount
   useEffect(() => {
@@ -279,90 +270,6 @@ export function SMSTemplateComposer({ onBack }: SMSTemplateComposerProps) {
     setTimeout(() => setCopiedId(null), 2000)
   }
 
-  const handleSendBusinessCard = async () => {
-    if (!selectedRecipient || !businessCard.sender) return
-
-    setIsSending(true)
-    setSendSuccess(null)
-
-    try {
-      const recipient = beneficiaries.find((b) => b.id === selectedRecipient)
-      if (!recipient?.phone) {
-        throw new Error("Recipient phone not found")
-      }
-
-      const response = await fetch("/api/sms/business-card", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: recipient.phone,
-          sender: businessCard.sender,
-          accountNumber: businessCard.accountNumber,
-          bank: businessCard.bank,
-          phone: businessCard.phone,
-          email: businessCard.email,
-        }),
-      })
-
-      const result = await response.json()
-      setSendSuccess(result.success)
-
-      if (result.success) {
-        dataStore.addNotification({
-          title: "Business Card Sent",
-          message: `Business card sent to ${recipient.name}`,
-          type: "success",
-        })
-      }
-    } catch (error) {
-      console.error("Failed to send business card:", error)
-      setSendSuccess(false)
-    } finally {
-      setIsSending(false)
-    }
-  }
-
-  const handleSendCustomSMS = async () => {
-    if (!selectedRecipient || !customMessage) return
-
-    setIsSending(true)
-    setSendSuccess(null)
-
-    try {
-      const recipient = beneficiaries.find((b) => b.id === selectedRecipient)
-      if (!recipient?.phone) {
-        throw new Error("Recipient phone not found")
-      }
-
-      const response = await fetch("/api/sms/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: recipient.phone,
-          message: customMessage,
-          type: "general",
-        }),
-      })
-
-      const result = await response.json()
-      setSendSuccess(result.success)
-
-      if (result.success) {
-        dataStore.addNotification({
-          title: "SMS Sent",
-          message: `Message sent to ${recipient.name}`,
-          type: "success",
-        })
-        setCustomMessage("")
-      }
-    } catch (error) {
-      console.error("Failed to send SMS:", error)
-      setSendSuccess(false)
-    } finally {
-      setIsSending(false)
-    }
-  }
-
   return (
     <div className="min-h-screen bg-[#f5f7fa]">
       {/* Header */}
@@ -382,7 +289,7 @@ export function SMSTemplateComposer({ onBack }: SMSTemplateComposerProps) {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="w-full grid grid-cols-3 bg-white border-b rounded-none h-12">
+        <TabsList className="w-full grid grid-cols-2 bg-white border-b rounded-none h-12">
           <TabsTrigger
             value="templates"
             className="data-[state=active]:bg-[#004A9F]/10 data-[state=active]:text-[#004A9F]"
@@ -397,17 +304,11 @@ export function SMSTemplateComposer({ onBack }: SMSTemplateComposerProps) {
             <CreditCard className="h-4 w-4 mr-2" />
             Business Card
           </TabsTrigger>
-          <TabsTrigger
-            value="send-sms"
-            className="data-[state=active]:bg-[#004A9F]/10 data-[state=active]:text-[#004A9F]"
-          >
-            <Send className="h-4 w-4 mr-2" />
-            Send SMS
-          </TabsTrigger>
         </TabsList>
 
-        {/* Templates Tab */}
+        {/* Templates are for local editing and preview only. */}
         <TabsContent value="templates" className="px-4 py-4 space-y-4 mt-0">
+          <p className="text-sm text-gray-500">Templates are saved on this device for preview and copying; automatic SMS alerts are unavailable.</p>
           {/* Filters */}
           <Card>
             <CardContent className="p-4 space-y-3">
@@ -631,156 +532,7 @@ export function SMSTemplateComposer({ onBack }: SMSTemplateComposerProps) {
             </CardContent>
           </Card>
 
-          {/* Send Business Card */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Send className="h-5 w-5 text-[#00B2A9]" />
-                Send Business Card
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label>Select Recipient</Label>
-                <Select value={selectedRecipient} onValueChange={setSelectedRecipient}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Choose a beneficiary" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {beneficiaries.map((b) => (
-                      <SelectItem key={b.id} value={b.id}>
-                        <span className="flex items-center gap-2">
-                          <Users className="h-3 w-3" />
-                          {b.name} - {b.phone || b.accountNumber}
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {sendSuccess !== null && (
-                <div
-                  className={`p-3 rounded-lg text-sm ${sendSuccess ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}
-                >
-                  {sendSuccess ? "Business card sent successfully!" : "Failed to send. Please try again."}
-                </div>
-              )}
-
-              <Button
-                onClick={handleSendBusinessCard}
-                disabled={!selectedRecipient || !businessCard.sender || isSending}
-                className="w-full bg-[#00B2A9] hover:bg-[#008A82]"
-              >
-                {isSending ? (
-                  <>
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <Send className="h-4 w-4 mr-2" />
-                    Send Business Card via SMS
-                  </>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Send SMS Tab */}
-        <TabsContent value="send-sms" className="px-4 py-4 space-y-4 mt-0">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Smartphone className="h-5 w-5 text-[#004A9F]" />
-                Send Custom SMS
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label>Select Recipient</Label>
-                <Select value={selectedRecipient} onValueChange={setSelectedRecipient}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Choose a beneficiary" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {beneficiaries.map((b) => (
-                      <SelectItem key={b.id} value={b.id}>
-                        <span className="flex items-center gap-2">
-                          <Users className="h-3 w-3" />
-                          {b.name} - {b.phone || "No phone"}
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label>Message</Label>
-                <Textarea
-                  value={customMessage}
-                  onChange={(e) => setCustomMessage(e.target.value)}
-                  placeholder="Type your message here..."
-                  rows={4}
-                  className="mt-1"
-                />
-                <div className="text-xs text-gray-500 mt-1 text-right">{customMessage.length} characters</div>
-              </div>
-
-              {sendSuccess !== null && (
-                <div
-                  className={`p-3 rounded-lg text-sm ${sendSuccess ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}
-                >
-                  {sendSuccess ? "SMS sent successfully!" : "Failed to send. Please try again."}
-                </div>
-              )}
-
-              <Button
-                onClick={handleSendCustomSMS}
-                disabled={!selectedRecipient || !customMessage || isSending}
-                className="w-full bg-[#004A9F] hover:bg-[#003875]"
-              >
-                {isSending ? (
-                  <>
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <Send className="h-4 w-4 mr-2" />
-                    Send SMS
-                  </>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Quick Templates */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">Quick Templates</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {templates
-                .filter((t) => t.isDefault)
-                .slice(0, 3)
-                .map((template) => (
-                  <Button
-                    key={template.id}
-                    variant="outline"
-                    className="w-full justify-start h-auto py-3 bg-transparent"
-                    onClick={() => setCustomMessage(generatePreviewText(template, selectedRecipient))}
-                  >
-                    <div className="text-left">
-                      <div className="font-medium text-sm">{template.name}</div>
-                      <div className="text-xs text-gray-500">{template.bank}</div>
-                    </div>
-                  </Button>
-                ))}
-            </CardContent>
-          </Card>
+          <p className="text-sm text-gray-500">Business card details are saved on this device. Automatic SMS sending is unavailable.</p>
         </TabsContent>
       </Tabs>
 

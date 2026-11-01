@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { Loader2, CreditCard, Shield, CheckCircle, AlertCircle } from "@/components/ui/iconify-compat"
 import { dataStore } from "@/lib/data-store"
 import { formatCurrency } from "@/lib/form-utils"
-import { useSMSAlert } from "@/hooks/use-sms-alert"
 
 interface TransferProcessingScreenProps {
   onNavigate: (screen: string, data?: any) => void
@@ -16,7 +15,6 @@ export function TransferProcessingScreen({ onNavigate, transferData }: TransferP
   const [progress, setProgress] = useState(0)
   const [isProcessing, setIsProcessing] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { sendAlert } = useSMSAlert()
 
   const steps = [
     { icon: Shield, label: "Verifying PIN", description: "Authenticating your transaction" },
@@ -73,35 +71,14 @@ export function TransferProcessingScreen({ onNavigate, transferData }: TransferP
               .then(async (id) => {
                 console.log("[Transfer] Transaction added with ID:", id)
                 
-                // Navigate to success page IMMEDIATELY - don't wait for SMS
+                // Navigate to the success page after recording the transaction
                 const successData = {
                   ...transferData,
                   id,
                   beneficiaryName: transferData?.beneficiaryName || "Recipient",
                   timestamp: new Date().toISOString(),
-                  smsStatus: "pending",
                 }
                 
-                // Send SMS alert CONCURRENTLY in the background using multi-gateway system
-                const userData = dataStore.getUserData()
-                const amount = Number.parseFloat(transferData.amount || "0")
-                
-                // Prepare SMS message
-                const recipientBank = transferData.bank || "ECOBANK"
-                const recipient = transferData.beneficiaryName || "Recipient"
-                const message = `Your Ecobank account was debited ₦${formatCurrency(amount)} to ${recipient} at ${new Date().toLocaleTimeString()}. Balance: ₦${formatCurrency(userData.balance - amount)}. Ref: ${id}`
-
-                // Send SMS without blocking - handle in background with gateway fallback
-                sendAlert({
-                  to: userData.phone,
-                  message,
-                  recipientBank,
-                  senderBankName: "Ecobank",
-                  showProgress: false, // Silent mode - don't show toast for background sends
-                }).catch((err) => {
-                  console.warn("[Transfer] SMS sending error:", err)
-                })
-
                 // Navigate immediately - no delay
                 onNavigate("transaction-success", successData)
               })

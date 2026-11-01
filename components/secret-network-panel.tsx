@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { X, Network, Settings, Zap, AlertCircle } from "lucide-react"
+import { X, Network, Zap, AlertCircle } from "lucide-react"
 
 interface NetworkStatus {
   isOnline: boolean
@@ -27,11 +27,6 @@ export function SecretNetworkPanel({ isOpen, onClose }: SecretNetworkPanelProps)
     rtt: 0,
     latency: 0,
     signalStrength: "unknown",
-  })
-
-  const [apiEndpoints, setApiEndpoints] = useState({
-    smsGateway: process.env.NEXT_PUBLIC_SMS_API || "/api/sms/send",
-    vartechBase: process.env.NEXT_PUBLIC_VARTECH_BASE || "https://sms.thevartech.com/api",
   })
 
   const [debugLevel, setDebugLevel] = useState<"silent" | "info" | "debug" | "verbose">("info")
@@ -154,26 +149,6 @@ export function SecretNetworkPanel({ isOpen, onClose }: SecretNetworkPanelProps)
                   <div className="bg-slate-700/50 p-3 rounded-lg">
                     <div className="text-slate-400 text-xs uppercase">Latency</div>
                     <div className="text-slate-200 font-semibold">{Math.round(networkStatus.latency)}ms</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* API Configuration */}
-              <div className="space-y-3 pb-4 border-b border-slate-700">
-                <h3 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
-                  <Settings className="w-4 h-4 text-blue-400" />
-                  API Configuration
-                </h3>
-
-                <div className="space-y-2 text-sm">
-                  <div className="bg-slate-700/50 p-2 rounded">
-                    <div className="text-slate-400 text-xs">SMS Gateway</div>
-                    <code className="text-green-300 text-xs break-all">{apiEndpoints.smsGateway}</code>
-                  </div>
-
-                  <div className="bg-slate-700/50 p-2 rounded">
-                    <div className="text-slate-400 text-xs">VarTech Base URL</div>
-                    <code className="text-green-300 text-xs break-all">{apiEndpoints.vartechBase}</code>
                   </div>
                 </div>
               </div>
