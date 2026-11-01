@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
@@ -17,83 +17,23 @@ interface ShareDetailsModalProps {
 export function ShareDetailsModal({ isOpen, onClose, recipientPhone }: ShareDetailsModalProps) {
   const [selectedBank, setSelectedBank] = useState<string>("Ecobank Nigeria")
   const [recipientPhoneInput, setRecipientPhoneInput] = useState<string>(recipientPhone || "")
-  const [isSending, setIsSending] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
 
   const userData = dataStore.getUserData()
-  console.log('ShareDetailsModal userData:', userData)
-  console.log('ShareDetailsModal selectedBank:', selectedBank)
 
   const cardPreviewData = {
     bank: selectedBank,
     email: userData?.email || "",
     phone: userData?.phone || "",
   }
-  console.log('ShareDetailsModal cardPreviewData:', cardPreviewData)
-
-  const handleSendViaSMS = async () => {
-    if (!recipientPhoneInput.trim()) {
-      setError("Please enter a recipient phone number")
-      return
-    }
-
-    setIsSending(true)
-    setError(null)
-
-    try {
-      console.log('ShareDetailsModal sending SMS with data:', {
-        to: recipientPhoneInput,
-        bank: selectedBank,
-        email: userData?.email || "",
-        phone: userData?.phone || "",
-        mediaUrl: `${window.location.origin}/api/vcard?bank=${encodeURIComponent(selectedBank)}&email=${encodeURIComponent(userData?.email || "")}&phone=${encodeURIComponent(userData?.phone || "")}`,
-      })
-
-      const response = await fetch("/api/sms/business-card", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: recipientPhoneInput,
-          bank: selectedBank,
-          email: userData?.email || "",
-          phone: userData?.phone || "",
-          mediaUrl: `${window.location.origin}/api/vcard?bank=${encodeURIComponent(selectedBank)}&email=${encodeURIComponent(userData?.email || "")}&phone=${encodeURIComponent(userData?.phone || "")}`,
-        }),
-      })
-
-      console.log('ShareDetailsModal SMS response status:', response.status)
-      console.log('ShareDetailsModal SMS response:', response)
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        throw new Error(result.error || "Failed to send business card")
-      }
-
-      setSuccess(true)
-      setTimeout(() => {
-        onClose()
-        setSuccess(false)
-        setRecipientPhoneInput("")
-      }, 2000)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to send business card")
-    } finally {
-      setIsSending(false)
-    }
-  }
 
   const handleShare = (platform: string) => {
-    if (platform === "sms") {
-      // SMS will be handled by the new logic
-      return
-    }
-
     const shareText = `Bank: ${selectedBank}\nEmail: ${userData?.email || ""}\nPhone: ${userData?.phone || ""}`
     const encodedText = encodeURIComponent(shareText)
 
     switch (platform) {
+      case "sms":
+        window.location.href = `sms:${encodeURIComponent(recipientPhoneInput.trim())}?body=${encodedText}`
+        break
       case "whatsapp":
         window.open(`https://wa.me/?text=${encodedText}`, "_blank")
         break
@@ -157,42 +97,31 @@ export function ShareDetailsModal({ isOpen, onClose, recipientPhone }: ShareDeta
             </CardContent>
           </Card>
 
-          {/* Error Message */}
-          {error && <div className="p-3 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg text-sm">{error}</div>}
-
-          {/* Success Message */}
-          {success && (
-            <div className="p-3 bg-success/10 border border-success/30 text-success rounded-lg text-sm">
-              Business card sent successfully!
-            </div>
-          )}
-
           {/* Share Options */}
           <div className="space-y-3">
             <div className="text-sm font-medium text-foreground text-center">Choose sharing method:</div>
+            <p className="text-xs text-muted-foreground text-center">SMS opens your device’s messaging app; you choose whether to send it.</p>
 
             <Button
               onClick={() => handleShare("whatsapp")}
               className="w-full bg-success hover:bg-success/90 text-white flex items-center gap-3"
-              disabled={isSending}
             >
               <MessageCircle className="h-5 w-5" />
               Share via WhatsApp
             </Button>
 
             <Button
-              onClick={handleSendViaSMS}
+              onClick={() => handleShare("sms")}
               className="w-full bg-primary hover:bg-primary/90 text-white flex items-center gap-3 disabled:opacity-50"
-              disabled={isSending || !recipientPhoneInput.trim()}
+              disabled={!recipientPhoneInput.trim()}
             >
               <MessageSquare className="h-5 w-5" />
-              {isSending ? "Sending..." : "Send Business Card via SMS"}
+              Open Business Card in SMS app
             </Button>
 
             <Button
               onClick={() => handleShare("telegram")}
               className="w-full bg-sky-500 hover:bg-sky-600 text-white flex items-center gap-3"
-              disabled={isSending}
             >
               <Send className="h-5 w-5" />
               Share via Telegram

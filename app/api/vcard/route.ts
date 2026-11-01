@@ -3,7 +3,6 @@ import { type NextRequest, NextResponse } from "next/server"
 /**
  * Dynamic vCard Generator Route
  * Generates a vCard (business card) file with bank, email, and phone information
- * Called by Twilio MMS to generate the business card attachment
  */
 export async function GET(request: NextRequest) {
   try {

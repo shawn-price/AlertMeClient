@@ -1,11 +1,7 @@
 "use client"
 
-import { generateDebitAlert, generateCreditAlert } from "./alert-templates"
-import { sendTransactionAlert } from "./sms-client"
-import { SMSService } from "./sms-service"
 import { StorageManager } from "./storage-manager"
 import { formatCurrency } from "@/lib/form-utils"
-import { GatewayConfig } from "@/lib/sms-gateways/types"
 
 export interface Transaction {
   id: string
@@ -58,19 +54,6 @@ export interface Notification {
   read: boolean
 }
 
-export interface NotificationLog {
-  id: string
-  transactionId: string
-  type: "sms" | "email" | "push"
-  status: "pending" | "sent" | "failed" | "delivered"
-  recipient: string
-  templateUsed: string
-  timestamp: string
-  message: string
-  deliveryAttempts?: number
-  lastError?: string
-}
-
 export interface LoanApplication {
   id: string
   type: string
@@ -94,7 +77,6 @@ export interface LoanApplication {
 export interface AppSettings {
   theme: string
   notifications: boolean
-  smsAlerts: boolean
   biometricLogin: boolean
   language: string
 }
@@ -106,7 +88,6 @@ interface AppState {
   notifications: Notification[]
   loanApplications: LoanApplication[]
   settings: AppSettings
-  smsGatewayConfigs: GatewayConfig[]
   lastSynced: string
   version: number
 }
@@ -115,10 +96,9 @@ class DataStore {
   private static instance: DataStore
   private state: AppState
   private listeners: Set<() => void> = new Set()
-  private notificationLogs: NotificationLog[] = []
   private readonly STORAGE_KEY = "ecobank_app_data"
   private readonly BACKUP_KEY = "ecobank_app_backup"
-  private readonly VERSION = 1
+  private readonly VERSION = 2
   private saveTimeout: NodeJS.Timeout | null = null
   private readonly DEBOUNCE_DELAY = 2000 // 2 second debounce for saves
   private notifyTimeout: NodeJS.Timeout | null = null
@@ -134,10 +114,24 @@ class DataStore {
   private constructor() {
     this.state = this.loadFromStorage()
     this.initializeDefaultData()
-    this.loadNotificationLogs()
 
     // Initialize IndexedDB for better scalability
     if (typeof window !== "undefined") {
+      // Clean existing browser data without replacing a backup with current state.
+      try {
+        const stored = StorageManager.loadSync<any>(this.STORAGE_KEY, null)
+        if (stored) StorageManager.saveSync(this.STORAGE_KEY, this.state)
+        const backup = StorageManager.loadSync<any>(this.BACKUP_KEY, null)
+        if (backup?.data) {
+          StorageManager.saveSync(this.BACKUP_KEY, {
+            ...backup,
+            data: this.migrateData(backup.data),
+            version: this.VERSION,
+          })
+        }
+      } catch (error) {
+        console.warn("Failed to clean stored application data:", error)
+      }
       StorageManager.initIndexedDB().catch((err) => console.warn("IndexedDB initialization failed:", err))
 
       // Request persistent storage quota
@@ -559,51 +553,9 @@ class DataStore {
       settings: {
         theme: "default",
         notifications: true,
-        smsAlerts: true,
         biometricLogin: false,
         language: "en",
       },
-      smsGatewayConfigs: [
-        {
-          name: "infobip",
-          enabled: false,
-          priority: 1,
-          credentials: {
-            apiKey: "",
-            username: "",
-            baseUrl: "",
-          },
-        },
-        {
-          name: "smsglobal",
-          enabled: false,
-          priority: 2,
-          credentials: {
-            apiKey: "",
-            endpoint: "",
-          },
-        },
-        {
-          name: "easysendsms",
-          enabled: false,
-          priority: 3,
-          credentials: {
-            apiKey: "",
-            username: "",
-            endpoint: "",
-          },
-        },
-        {
-          name: "telnyx",
-          enabled: false,
-          priority: 4,
-          credentials: {
-            apiKey: "",
-            messagingProfileId: "",
-            endpoint: "",
-          },
-        },
-      ],
       lastSynced: new Date().toISOString(),
       version: this.VERSION,
     }
@@ -618,7 +570,7 @@ class DataStore {
           console.log("Data version mismatch, performing migration")
           return this.migrateData(stored)
         }
-        return stored
+        return this.migrateData(stored)
       }
     } catch (error) {
       console.error("Failed to load from storage:", error)
@@ -626,20 +578,26 @@ class DataStore {
     return this.getDefaultState()
   }
 
+  // Copy only supported fields so removed configuration and credentials are not
+  // restored from older browser storage, imports, or backups.
   private migrateData(oldState: any): AppState {
-    // Handle data migrations between versions here
-    const newState = this.getDefaultState()
-    if (oldState.userData) {
-      newState.userData = { ...newState.userData, ...oldState.userData }
+    const defaults = this.getDefaultState()
+    const settings = oldState?.settings || {}
+    return {
+      userData: { ...defaults.userData, ...oldState?.userData },
+      transactions: oldState?.transactions ?? defaults.transactions,
+      beneficiaries: oldState?.beneficiaries ?? defaults.beneficiaries,
+      notifications: oldState?.notifications ?? defaults.notifications,
+      loanApplications: oldState?.loanApplications ?? defaults.loanApplications,
+      settings: {
+        theme: settings.theme ?? defaults.settings.theme,
+        notifications: settings.notifications ?? defaults.settings.notifications,
+        biometricLogin: settings.biometricLogin ?? defaults.settings.biometricLogin,
+        language: settings.language ?? defaults.settings.language,
+      },
+      lastSynced: oldState?.lastSynced ?? defaults.lastSynced,
+      version: this.VERSION,
     }
-    if (oldState.transactions) {
-      newState.transactions = oldState.transactions
-    }
-    if (oldState.beneficiaries) {
-      newState.beneficiaries = oldState.beneficiaries
-    }
-    newState.version = this.VERSION
-    return newState
   }
 
   private saveToStorage(): void {
@@ -773,16 +731,6 @@ class DataStore {
       time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     }
     
-    this.logNotification({
-      transactionId: id,
-      type: "sms",
-      status: "pending",
-      recipient: newTransaction.recipient || "",
-      templateUsed: newTransaction.recipientBank || "default",
-      timestamp: new Date().toISOString(),
-      message: `Transaction alert for ${newTransaction.type}`,
-    })
-
     // Ensure amount and fee are numbers rounded to 2 decimals
     newTransaction.amount = Number(Number(newTransaction.amount).toFixed(2))
     if (newTransaction.fee !== undefined) newTransaction.fee = Number(Number(newTransaction.fee).toFixed(2))
@@ -796,58 +744,6 @@ class DataStore {
     } else {
       const delta = newTransaction.amount
       this.state.userData.balance = Number((this.state.userData.balance + delta).toFixed(2))
-    }
-
-    // Send SMS notifications if enabled
-    if (this.state.settings.smsAlerts) {
-      if (newTransaction.isDebit && newTransaction.recipient) {
-        const debitMessage = generateDebitAlert(
-          newTransaction.amount,
-          newTransaction.recipient,
-          this.state.userData.balance,
-          reference,
-        )
-
-        await sendTransactionAlert({
-          to: this.state.userData.phone,
-          message: debitMessage,
-          type: "debit",
-        })
-
-        // Send credit alert to recipient if phone available
-        const beneficiary = this.state.beneficiaries.find((b) => b.name === newTransaction.recipient)
-        if (beneficiary?.phone) {
-          const creditMessage = generateCreditAlert(
-            newTransaction.amount,
-            this.state.userData.name,
-            0, // We don't know recipient's balance
-            reference,
-          )
-
-          await sendTransactionAlert({
-            to: beneficiary.phone,
-            message: creditMessage,
-            type: "credit",
-          })
-        }
-      }
-      
-      if (newTransaction.isDebit && newTransaction.recipientBank) {
-        await SMSService.sendDynamicTransactionAlert(newTransaction.recipientBank, {
-          amount: newTransaction.amount,
-          recipient: newTransaction.recipient || "",
-          sender: this.state.userData.name,
-          balance: this.state.userData.balance,
-          reference: reference,
-          beneficiaryName: newTransaction.recipient || "",
-          accountNumber: newTransaction.recipientAccount || "",
-          description: newTransaction.description || "Transfer",
-          transactionType: newTransaction.isDebit ? "Debit" : "Credit",
-        }, {
-          includeRegulatoryDisclaimer: true,
-          includeOptOut: true
-        })
-      }
     }
 
     // Add in-app notification
@@ -1010,7 +906,7 @@ class DataStore {
         importedData.data = this.migrateData(importedData.data)
       }
 
-      this.state = importedData.data
+      this.state = this.migrateData(importedData.data)
       this.notify()
       return true
     } catch (error) {
@@ -1024,7 +920,7 @@ class DataStore {
       const backup: any = StorageManager.loadSync(this.BACKUP_KEY, null)
       if (!backup) return false
 
-      this.state = backup.data
+      this.state = this.migrateData(backup.data)
       this.notify()
       return true
     } catch (error) {
@@ -1077,32 +973,6 @@ class DataStore {
     return this.state.userData.accountNumber !== ""
   }
 
-  private loadNotificationLogs(): void {
-    try {
-      const stored = StorageManager.loadSync<NotificationLog[]>("ecobank_notification_logs", [])
-      if (Array.isArray(stored)) {
-        this.notificationLogs = stored
-      }
-    } catch (error) {
-      console.warn("Failed to load notification logs:", error)
-      this.notificationLogs = []
-    }
-  }
-
-  private logNotification(log: Omit<NotificationLog, "id">): void {
-    try {
-      const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-      this.notificationLogs.push({ ...log, id })
-      // Keep only recent logs (last 100)
-      if (this.notificationLogs.length > 100) {
-        this.notificationLogs = this.notificationLogs.slice(-100)
-      }
-      StorageManager.saveSync("ecobank_notification_logs", this.notificationLogs)
-    } catch (error) {
-      console.warn("Failed to log notification:", error)
-    }
-  }
-
   private createAutoBackup(): void {
     try {
       const backup = {
@@ -1116,25 +986,7 @@ class DataStore {
     }
   }
 
-  // SMS Gateway configuration methods
-  getSMSGatewayConfigs(): GatewayConfig[] {
-    return [...this.state.smsGatewayConfigs]
-  }
 
-  setSMSGatewayConfigs(configs: GatewayConfig[]): void {
-    this.state.smsGatewayConfigs = configs.map((c) => ({ ...c }))
-    this.notify()
-  }
-
-  updateSMSGatewayConfig(gatewayName: string, updates: Partial<GatewayConfig>): boolean {
-    const config = this.state.smsGatewayConfigs.find((c) => c.name === gatewayName)
-    if (config) {
-      Object.assign(config, updates)
-      this.notify()
-      return true
-    }
-    return false
-  }
 }
 
 export const dataStore = DataStore.getInstance()
